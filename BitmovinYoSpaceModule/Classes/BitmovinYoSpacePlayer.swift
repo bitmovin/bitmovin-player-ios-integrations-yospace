@@ -9,14 +9,13 @@ enum SessionStatus : Int
     case initialisedPlaying
 }
 
-public class BitmovinYoSpacePlayer:BitmovinPlayer,YSSessionManagerObserver, YSAnalyticObserver {
+public class BitmovinYoSpacePlayer:BitmovinPlayer {
 
     var ysVideoPlayer:YoSpacePlayer;
     var sessionManger:YSSessionManager?
     var sessionInitialized:SessionStatus
     var yospaceSourceConfiguration:YospaceSourceConfiguration?
     var sourceConfiguration:SourceConfiguration?
-    public let configuration:BitmovinYoSpaceConfiguration = BitmovinYoSpaceConfiguration()
 
     public override init(configuration: PlayerConfiguration) {
         sessionInitialized = .notInitialised
@@ -31,7 +30,15 @@ public class BitmovinYoSpacePlayer:BitmovinPlayer,YSSessionManagerObserver, YSAn
         sessionInitialized = .notInitialised
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
+        let yospaceProperties = YSSessionProperties()
+        yospaceProperties.analyticsUserAgent = yospaceSourceConfiguration.userAgent;
+        yospaceProperties.timeout = yospaceSourceConfiguration.timeout
         
+        if(yospaceSourceConfiguration.debug){
+            let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
+            YSSessionProperties.add(_:combined!)
+
+        }
         guard let url:URL = self.sourceConfiguration?.firstSourceItem?.hlsSource?.url else {
             //TODO throw error
             return
@@ -39,54 +46,26 @@ public class BitmovinYoSpacePlayer:BitmovinPlayer,YSSessionManagerObserver, YSAn
         
         switch yospaceSourceConfiguration.yoSpaceAssetType {
             case .linear:
-                loadLive(url: url)
+                loadLive(url: url, yospaceProperties: yospaceProperties)
                 break
             case .linearStartOver:
-                loadNonLinearStartOver(url: url);
+                loadNonLinearStartOver(url: url, yospaceProperties: yospaceProperties);
                 break
             case .vod:
-                loadVOD(url: url)
+                loadVOD(url: url, yospaceProperties: yospaceProperties)
                 break
         }
     }
     
-    public func loadVOD(url: URL){
-        if(configuration.debug){
-            let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
-            YSSessionProperties.add(_:combined!)
-        }
-        let yospaceProperties = YSSessionProperties()
-        yospaceProperties.analyticsUserAgent = configuration.userAgent;
-        yospaceProperties.timeout = configuration.timeout
-        
+    public func loadVOD(url: URL, yospaceProperties: YSSessionProperties){
         YSSessionManager.create(forVoD: url, properties: yospaceProperties, delegate: self)
     }
     
-    public func loadLive(url: URL){
-        
-        if(configuration.debug){
-            let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
-            YSSessionProperties.add(_:combined!)
-        }
-
-        let yospaceProperties = YSSessionProperties()
-        yospaceProperties.analyticsUserAgent = configuration.userAgent;
-        yospaceProperties.timeout = configuration.timeout
-
+    public func loadLive(url: URL, yospaceProperties: YSSessionProperties){
         YSSessionManager.create(forLive: url, properties: yospaceProperties, delegate: self)
     }
     
-    public func loadNonLinearStartOver(url: URL){
-        
-        if(configuration.debug){
-            let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
-            YSSessionProperties.add(_:combined!)
-        }
-        
-        let yospaceProperties = YSSessionProperties()
-        yospaceProperties.analyticsUserAgent = configuration.userAgent;
-        yospaceProperties.timeout = configuration.timeout
-        
+    public func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties){
         YSSessionManager.create(forNonLinearStartOver: url, properties: yospaceProperties, delegate: self)
     }
     
@@ -95,11 +74,11 @@ public class BitmovinYoSpacePlayer:BitmovinPlayer,YSSessionManagerObserver, YSAn
     }
     
     public override func add(listener: PlayerListener) {
-        
+        super.add(listener: listener)
     }
     
     public override func remove(listener: PlayerListener) {
-        
+        super.remove(listener: listener)
     }
     
     /**
@@ -121,11 +100,9 @@ public class BitmovinYoSpacePlayer:BitmovinPlayer,YSSessionManagerObserver, YSAn
     public func contentDidResume(_ playheadPosition: TimeInterval) {
         print("Content did resume");
     }
-    
-    /**
-     YSAnalyticsObserver ad analytics
-     */
-    
+}
+
+extension BitmovinYoSpacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         print("Advert Break Did Start");
     }
@@ -145,7 +122,6 @@ public class BitmovinYoSpacePlayer:BitmovinPlayer,YSSessionManagerObserver, YSAn
     
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
         print("Tracking Event Did Occur ", YospaceUtil.trackingEventString(event: event));
-
     }
     
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
@@ -155,8 +131,10 @@ public class BitmovinYoSpacePlayer:BitmovinPlayer,YSSessionManagerObserver, YSAn
     public func nonlinearClickThroughDidOccur(_ nonlinearCreative: YSNonLinearCreative) {
         
     }
-    
-    
+}
+
+
+extension BitmovinYoSpacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
         
         self.sessionManger = sessionManager
