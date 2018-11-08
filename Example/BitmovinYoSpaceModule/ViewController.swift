@@ -57,7 +57,7 @@ class ViewController: UIViewController {
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        let config = YospaceSourceConfiguration(yoSpaceAssetType: .linear)
+        let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
         bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
@@ -70,7 +70,7 @@ class ViewController: UIViewController {
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        let config = YospaceSourceConfiguration(yoSpaceAssetType: .vod)
+        let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
 
         bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
@@ -82,7 +82,7 @@ class ViewController: UIViewController {
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        let config = YospaceSourceConfiguration(yoSpaceAssetType: .linearStartOver)
+        let config = YospaceSourceConfiguration(yospaceAssetType: .linearStartOver)
 
         bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
@@ -108,5 +108,9 @@ extension ViewController : PlayerListener {
     
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
         print("Ad Break Finished")
+    }
+    
+    public func onAdClicked(_ event: AdClickedEvent) {
+        print("Ad Clicked")
     }
 }

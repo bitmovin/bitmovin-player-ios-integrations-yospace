@@ -52,7 +52,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
             return
         }
 
-        switch yospaceSourceConfiguration.yoSpaceAssetType {
+        switch yospaceSourceConfiguration.yospaceAssetType {
             case .linear:
                 loadLive(url: url, yospaceProperties: yospaceProperties)
                 break
@@ -205,6 +205,10 @@ extension BitmovinYospacePlayer: PlayerListener {
             let objects: [Any] = [currentTime]
             let keys: [Any] = [kYoPlayheadKey]
             self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackStartedNotification)
+        }else {
+            let objects: [Any] = [currentTime]
+            let keys: [Any] = [kYoPlayheadKey]
+            self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackResumedNotification)
         }
 
     }
