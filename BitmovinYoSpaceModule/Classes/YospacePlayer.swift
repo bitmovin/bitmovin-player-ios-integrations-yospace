@@ -40,6 +40,6 @@ class YoSpacePlayer: NSObject, YSVideoPlayer  {
         }
     }
     
-    public weak var player:BitmovinYoSpacePlayer?
+    public weak var player:BitmovinYospacePlayer?
     
 }

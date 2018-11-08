@@ -11,7 +11,7 @@ import BitmovinYoSpaceModule
 import BitmovinPlayer
 
 class ViewController: UIViewController {
-    var bitmovinYoSpacePlayer: BitmovinYoSpacePlayer?;
+    var bitmovinYoSpacePlayer: BitmovinYospacePlayer?;
     @IBOutlet var playerView: UIView!
     @IBOutlet var unloadButton: UIButton!
     @IBOutlet var liveButton: UIButton!
@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
-        bitmovinYoSpacePlayer = BitmovinYoSpacePlayer(configuration: configuration)
+        bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration)
         
         guard let player = bitmovinYoSpacePlayer else {
             return
