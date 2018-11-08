@@ -1,0 +1,10 @@
+/*
+ * COPYRIGHT © 2018 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
+ */
+
+#ifndef __YOVERSION_H__
+#define __YOVERSION_H__
+
+#define ADMANAGEMENT_VERSION @"1.7.0"
+
+#endif

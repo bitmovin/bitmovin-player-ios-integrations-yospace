@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+    <device id="retina5_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModule="BitmovinYoSpaceModule_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hb3-bn-Sn4">
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x1n-n0-LwS">
+                                <rect key="frame" x="24" y="28" width="30" height="30"/>
+                                <state key="normal" title="Live"/>
+                                <connections>
+                                    <action selector="liveButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="goA-yc-r1B"/>
+                                    <action selector="liveButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="kwE-l0-xRd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lyc-l3-Nsg">
+                                <rect key="frame" x="187" y="28" width="34" height="30"/>
+                                <state key="normal" title="Click"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n0d-8r-aL9">
+                                <rect key="frame" x="77" y="28" width="32" height="30"/>
+                                <state key="normal" title="VOD"/>
+                                <connections>
+                                    <action selector="vodButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="PVN-ch-ftT"/>
+                                    <action selector="vodButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="j1c-a1-58h"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fRY-ie-hiw">
+                                <rect key="frame" x="127" y="28" width="40" height="30"/>
+                                <state key="normal" title="NLSO"/>
+                                <connections>
+                                    <action selector="startOverButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="ZAz-Yn-UpJ"/>
+                                    <action selector="startOverButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="jSS-dC-5m5"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KEF-Cw-sKa">
+                                <rect key="frame" x="241" y="28" width="49" height="30"/>
+                                <state key="normal" title="Unload"/>
+                                <connections>
+                                    <action selector="unloadButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="0bk-k7-BXn"/>
+                                    <action selector="unloadButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="FKP-hB-F6d"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="n0d-8r-aL9" firstAttribute="top" secondItem="x1n-n0-LwS" secondAttribute="top" id="08o-qf-7i4"/>
+                            <constraint firstItem="fRY-ie-hiw" firstAttribute="leading" secondItem="n0d-8r-aL9" secondAttribute="trailing" constant="18" id="5Vy-Ty-93S"/>
+                            <constraint firstItem="Lyc-l3-Nsg" firstAttribute="leading" secondItem="fRY-ie-hiw" secondAttribute="trailing" constant="20" id="AZV-dl-APD"/>
+                            <constraint firstItem="x1n-n0-LwS" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="CwP-Br-Ggz"/>
+                            <constraint firstItem="hb3-bn-Sn4" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="E8D-Ex-raq"/>
+                            <constraint firstItem="KEF-Cw-sKa" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="FjC-O3-EF5"/>
+                            <constraint firstItem="hb3-bn-Sn4" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="Jb3-Sj-LCR"/>
+                            <constraint firstItem="x1n-n0-LwS" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="24" id="KzG-cK-fne"/>
+                            <constraint firstItem="n0d-8r-aL9" firstAttribute="leading" secondItem="x1n-n0-LwS" secondAttribute="trailing" constant="23" id="cTH-0G-1C0"/>
+                            <constraint firstItem="KEF-Cw-sKa" firstAttribute="leading" secondItem="Lyc-l3-Nsg" secondAttribute="trailing" constant="20" id="dKa-ad-BPO"/>
+                            <constraint firstAttribute="trailing" secondItem="hb3-bn-Sn4" secondAttribute="trailing" id="dLw-w4-ted"/>
+                            <constraint firstItem="Lyc-l3-Nsg" firstAttribute="top" secondItem="fRY-ie-hiw" secondAttribute="top" id="tN7-lc-pgJ"/>
+                            <constraint firstItem="KEF-Cw-sKa" firstAttribute="top" secondItem="Lyc-l3-Nsg" secondAttribute="top" id="ut6-bl-gZE"/>
+                            <constraint firstItem="hb3-bn-Sn4" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="uwY-hk-3hk"/>
+                            <constraint firstItem="fRY-ie-hiw" firstAttribute="top" secondItem="n0d-8r-aL9" secondAttribute="top" id="zCg-AC-QM2"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="clickButton" destination="Lyc-l3-Nsg" id="ctD-mj-dUY"/>
+                        <outlet property="liveButton" destination="x1n-n0-LwS" id="9sW-rf-OPU"/>
+                        <outlet property="playerView" destination="hb3-bn-Sn4" id="Jem-QS-59N"/>
+                        <outlet property="startOverButton" destination="fRY-ie-hiw" id="AAy-FP-YbR"/>
+                        <outlet property="unloadButton" destination="KEF-Cw-sKa" id="sp5-ij-azV"/>
+                        <outlet property="vodButton" destination="n0d-8r-aL9" id="ATj-UR-s82"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="140" y="133.5832083958021"/>
+        </scene>
+    </scenes>
+</document>
