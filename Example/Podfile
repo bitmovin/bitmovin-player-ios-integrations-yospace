@@ -1,6 +1,6 @@
-target 'BitmovinYoSpaceModule_Example' do
+target 'BitmovinYospaceModule_Example' do
     use_frameworks!
   platform :ios, '9.0'
-  pod 'BitmovinYoSpaceModule', :path => '../'
+  pod 'BitmovinYospaceModule', :path => '../'
   pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.13.0'
 end

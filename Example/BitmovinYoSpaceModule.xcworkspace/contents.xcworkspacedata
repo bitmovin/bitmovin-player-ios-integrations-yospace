@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:BitmovinYoSpaceModule.xcodeproj">
+      location = "group:/Users/zachmanc/Documents/git/turner/ios/bitmovin-player-ios-integrations-yospace/Example/BitmovinYospaceModule.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:BitmovinYospaceModule.xcodeproj">
    </FileRef>
 </Workspace>

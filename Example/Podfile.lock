@@ -1,17 +1,17 @@
 PODS:
   - BitmovinPlayer (2.13.0)
-  - BitmovinYoSpaceModule (0.1.0):
+  - BitmovinYospaceModule (0.1.0):
     - BitmovinPlayer (~> 2.13.0)
 
 DEPENDENCIES:
   - BitmovinPlayer (from `https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git`, tag `2.13.0`)
-  - BitmovinYoSpaceModule (from `../`)
+  - BitmovinYospaceModule (from `../`)
 
 EXTERNAL SOURCES:
   BitmovinPlayer:
     :git: https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git
     :tag: 2.13.0
-  BitmovinYoSpaceModule:
+  BitmovinYospaceModule:
     :path: "../"
 
 CHECKOUT OPTIONS:
@@ -21,8 +21,8 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   BitmovinPlayer: 935abf3310c5d9ac6c08fe30b71b390848bbf23c
-  BitmovinYoSpaceModule: 864fd148edf75427cbfc644def2378eea71fbf4d
+  BitmovinYospaceModule: ef78590e99d887f7442e618cf295e94218e39e99
 
-PODFILE CHECKSUM: 6cd58596924c649bc43e797ad49be17722a21188
+PODFILE CHECKSUM: ad9a37b6a70ab6c0cc40b06895916ea714324986
 
 COCOAPODS: 1.5.3
