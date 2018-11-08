@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		379D76254835F7ECEBEFCE93 /* Pods_BitmovinYoSpaceModule_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF69475B22DB8F8E8DE1C48C /* Pods_BitmovinYoSpaceModule_Example.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
+		AD572CE4B1F0FC930B18DA89 /* Pods_BitmovinYospaceModule_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		57CDA9C79DD968D9E513DEA5 /* Pods_BitmovinYoSpaceModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYoSpaceModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		59EA5BF9534F0A19507CD7CA /* BitmovinYoSpaceModule.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BitmovinYoSpaceModule.podspec; path = ../BitmovinYoSpaceModule.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60551C0CD827F4E45EF30940 /* Pods-BitmovinYoSpaceModule_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Tests/Pods-BitmovinYoSpaceModule_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		607FACD01AFB9204008FA782 /* BitmovinYoSpaceModule_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitmovinYoSpaceModule_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		607FACD01AFB9204008FA782 /* BitmovinYospaceModule_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitmovinYospaceModule_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -29,11 +29,13 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		80D6E2E903A76BA6042D3966 /* Pods-BitmovinYoSpaceModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example.release.xcconfig"; sourceTree = "<group>"; };
+		8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYospaceModule_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		99FC543AB5429218CFA30BF1 /* Pods-BitmovinYoSpaceModule_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Tests/Pods-BitmovinYoSpaceModule_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		AF69475B22DB8F8E8DE1C48C /* Pods_BitmovinYoSpaceModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYoSpaceModule_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C90D327416965D4681E951CB /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		D18674A6BFCDF0055801630A /* Pods-BitmovinYoSpaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		DE83C64B7C17AFEC4D46150E /* Pods-BitmovinYospaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		F219C37BDC456B34012838FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				379D76254835F7ECEBEFCE93 /* Pods_BitmovinYoSpaceModule_Example.framework in Frameworks */,
+				AD572CE4B1F0FC930B18DA89 /* Pods_BitmovinYospaceModule_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,7 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				57CDA9C79DD968D9E513DEA5 /* Pods_BitmovinYoSpaceModule_Tests.framework */,
-				AF69475B22DB8F8E8DE1C48C /* Pods_BitmovinYoSpaceModule_Example.framework */,
+				8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -61,7 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
-				607FACD21AFB9204008FA782 /* Example for BitmovinYoSpaceModule */,
+				607FACD21AFB9204008FA782 /* Example for BitmovinYospaceModule */,
 				607FACE81AFB9204008FA782 /* Tests */,
 				607FACD11AFB9204008FA782 /* Products */,
 				C47EC4D4B334165BB09D7E81 /* Pods */,
@@ -72,12 +74,12 @@
 		607FACD11AFB9204008FA782 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				607FACD01AFB9204008FA782 /* BitmovinYoSpaceModule_Example.app */,
+				607FACD01AFB9204008FA782 /* BitmovinYospaceModule_Example.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		607FACD21AFB9204008FA782 /* Example for BitmovinYoSpaceModule */ = {
+		607FACD21AFB9204008FA782 /* Example for BitmovinYospaceModule */ = {
 			isa = PBXGroup;
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
@@ -87,7 +89,7 @@
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
-			name = "Example for BitmovinYoSpaceModule";
+			name = "Example for BitmovinYospaceModule";
 			path = BitmovinYoSpaceModule;
 			sourceTree = "<group>";
 		};
@@ -133,6 +135,8 @@
 				80D6E2E903A76BA6042D3966 /* Pods-BitmovinYoSpaceModule_Example.release.xcconfig */,
 				99FC543AB5429218CFA30BF1 /* Pods-BitmovinYoSpaceModule_Tests.debug.xcconfig */,
 				60551C0CD827F4E45EF30940 /* Pods-BitmovinYoSpaceModule_Tests.release.xcconfig */,
+				DE83C64B7C17AFEC4D46150E /* Pods-BitmovinYospaceModule_Example.debug.xcconfig */,
+				F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -140,9 +144,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		607FACCF1AFB9204008FA782 /* BitmovinYoSpaceModule_Example */ = {
+		607FACCF1AFB9204008FA782 /* BitmovinYospaceModule_Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BitmovinYoSpaceModule_Example" */;
+			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BitmovinYospaceModule_Example" */;
 			buildPhases = (
 				6DD864613D84340DC8C69C76 /* [CP] Check Pods Manifest.lock */,
 				607FACCC1AFB9204008FA782 /* Sources */,
@@ -154,9 +158,9 @@
 			);
 			dependencies = (
 			);
-			name = BitmovinYoSpaceModule_Example;
+			name = BitmovinYospaceModule_Example;
 			productName = BitmovinYoSpaceModule;
-			productReference = 607FACD01AFB9204008FA782 /* BitmovinYoSpaceModule_Example.app */;
+			productReference = 607FACD01AFB9204008FA782 /* BitmovinYospaceModule_Example.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -176,7 +180,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BitmovinYoSpaceModule" */;
+			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BitmovinYospaceModule" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -189,7 +193,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				607FACCF1AFB9204008FA782 /* BitmovinYoSpaceModule_Example */,
+				607FACCF1AFB9204008FA782 /* BitmovinYospaceModule_Example */,
 			);
 		};
 /* End PBXProject section */
@@ -219,7 +223,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BitmovinYoSpaceModule_Example-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-BitmovinYospaceModule_Example-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -232,7 +236,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example-frameworks.sh",
+				"${SRCROOT}/Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example-frameworks.sh",
 				"${PODS_ROOT}/BitmovinPlayer/iOS/BitmovinPlayer.framework",
 				"${PODS_ROOT}/../../lib/Yospace.framework",
 			);
@@ -243,7 +247,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -390,7 +394,7 @@
 		};
 		607FACF01AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D18674A6BFCDF0055801630A /* Pods-BitmovinYoSpaceModule_Example.debug.xcconfig */;
+			baseConfigurationReference = DE83C64B7C17AFEC4D46150E /* Pods-BitmovinYospaceModule_Example.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -414,7 +418,7 @@
 					"-framework",
 					"\"WebKit\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.BitmovinYoSpaceModule-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.BitmovinYospaceModule-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -425,7 +429,7 @@
 		};
 		607FACF11AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80D6E2E903A76BA6042D3966 /* Pods-BitmovinYoSpaceModule_Example.release.xcconfig */;
+			baseConfigurationReference = F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -450,7 +454,7 @@
 					"-framework",
 					"\"WebKit\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.BitmovinYoSpaceModule-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.BitmovinYospaceModule-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -462,7 +466,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BitmovinYoSpaceModule" */ = {
+		607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BitmovinYospaceModule" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				607FACED1AFB9204008FA782 /* Debug */,
@@ -471,7 +475,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BitmovinYoSpaceModule_Example" */ = {
+		607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BitmovinYospaceModule_Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				607FACF01AFB9204008FA782 /* Debug */,

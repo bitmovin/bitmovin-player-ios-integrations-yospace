@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import BitmovinYoSpaceModule
+import BitmovinYospaceModule
 import BitmovinPlayer
 
 class ViewController: UIViewController {

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-               BuildableName = "BitmovinYoSpaceModule_Example.app"
-               BlueprintName = "BitmovinYoSpaceModule_Example"
-               ReferencedContainer = "container:BitmovinYoSpaceModule.xcodeproj">
+               BuildableName = "BitmovinYospaceModule_Example.app"
+               BlueprintName = "BitmovinYospaceModule_Example"
+               ReferencedContainer = "container:BitmovinYospaceModule.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,7 +31,7 @@
                BlueprintIdentifier = "607FACE41AFB9204008FA782"
                BuildableName = "BitmovinYoSpaceModule_Tests.xctest"
                BlueprintName = "BitmovinYoSpaceModule_Tests"
-               ReferencedContainer = "container:BitmovinYoSpaceModule.xcodeproj">
+               ReferencedContainer = "container:BitmovinYospaceModule.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -49,7 +49,7 @@
                BlueprintIdentifier = "607FACE41AFB9204008FA782"
                BuildableName = "BitmovinYoSpaceModule_Tests.xctest"
                BlueprintName = "BitmovinYoSpaceModule_Tests"
-               ReferencedContainer = "container:BitmovinYoSpaceModule.xcodeproj">
+               ReferencedContainer = "container:BitmovinYospaceModule.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +57,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "BitmovinYoSpaceModule_Example.app"
-            BlueprintName = "BitmovinYoSpaceModule_Example"
-            ReferencedContainer = "container:BitmovinYoSpaceModule.xcodeproj">
+            BuildableName = "BitmovinYospaceModule_Example.app"
+            BlueprintName = "BitmovinYospaceModule_Example"
+            ReferencedContainer = "container:BitmovinYospaceModule.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -80,9 +80,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "BitmovinYoSpaceModule_Example.app"
-            BlueprintName = "BitmovinYoSpaceModule_Example"
-            ReferencedContainer = "container:BitmovinYoSpaceModule.xcodeproj">
+            BuildableName = "BitmovinYospaceModule_Example.app"
+            BlueprintName = "BitmovinYospaceModule_Example"
+            ReferencedContainer = "container:BitmovinYospaceModule.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -99,9 +99,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "BitmovinYoSpaceModule_Example.app"
-            BlueprintName = "BitmovinYoSpaceModule_Example"
-            ReferencedContainer = "container:BitmovinYoSpaceModule.xcodeproj">
+            BuildableName = "BitmovinYospaceModule_Example.app"
+            BlueprintName = "BitmovinYospaceModule_Example"
+            ReferencedContainer = "container:BitmovinYospaceModule.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

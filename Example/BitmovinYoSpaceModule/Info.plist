@@ -6,6 +6,8 @@
 	<string>18ca6ad5-9768-4129-bdf6-17685e0d14d2</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>BitmovinYospaceModule_Example</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
