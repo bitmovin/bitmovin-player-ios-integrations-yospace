@@ -6,7 +6,7 @@ tvOS 9.0+
 
 ## Example
 
-The followin example create a BitmovinYospacePlayer and loads a Yospace stream 
+The following example creates a BitmovinYospacePlayer and loads a Yospace stream 
 
 ```swift
 //Create a BitmovinYospacePlayer
@@ -23,8 +23,8 @@ playerView.bringSubviewToFront(playerBoundary)
 let sourceConfig = SourceConfiguration()
 sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
 
-//Create a YospaceSourceConfiguration
-let yospaceSourceConfiguration = YospaceSourceConfiguration(yoSpaceAssetType: .linear)
+//Create a YospaceSourceConfiguration with your yospaceAssetType 
+let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
 //Load your sourceConfiguration and yospaceSourceConfiguration
 bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
