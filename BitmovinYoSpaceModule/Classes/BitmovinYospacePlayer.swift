@@ -9,7 +9,7 @@ enum SessionStatus : Int
     case initialisedPlaying
 }
 
-public class BitmovinYoSpacePlayer:BitmovinPlayer {
+public class BitmovinYospacePlayer:BitmovinPlayer {
 
     var ysVideoPlayer:YoSpacePlayer;
     var sessionManger:YSSessionManager?
@@ -102,7 +102,7 @@ public class BitmovinYoSpacePlayer:BitmovinPlayer {
     }
 }
 
-extension BitmovinYoSpacePlayer: YSAnalyticObserver {
+extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         print("Advert Break Did Start");
     }
@@ -134,7 +134,7 @@ extension BitmovinYoSpacePlayer: YSAnalyticObserver {
 }
 
 
-extension BitmovinYoSpacePlayer: YSSessionManagerObserver {
+extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
         
         self.sessionManger = sessionManager
@@ -176,7 +176,7 @@ extension BitmovinYoSpacePlayer: YSSessionManagerObserver {
     }
 }
 
-extension BitmovinYoSpacePlayer: PlayerListener {
+extension BitmovinYospacePlayer: PlayerListener {
     public func onPlay(_ event: PlayEvent) {
         debugPrint("On Play")
         
