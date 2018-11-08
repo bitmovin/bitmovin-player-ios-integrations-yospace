@@ -10,11 +10,11 @@ import BitmovinPlayer
 
 public class YospaceSourceConfiguration {
     public let yoSpaceAssetType: YospaceAssetType
-    public var timeout:TimeInterval = 5000
-    public var debug:Bool = false;
-    public var userAgent:String = "BitmovinYospacePlayer"
-    
-    public init(yoSpaceAssetType:YospaceAssetType){
+    public var timeout: TimeInterval = 5000
+    public var debug: Bool = false
+    public var userAgent: String = "BitmovinYospacePlayer"
+
+    public init(yoSpaceAssetType: YospaceAssetType) {
         self.yoSpaceAssetType = yoSpaceAssetType
     }
 }

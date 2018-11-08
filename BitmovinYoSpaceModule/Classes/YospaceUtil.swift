@@ -9,8 +9,8 @@ import UIKit
 import Yospace
 
 class YospaceUtil {
-    
-    static func trackingEventString(event: YSETrackingEvent) -> String{
+
+    static func trackingEventString(event: YSETrackingEvent) -> String {
         switch event {
         case .creativeViewEvent:
             return "creativeViewEvent"
@@ -66,6 +66,6 @@ class YospaceUtil {
             return "progressEvent"
         case .nonLinearClickTrackingEvent:
             return "nonLinearClickTrackingEvent"
-        };
+        }
     }
 }
