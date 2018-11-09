@@ -65,20 +65,16 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
         }
     }
 
-    public func loadVOD(url: URL, yospaceProperties: YSSessionProperties) {
+    func loadVOD(url: URL, yospaceProperties: YSSessionProperties) {
         YSSessionManager.create(forVoD: url, properties: yospaceProperties, delegate: self)
     }
 
-    public func loadLive(url: URL, yospaceProperties: YSSessionProperties) {
+    func loadLive(url: URL, yospaceProperties: YSSessionProperties) {
         YSSessionManager.create(forLive: url, properties: yospaceProperties, delegate: self)
     }
 
-    public func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties) {
+    func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties) {
         YSSessionManager.create(forNonLinearStartOver: url, properties: yospaceProperties, delegate: self)
-    }
-
-    public func operationDidFailWithError(_ error: Error) {
-        print("Operation did fail with error")
     }
 
     public override func add(listener: PlayerListener) {
@@ -186,12 +182,18 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
-
             load(sourceConfiguration: sourceConfig)
             break
         default:
             break
         }
+    }
+
+    public func operationDidFailWithError(_ error: Error) {
+        for listener: PlayerListener in listeners {
+            // TODO throw error
+        }
+
     }
 }
 
@@ -205,7 +207,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             let objects: [Any] = [currentTime]
             let keys: [Any] = [kYoPlayheadKey]
             self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackStartedNotification)
-        }else {
+        } else {
             let objects: [Any] = [currentTime]
             let keys: [Any] = [kYoPlayheadKey]
             self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackResumedNotification)
