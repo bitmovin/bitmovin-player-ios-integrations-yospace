@@ -23,11 +23,11 @@ class ViewController: UIViewController {
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
         bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration)
-        bitmovinYoSpacePlayer?.add(listener: self);
+        bitmovinYoSpacePlayer?.add(listener: self)
         guard let player = bitmovinYoSpacePlayer else {
             return
         }
-        
+
         super.viewDidLoad()
 
         self.playerView.backgroundColor = .black
@@ -93,23 +93,23 @@ class ViewController: UIViewController {
 
 }
 
-extension ViewController : PlayerListener {
+extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
         print("Ad Started")
     }
-    
+
     public func onAdFinished(_ event: AdFinishedEvent) {
         print("Ad Finished")
     }
-    
+
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
         print("Ad Break Started")
     }
-    
+
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
         print("Ad Break Finished")
     }
-    
+
     public func onAdClicked(_ event: AdClickedEvent) {
         print("Ad Clicked")
     }
