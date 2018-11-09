@@ -105,8 +105,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         guard let clickThroughUrl: URL = advert.linearCreativeElement().linearClickthroughURL() else {
             return []
         }
-
-        let adStartedEvent: AdStartedEvent = AdStartedEvent(clickThroughUrl: clickThroughUrl, clientType: BMPAdSourceType.none, indexInQueue: 0, duration: advert.advertDuration(), timeOffset: advert.advertStart(), skipOffset: 0, position: "0")
+        
+        let adStartedEvent: AdStartedEvent = AdStartedEvent(clickThroughUrl: clickThroughUrl, clientType: .IMA, indexInQueue: 0, duration: advert.advertDuration(), timeOffset: advert.advertStart(), skipOffset: 1, position: "0")
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(adStartedEvent)
         }
