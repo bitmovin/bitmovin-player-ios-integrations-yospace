@@ -4,8 +4,8 @@ import Yospace
 
 enum SessionStatus: Int {
     case notInitialised
-    case initialisedReady
-    case initialisedPlaying
+    case ready
+    case playing
 }
 
 public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
@@ -14,7 +14,8 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     }
 
     var sessionManger: YSSessionManager?
-    var sessionInitialized: SessionStatus = .notInitialised
+    var sessionStatus: SessionStatus = .notInitialised
+    var adPlaying = false
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
@@ -29,13 +30,14 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     }
 
     public override init(configuration: PlayerConfiguration) {
-        sessionInitialized = .notInitialised
+        sessionStatus = .notInitialised
         super.init(configuration: configuration)
         self.add(listener: self)
     }
 
     public func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration) {
-        sessionInitialized = .notInitialised
+        sessionStatus = .notInitialised
+        adPlaying = false
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
         let yospaceProperties = YSSessionProperties()
@@ -45,10 +47,10 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
         if(yospaceSourceConfiguration.debug) {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
             YSSessionProperties.add(_:combined!)
-
         }
+
         guard let url: URL = self.sourceConfiguration?.firstSourceItem?.hlsSource?.url else {
-            //TODO throw error
+            handleError(code: YospaceErrorCode.invalidSource.rawValue, message: "Invalid source provided. Yospace URL must be HLS")
             return
         }
 
@@ -76,6 +78,10 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties) {
         YSSessionManager.create(forNonLinearStartOver: url, properties: yospaceProperties, delegate: self)
     }
+    
+    public func clickThroughPressed(){
+        sessionManger?.linearClickThroughDidOccur();
+    }
 
     public override func add(listener: PlayerListener) {
         listeners.append(listener)
@@ -85,6 +91,30 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     public override func remove(listener: PlayerListener) {
         listeners = listeners.filter { $0 !== listener }
         super.remove(listener: listener)
+    }
+
+    public override func skipAd() {
+        if(sessionStatus != .notInitialised) {
+            //TODO skipAd
+        } else {
+            return super.skipAd()
+        }
+    }
+
+    public override var isAd: Bool {
+        get {
+            if(sessionStatus != .notInitialised) {
+                return adPlaying
+            } else {
+                return super.isAd
+            }
+        }
+    }
+
+    func handleError(code: UInt, message: String) {
+        for listener: PlayerListener in listeners {
+            listener.onError?(ErrorEvent(code: code, message: message))
+        }
     }
 }
 
@@ -102,10 +132,13 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
-        guard let clickThroughUrl: URL = advert.linearCreativeElement().linearClickthroughURL() else {
-            return []
-        }
+        adPlaying = true
+        var clickThroughUrl:URL = URL(string: "http://google.com")!
         
+        if (advert.linearCreativeElement().linearClickthroughURL() != nil) {
+            clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
+        }
+
         let adStartedEvent: AdStartedEvent = AdStartedEvent(clickThroughUrl: clickThroughUrl, clientType: .IMA, indexInQueue: 0, duration: advert.advertDuration(), timeOffset: advert.advertStart(), skipOffset: 1, position: "0")
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(adStartedEvent)
@@ -114,17 +147,20 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func advertDidEnd(_ advert: YSAdvert) {
+        adPlaying = false
         for listener: PlayerListener in listeners {
             listener.onAdFinished?(AdFinishedEvent())
         }
     }
 
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
-        print("Tracking Event Did Occur ", YospaceUtil.trackingEventString(event: event))
+        NSLog("Tracking Event Did Occur %@", YospaceUtil.trackingEventString(event: event))
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
-
+        for listener: PlayerListener in listeners {
+            listener.onAdClicked?(AdClickedEvent(clickThroughUr: linearCreative.linearClickthroughURL()))
+        }
     }
 
     public func nonlinearClickThroughDidOccur(_ nonlinearCreative: YSNonLinearCreative) {
@@ -132,28 +168,25 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func contentDidEnd(_ playheadPosition: TimeInterval) {
-        print("Content did end")
+        NSLog("Content did end")
     }
 
     public func contentDidPause(_ playheadPosition: TimeInterval) {
-        print("Content did pause")
+        NSLog("Content did pause")
     }
 
     public func contentDidStart(_ playheadPosition: TimeInterval) {
-        print("Content did start")
+        NSLog("Content did start")
     }
 
     public func contentDidResume(_ playheadPosition: TimeInterval) {
-        print("Content did resume")
+        NSLog("Content did resume")
     }
 }
 
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
-
         self.sessionManger = sessionManager
-
-        // start observing analytic events
         self.sessionManger?.subscribe(toAnalyticEvents: self)
 
         //TODO create policy
@@ -164,21 +197,20 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         do {
             try self.sessionManger?.setVideoPlayer(self)
         } catch {
-            debugPrint("Exception in setting player")
+            handleError(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger")
         }
 
         switch sessionManager.initialisationState {
         case .notInitialised:
-            //TODO throw error
-            print("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            handleError(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized")
+            NSLog("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
             break
         case .initialisedNoAnalytics:
-            //TODO throw error
-
-            print("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            handleError(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics")
+            NSLog("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
             break
         case .initialisedWithAnalytics:
-            print("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            NSLog("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
 
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
@@ -190,142 +222,90 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
     }
 
     public func operationDidFailWithError(_ error: Error) {
-        for listener: PlayerListener in listeners {
-            // TODO throw error
-        }
-
+        handleError(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error")
     }
 }
 
 extension BitmovinYospacePlayer: PlayerListener {
     public func onPlay(_ event: PlayEvent) {
-        debugPrint("On Play")
+        NSLog("On Play")
 
-        if (sessionInitialized == .notInitialised || sessionInitialized == .initialisedReady) {
-            print("Firing YoPlaybackStarted Notification")
-            sessionInitialized = .initialisedPlaying
-            let objects: [Any] = [currentTime]
-            let keys: [Any] = [kYoPlayheadKey]
-            self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackStartedNotification)
+        if (sessionStatus == .notInitialised || sessionStatus == .ready) {
+            sessionStatus = .playing
+            let dictionary = [kYoPlayheadKey: currentTime]
+            self.notify(dictionary: dictionary, name: YoPlaybackStartedNotification)
         } else {
-            let objects: [Any] = [currentTime]
-            let keys: [Any] = [kYoPlayheadKey]
-            self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackResumedNotification)
+            let dictionary = [kYoPlayheadKey: currentTime]
+            self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         }
 
     }
 
     public func onPaused(_ event: PausedEvent) {
-        print("On Paused")
-        print("Firing YoPlaybackPausedNotification")
-        let objects: [Any] = [currentTime]
-        let keys: [Any] = [kYoPlayheadKey]
-        self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackPausedNotification)
-
+        NSLog("On Paused")
+        let dictionary = [kYoPlayheadKey: currentTime]
+        self.notify(dictionary: dictionary, name: YoPlaybackPausedNotification)
     }
 
-    public func onSeek(_ event: SeekEvent) {
-        print("On Seek")
+    public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
+        NSLog("On Source Unloaded")
+        sessionStatus = .notInitialised
+        adPlaying = false
+        self.notify(dictionary: Dictionary(), name: YoPlaybackEndedNotification)
+    }
+
+    public func onStallStarted(_ event: StallStartedEvent) {
+        NSLog("On Stall Started")
+        let dictionary = [kYoPlayheadKey: currentTime]
+        self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
+    }
+
+    public func onStallEnded(_ event: StallEndedEvent) {
+        NSLog("On Stall Ended")
+        let dictionary = [kYoPlayheadKey: currentTime]
+        self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
     }
 
     public func onError(_ event: ErrorEvent) {
-        print("On Error")
+        NSLog("On Error")
     }
 
     public func onReady(_ event: ReadyEvent) {
-        print("On Ready")
-        if (sessionInitialized == .notInitialised) {
-            print("Firing YoPlaybackReadyNotification")
-            let objects = [Any]()
-            let keys = [Any]()
-            self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackReadyNotification)
+        NSLog("On Ready")
+        if (sessionStatus == .notInitialised) {
+            sessionStatus = .ready
+            self.notify(dictionary: Dictionary(), name: YoPlaybackReadyNotification)
         }
-
     }
 
     public func onMuted(_ event: MutedEvent) {
-
-    }
-
-    public func onSeeked(_ event: SeekedEvent) {
-
-    }
-
-    public func onEvent(_ event: PlayerEvent) {
-
+        let dictionary = [kYoMutedKey: Bool(self.isMuted)]
+        self.notify(dictionary: dictionary, name: YoPlaybackVolumeChangedNotification)
     }
 
     public func onUnmuted(_ event: UnmutedEvent) {
-
+        let dictionary = [kYoMutedKey: Bool(self.isMuted)]
+        self.notify(dictionary: dictionary, name: YoPlaybackVolumeChangedNotification)
     }
 
     public func onMetadata(_ event: MetadataEvent) {
-        let meta = YSTimedMetadata()
-        for entry: MetadataEntry in event.metadata.entries {
-            if (entry.metadataType == BMPMetadataType.ID3) {
-                let metadata = entry as! AVMetadataItem
-
-                guard let key = metadata.key, let data = metadata.dataValue else {
-                    continue
-                }
-
-                switch key.description {
-                case "YPRG":
-                    debugPrint("Programme metadata - ignoring")
-
-                case "YTYP":
-                    if let type  = String(data: data, encoding: String.Encoding.utf8) {
-                        meta.type = String(type[type.index(type.startIndex, offsetBy: 1)...])
-                    }
-
-                case "YSEQ":
-                    if let seq = String(data: data, encoding: String.Encoding.utf8) {
-                        meta.setSequenceFrom(String(seq[seq.index(seq.startIndex, offsetBy: 1)...]))
-                    }
-
-                case "YMID":
-                    if let mediaID = String(data: data, encoding: String.Encoding.utf8) {
-                        meta.mediaId = String(mediaID[mediaID.index(mediaID.startIndex, offsetBy: 1)...])
-                    }
-
-                case "YDUR":
-                    if let offset = String(data: data, encoding: String.Encoding.utf8) {
-                        if let offset = Double(String(offset[offset.index(offset.startIndex, offsetBy: 1)...])) {
-                            meta.offset = offset
-                        }
-                    }
-
-                default:
-                    break
-                }
-            }
-        }
+        let meta = YSTimedMetadata.createFromMetadata(event: event)
         if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (meta.type.count != 0) {
-            let objects: [Any] = [meta]
-            let keys: [Any] = [kYoMetadataKey]
-            self.notify(objects as [AnyObject], keys: keys as! [String], name: YoTimedMetadataNotification)
+            let dictionary = [kYoMetadataKey: meta]
+            self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
         }
-    }
-
-    public func onTimeChanged(_ event: TimeChangedEvent) {
-
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {
-        let objects: [Any] = [Int(self.currentTime), Int(truncating: true)]
-        let keys: [Any] = [kYoPlayheadKey, kYoCompletedKey]
-        self.notify(objects as [AnyObject], keys: keys as! [String], name: YoPlaybackEndedNotification)
+        let dictionary = [kYoPlayheadKey: Int(currentTime), kYoCompletedKey: Int(truncating: true)]
+        self.notify(dictionary: dictionary, name: YoPlaybackEndedNotification)
     }
 
-    func notify(_ objects: [AnyObject], keys: [String], name: String) {
-        let dictionary = NSDictionary(objects: objects, forKeys: keys as [NSCopying])
-        if Thread.isMainThread {
-            NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self, userInfo: dictionary as? [AnyHashable: Any])
-        } else {
-            DispatchQueue.main.async(execute: {() -> Void in
-                NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self, userInfo: dictionary as? [AnyHashable: Any])
-            })
-        }
-    }
+    func notify(dictionary: Dictionary<String, Any>, name: String) {
+        NSLog("Firing %@ Notification", name)
 
+        DispatchQueue.main.async(execute: {() -> Void in
+            NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self, userInfo: dictionary)
+        })
+    }
 }

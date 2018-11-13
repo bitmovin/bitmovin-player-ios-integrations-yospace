@@ -4,3 +4,10 @@ target 'BitmovinYospaceModule_Example' do
   pod 'BitmovinYospaceModule', :path => '../'
   pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.13.0'
 end
+
+target 'BitmovinYospaceModule_Example_tvOS' do
+    use_frameworks!
+    platform :tvos, '9.0'
+    pod 'BitmovinYospaceModule', :path => '../'
+    pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.13.0'
+end

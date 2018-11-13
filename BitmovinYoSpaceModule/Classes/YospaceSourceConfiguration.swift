@@ -1,10 +1,3 @@
-//
-//  YoSpaceSourceConfiguration.swift
-//  BitmovinYoSpaceModule
-//
-//  Created by Cory Zachman on 10/26/18.
-//
-
 import UIKit
 import BitmovinPlayer
 

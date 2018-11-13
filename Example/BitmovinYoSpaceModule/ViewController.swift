@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
     @IBOutlet var clickButton: UIButton!
+    var clickUrl: URL?
 
     override func viewDidLoad() {
         let configuration = PlayerConfiguration()
@@ -39,6 +40,8 @@ class ViewController: UIViewController {
 
         playerView.addSubview(playerBoundary)
         playerView.bringSubviewToFront(playerBoundary)
+        
+        clickButton.isEnabled = false;
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,8 +69,8 @@ class ViewController: UIViewController {
         guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152902489/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==") else {
             return
         }
-//        
-//        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152908799/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==") else {
+
+//        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152908799/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==?yo.ch=true&yo.ac=true") else {
 //            return
 //        }
 
@@ -91,29 +94,38 @@ class ViewController: UIViewController {
     }
 
     @IBAction func clickButtonClicked(sender: UIButton) {
-
+        guard let url = clickUrl else {
+            return
+        }
+        bitmovinYoSpacePlayer?.clickThroughPressed()
+        UIApplication.shared.openURL(url)
+        
     }
 
 }
 
 extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
-        print("Ad Started")
+        NSLog("Ad Started")
+        clickButton.isEnabled = true;
+        clickUrl = event.clickThroughUrl
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
-        print("Ad Finished")
+        NSLog("Ad Finished")
+        clickButton.isEnabled = false;
+        clickUrl = nil
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        print("Ad Break Started")
+        NSLog("Ad Break Started")
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        print("Ad Break Finished")
+        NSLog("Ad Break Finished")
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
-        print("Ad Clicked")
+        NSLog("Ad Clicked")
     }
 }
