@@ -7,15 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0103E86121963C19006EA024 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0103E86021963C19006EA024 /* AppDelegate.swift */; };
+		0103E86321963C19006EA024 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0103E86221963C19006EA024 /* ViewController.swift */; };
+		0103E86621963C19006EA024 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0103E86421963C19006EA024 /* Main.storyboard */; };
+		0103E86821963C1C006EA024 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0103E86721963C1C006EA024 /* Assets.xcassets */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		AD572CE4B1F0FC930B18DA89 /* Pods_BitmovinYospaceModule_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */; };
+		D8EC1B00377AC2E7952C5EB5 /* Pods_BitmovinYospaceModule_Example_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CD4AA7D4FFFC3733F28A7FD /* Pods_BitmovinYospaceModule_Example_tvOS.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0103E85E21963C19006EA024 /* BitmovinYospaceModule_Example_tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitmovinYospaceModule_Example_tvOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0103E86021963C19006EA024 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0103E86221963C19006EA024 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		0103E86521963C19006EA024 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		0103E86721963C1C006EA024 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0103E86921963C1C006EA024 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4119C4B06A4019FC60C3387B /* Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		57CDA9C79DD968D9E513DEA5 /* Pods_BitmovinYoSpaceModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYoSpaceModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		59EA5BF9534F0A19507CD7CA /* BitmovinYoSpaceModule.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BitmovinYoSpaceModule.podspec; path = ../BitmovinYoSpaceModule.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60551C0CD827F4E45EF30940 /* Pods-BitmovinYoSpaceModule_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Tests/Pods-BitmovinYoSpaceModule_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -30,15 +42,25 @@
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		80D6E2E903A76BA6042D3966 /* Pods-BitmovinYoSpaceModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example.release.xcconfig"; sourceTree = "<group>"; };
 		8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYospaceModule_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8CD4AA7D4FFFC3733F28A7FD /* Pods_BitmovinYospaceModule_Example_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYospaceModule_Example_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		99FC543AB5429218CFA30BF1 /* Pods-BitmovinYoSpaceModule_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Tests/Pods-BitmovinYoSpaceModule_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		C90D327416965D4681E951CB /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		D18674A6BFCDF0055801630A /* Pods-BitmovinYoSpaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		DE83C64B7C17AFEC4D46150E /* Pods-BitmovinYospaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		F219C37BDC456B34012838FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.release.xcconfig"; sourceTree = "<group>"; };
+		FA11A061B474A56F05D8759A /* Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0103E85B21963C19006EA024 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8EC1B00377AC2E7952C5EB5 /* Pods_BitmovinYospaceModule_Example_tvOS.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACCD1AFB9204008FA782 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -50,11 +72,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0103E85F21963C19006EA024 /* BitmovinYospaceModule_Example_tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				0103E86021963C19006EA024 /* AppDelegate.swift */,
+				0103E86221963C19006EA024 /* ViewController.swift */,
+				0103E86421963C19006EA024 /* Main.storyboard */,
+				0103E86721963C1C006EA024 /* Assets.xcassets */,
+				0103E86921963C1C006EA024 /* Info.plist */,
+			);
+			path = BitmovinYospaceModule_Example_tvOS;
+			sourceTree = "<group>";
+		};
 		52B1EE85D2ADAEA30FF4664E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				57CDA9C79DD968D9E513DEA5 /* Pods_BitmovinYoSpaceModule_Tests.framework */,
 				8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */,
+				8CD4AA7D4FFFC3733F28A7FD /* Pods_BitmovinYospaceModule_Example_tvOS.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -65,6 +100,7 @@
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for BitmovinYospaceModule */,
 				607FACE81AFB9204008FA782 /* Tests */,
+				0103E85F21963C19006EA024 /* BitmovinYospaceModule_Example_tvOS */,
 				607FACD11AFB9204008FA782 /* Products */,
 				C47EC4D4B334165BB09D7E81 /* Pods */,
 				52B1EE85D2ADAEA30FF4664E /* Frameworks */,
@@ -75,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACD01AFB9204008FA782 /* BitmovinYospaceModule_Example.app */,
+				0103E85E21963C19006EA024 /* BitmovinYospaceModule_Example_tvOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -137,6 +174,8 @@
 				60551C0CD827F4E45EF30940 /* Pods-BitmovinYoSpaceModule_Tests.release.xcconfig */,
 				DE83C64B7C17AFEC4D46150E /* Pods-BitmovinYospaceModule_Example.debug.xcconfig */,
 				F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */,
+				FA11A061B474A56F05D8759A /* Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig */,
+				4119C4B06A4019FC60C3387B /* Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -144,6 +183,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0103E85D21963C19006EA024 /* BitmovinYospaceModule_Example_tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0103E86C21963C1C006EA024 /* Build configuration list for PBXNativeTarget "BitmovinYospaceModule_Example_tvOS" */;
+			buildPhases = (
+				0ED1CAD514A05E7CA12A50B9 /* [CP] Check Pods Manifest.lock */,
+				0103E85A21963C19006EA024 /* Sources */,
+				0103E85B21963C19006EA024 /* Frameworks */,
+				0103E85C21963C19006EA024 /* Resources */,
+				E97DA3A1F15389B1EC439729 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BitmovinYospaceModule_Example_tvOS;
+			productName = BitmovinYospaceModule_Example_tvOS;
+			productReference = 0103E85E21963C19006EA024 /* BitmovinYospaceModule_Example_tvOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		607FACCF1AFB9204008FA782 /* BitmovinYospaceModule_Example */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BitmovinYospaceModule_Example" */;
@@ -169,10 +227,15 @@
 		607FACC81AFB9204008FA782 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0830;
+				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = CocoaPods;
 				TargetAttributes = {
+					0103E85D21963C19006EA024 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = 7UXPEM3WRB;
+						ProvisioningStyle = Automatic;
+					};
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = 7UXPEM3WRB;
@@ -195,11 +258,21 @@
 			projectRoot = "";
 			targets = (
 				607FACCF1AFB9204008FA782 /* BitmovinYospaceModule_Example */,
+				0103E85D21963C19006EA024 /* BitmovinYospaceModule_Example_tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0103E85C21963C19006EA024 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0103E86821963C1C006EA024 /* Assets.xcassets in Resources */,
+				0103E86621963C19006EA024 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACCE1AFB9204008FA782 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -213,6 +286,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0ED1CAD514A05E7CA12A50B9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BitmovinYospaceModule_Example_tvOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		6DD864613D84340DC8C69C76 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -229,6 +324,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E97DA3A1F15389B1EC439729 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS-frameworks.sh",
+				"${PODS_ROOT}/../../lib/Yospace-tvOS.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Yospace-tvOS.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		EF2B675BE1A50B9BE0E1E55F /* [CP] Embed Pods Frameworks */ = {
@@ -254,6 +371,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0103E85A21963C19006EA024 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0103E86321963C19006EA024 /* ViewController.swift in Sources */,
+				0103E86121963C19006EA024 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACCC1AFB9204008FA782 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -266,6 +392,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		0103E86421963C19006EA024 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0103E86521963C19006EA024 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		607FACD91AFB9204008FA782 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -285,6 +419,64 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		0103E86A21963C1C006EA024 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FA11A061B474A56F05D8759A /* Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7UXPEM3WRB;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		0103E86B21963C1C006EA024 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4119C4B06A4019FC60C3387B /* Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7UXPEM3WRB;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 		607FACED1AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -473,6 +665,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0103E86C21963C1C006EA024 /* Build configuration list for PBXNativeTarget "BitmovinYospaceModule_Example_tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0103E86A21963C1C006EA024 /* Debug */,
+				0103E86B21963C1C006EA024 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BitmovinYospaceModule" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
