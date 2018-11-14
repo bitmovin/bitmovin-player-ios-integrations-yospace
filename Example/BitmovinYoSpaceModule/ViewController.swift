@@ -9,6 +9,7 @@
 import UIKit
 import BitmovinYospaceModule
 import BitmovinPlayer
+import Toast_Swift
 
 class ViewController: UIViewController {
     var bitmovinYoSpacePlayer: BitmovinYospacePlayer?
@@ -25,6 +26,8 @@ class ViewController: UIViewController {
         configuration.playbackConfiguration.isAutoplayEnabled = true
         bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration)
         bitmovinYoSpacePlayer?.add(listener: self)
+        bitmovinYoSpacePlayer?.add(yospaceListener: self)
+
         guard let player = bitmovinYoSpacePlayer else {
             return
         }
@@ -66,13 +69,13 @@ class ViewController: UIViewController {
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152902489/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==") else {
-            return
-        }
-
-//        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152908799/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==?yo.ch=true&yo.ac=true") else {
+//        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152902489/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==") else {
 //            return
 //        }
+
+        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152908799/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VuadfadfadfcHZfdHYubTN1OA==") else {
+            return
+        }
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
@@ -107,25 +110,41 @@ class ViewController: UIViewController {
 extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
         NSLog("Ad Started")
+        self.view.makeToast("Ad Started")
         clickButton.isEnabled = true;
         clickUrl = event.clickThroughUrl
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
         NSLog("Ad Finished")
+        self.view.makeToast("Ad Finished")
+
         clickButton.isEnabled = false;
         clickUrl = nil
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
         NSLog("Ad Break Started")
+        self.view.makeToast("Ad Break Started")
+
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
         NSLog("Ad Break Finished")
+        self.view.makeToast("Ad Break Finished")
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
         NSLog("Ad Clicked")
+        self.view.makeToast("Ad Clicked")
+    }
+}
+
+extension ViewController: YospaceListener {
+    public func onYospaceError(event: ErrorEvent){
+        let alert = UIAlertController(title: "Alert", message: "Error: \(event.code) -  \(event.message)" , preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+
     }
 }
