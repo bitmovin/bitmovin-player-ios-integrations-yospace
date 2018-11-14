@@ -19,6 +19,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
+    private var yospaceListeners: [YospaceListener] = []
 
     public var rate: Float {
         get {
@@ -34,15 +35,21 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
         super.init(configuration: configuration)
         self.add(listener: self)
     }
+    
+    public override func destroy() {
+        resetSessionManager();
+        super.destroy()
+    }
 
     public func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration) {
-        sessionStatus = .notInitialised
-        adPlaying = false
+        resetSessionManager();
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
         let yospaceProperties = YSSessionProperties()
         yospaceProperties.analyticsUserAgent = yospaceSourceConfiguration.userAgent
-        yospaceProperties.timeout = yospaceSourceConfiguration.timeout
+        if let timeout = yospaceSourceConfiguration.timeout {
+            yospaceProperties.timeout = timeout
+        }
 
         if(yospaceSourceConfiguration.debug) {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
@@ -65,6 +72,12 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
                 loadVOD(url: url, yospaceProperties: yospaceProperties)
                 break
         }
+    }
+    
+    func resetSessionManager(){
+        self.sessionManger?.shutdown()
+        sessionStatus = .notInitialised
+        adPlaying = false
     }
 
     func loadVOD(url: URL, yospaceProperties: YSSessionProperties) {
@@ -112,10 +125,19 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     }
 
     func handleError(code: UInt, message: String) {
-        for listener: PlayerListener in listeners {
-            listener.onError?(ErrorEvent(code: code, message: message))
+        for listener: YospaceListener in yospaceListeners {
+            listener.onYospaceError(event: ErrorEvent(code: code, message: message))
         }
     }
+    
+    public func add(yospaceListener: YospaceListener){
+        yospaceListeners.append(yospaceListener)
+    }
+    
+    public func remove(yospaceListener: YospaceListener){
+        yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
+    }
+    
 }
 
 extension BitmovinYospacePlayer: YSAnalyticObserver {
@@ -249,9 +271,10 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
         NSLog("On Source Unloaded")
-        sessionStatus = .notInitialised
-        adPlaying = false
-        self.notify(dictionary: Dictionary(), name: YoPlaybackEndedNotification)
+        if(sessionStatus != .notInitialised){
+            // the yospace sessionManager.shutdown() call is asynchronous. If the user just calls `load()` on second playback without calling `unload()` we end up canceling both the old session and the new session. This if statement keeps track of that
+            resetSessionManager();
+        }
     }
 
     public func onStallStarted(_ event: StallStartedEvent) {

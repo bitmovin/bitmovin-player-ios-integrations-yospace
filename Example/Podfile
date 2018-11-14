@@ -3,6 +3,9 @@ target 'BitmovinYospaceModule_Example' do
   platform :ios, '9.0'
   pod 'BitmovinYospaceModule', :path => '../'
   pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.13.0'
+  
+  #Not needed for normal use. Just added to make the UI cleaner
+  pod 'Toast-Swift', git: 'git@github.com:scalessec/Toast-Swift.git', tag: '4.0.0'
 end
 
 target 'BitmovinYospaceModule_Example_tvOS' do
