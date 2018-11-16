@@ -106,6 +106,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
         super.remove(listener: listener)
     }
 
+    #if os(iOS)
     public override func skipAd() {
         if(sessionStatus != .notInitialised) {
             //TODO skipAd
@@ -123,6 +124,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
             }
         }
     }
+    #endif
 
     func handleError(code: UInt, message: String) {
         for listener: YospaceListener in yospaceListeners {
