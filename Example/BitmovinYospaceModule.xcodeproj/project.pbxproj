@@ -27,6 +27,7 @@
 		0103E86521963C19006EA024 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0103E86721963C1C006EA024 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0103E86921963C1C006EA024 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		015DC509219E252C0009363E /* Yospace-tvOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Yospace-tvOS.framework"; path = "../lib/Yospace-tvOS.framework"; sourceTree = "<group>"; };
 		4119C4B06A4019FC60C3387B /* Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		57CDA9C79DD968D9E513DEA5 /* Pods_BitmovinYoSpaceModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYoSpaceModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		59EA5BF9534F0A19507CD7CA /* BitmovinYoSpaceModule.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BitmovinYoSpaceModule.podspec; path = ../BitmovinYoSpaceModule.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -97,6 +98,7 @@
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
+				015DC509219E252C0009363E /* Yospace-tvOS.framework */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for BitmovinYospaceModule */,
 				607FACE81AFB9204008FA782 /* Tests */,
@@ -335,12 +337,14 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS-frameworks.sh",
+				"${PODS_ROOT}/BitmovinPlayer/tvOS/BitmovinPlayer.framework",
 				"${PODS_ROOT}/../../lib/Yospace-tvOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Yospace-tvOS.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -436,12 +440,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7UXPEM3WRB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/BitmovinYospaceModule-tvOS\"",
+					"\"${PODS_ROOT}/BitmovinPlayer/tvOS\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -466,10 +475,16 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7UXPEM3WRB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/BitmovinYospaceModule-tvOS\"",
+					"\"${PODS_ROOT}/BitmovinPlayer/tvOS\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
