@@ -20,10 +20,17 @@ class ViewController: UIViewController {
     var clickUrl: URL?
 
     override func viewDidLoad() {
+        // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
-        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: nil, timeout: nil)
+        
+        // Create a YospaceConfiguration
+        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+        
+        //Create a BitmovinYospacePlayer
         bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+        
+        //Add your listeners
         bitmovinYoSpacePlayer?.add(listener: self)
         bitmovinYoSpacePlayer?.add(yospaceListener: self)
 

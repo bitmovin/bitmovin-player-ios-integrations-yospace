@@ -28,10 +28,15 @@ class ViewController: UIViewController {
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
 
+        // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
-        bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
-        bitmovinYospacePlayer?.add(listener: self)
-        bitmovinYospacePlayer?.add(yospaceListener: self)
+        
+        //Create a BitmovinYospacePlayer
+        bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+        
+        //Add your listeners
+        bitmovinYoSpacePlayer?.add(listener: self)
+        bitmovinYoSpacePlayer?.add(yospaceListener: self)
 
         guard let player = bitmovinYospacePlayer else {
             return
