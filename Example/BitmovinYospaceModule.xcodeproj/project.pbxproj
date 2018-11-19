@@ -11,6 +11,8 @@
 		0103E86321963C19006EA024 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0103E86221963C19006EA024 /* ViewController.swift */; };
 		0103E86621963C19006EA024 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0103E86421963C19006EA024 /* Main.storyboard */; };
 		0103E86821963C1C006EA024 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0103E86721963C1C006EA024 /* Assets.xcassets */; };
+		0168DCC321A3789C00E1DBDB /* BitmovinExamplePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0168DCC221A3789C00E1DBDB /* BitmovinExamplePolicy.swift */; };
+		0168DCC521A37ECB00E1DBDB /* BitmovinExamplePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0168DCC421A37ECB00E1DBDB /* BitmovinExamplePolicy.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -28,6 +30,8 @@
 		0103E86721963C1C006EA024 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0103E86921963C1C006EA024 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		015DC509219E252C0009363E /* Yospace-tvOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Yospace-tvOS.framework"; path = "../lib/Yospace-tvOS.framework"; sourceTree = "<group>"; };
+		0168DCC221A3789C00E1DBDB /* BitmovinExamplePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BitmovinExamplePolicy.swift; path = BitmovinYospaceModule/BitmovinExamplePolicy.swift; sourceTree = SOURCE_ROOT; };
+		0168DCC421A37ECB00E1DBDB /* BitmovinExamplePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmovinExamplePolicy.swift; sourceTree = "<group>"; };
 		4119C4B06A4019FC60C3387B /* Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		57CDA9C79DD968D9E513DEA5 /* Pods_BitmovinYoSpaceModule_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitmovinYoSpaceModule_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		59EA5BF9534F0A19507CD7CA /* BitmovinYoSpaceModule.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BitmovinYoSpaceModule.podspec; path = ../BitmovinYoSpaceModule.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -81,6 +85,7 @@
 				0103E86421963C19006EA024 /* Main.storyboard */,
 				0103E86721963C1C006EA024 /* Assets.xcassets */,
 				0103E86921963C1C006EA024 /* Info.plist */,
+				0168DCC421A37ECB00E1DBDB /* BitmovinExamplePolicy.swift */,
 			);
 			path = BitmovinYospaceModule_Example_tvOS;
 			sourceTree = "<group>";
@@ -127,6 +132,7 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				0168DCC221A3789C00E1DBDB /* BitmovinExamplePolicy.swift */,
 			);
 			name = "Example for BitmovinYospaceModule";
 			path = BitmovinYoSpaceModule;
@@ -419,6 +425,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0168DCC521A37ECB00E1DBDB /* BitmovinExamplePolicy.swift in Sources */,
 				0103E86321963C19006EA024 /* ViewController.swift in Sources */,
 				0103E86121963C19006EA024 /* AppDelegate.swift in Sources */,
 			);
@@ -428,6 +435,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0168DCC321A3789C00E1DBDB /* BitmovinExamplePolicy.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);

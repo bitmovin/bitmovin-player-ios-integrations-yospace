@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  BitmovinYospaceModule_Example_tvOS
 //
-//  Created by Cory Zachman on 11/9/18.
+//  Created by Bitmovin on 11/9/18.
 //  Copyright © 2018 CocoaPods. All rights reserved.
 //
 
@@ -11,30 +11,33 @@ import BitmovinPlayer
 import BitmovinYospaceModule
 
 class ViewController: UIViewController {
-    var bitmovinYoSpacePlayer: BitmovinYospacePlayer?
+    var bitmovinYospacePlayer: BitmovinYospacePlayer?
     @IBOutlet var playerView: UIView!
     @IBOutlet var unloadButton: UIButton!
     @IBOutlet var liveButton: UIButton!
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
     var clickUrl: URL?
+    var policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
 
     override func viewDidLoad() {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
-        
+
         // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
-        
-        //Create a BitmovinYospacePlayer
-        bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
-        
-        //Add your listeners
-        bitmovinYoSpacePlayer?.add(listener: self)
-        bitmovinYoSpacePlayer?.add(yospaceListener: self)
 
-        guard let player = bitmovinYoSpacePlayer else {
+        //Create a BitmovinYospacePlayer
+        bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+
+        //Add your listeners
+        bitmovinYospacePlayer?.add(listener: self)
+        bitmovinYospacePlayer?.add(yospaceListener: self)
+
+        bitmovinYospacePlayer?.playerPolicy = policy
+
+        guard let player = bitmovinYospacePlayer else {
             return
         }
 
@@ -61,7 +64,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func unloadButtonClicked(sender: UIButton) {
-        self.bitmovinYoSpacePlayer?.unload()
+        self.bitmovinYospacePlayer?.unload()
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
@@ -73,7 +76,7 @@ class ViewController: UIViewController {
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
-        bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
@@ -89,7 +92,7 @@ class ViewController: UIViewController {
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
 
-        bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
     @IBAction func startOverButtonClicked(sender: UIButton) {
@@ -101,14 +104,14 @@ class ViewController: UIViewController {
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .nonLinearStartOver)
 
-        bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
     @IBAction func clickButtonClicked(sender: UIButton) {
         guard let url = clickUrl else {
             return
         }
-        bitmovinYoSpacePlayer?.clickThroughPressed()
+        bitmovinYospacePlayer?.clickThroughPressed()
         UIApplication.shared.openURL(url)
 
     }

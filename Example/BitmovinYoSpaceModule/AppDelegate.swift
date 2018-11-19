@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  BitmovinYoSpaceModule
 //
-//  Created by Cory Zachman on 10/16/2018.
+//  Created by Bitmovin on 10/16/2018.
 //  Copyright (c) 2018 Cory Zachman. All rights reserved.
 //
 
