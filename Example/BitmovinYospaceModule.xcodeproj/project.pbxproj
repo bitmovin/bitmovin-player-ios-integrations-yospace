@@ -194,6 +194,7 @@
 				0103E85B21963C19006EA024 /* Frameworks */,
 				0103E85C21963C19006EA024 /* Resources */,
 				E97DA3A1F15389B1EC439729 /* [CP] Embed Pods Frameworks */,
+				0168DCA7219F81DC00E1DBDB /* Swiftlint */,
 			);
 			buildRules = (
 			);
@@ -213,6 +214,7 @@
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
 				EF2B675BE1A50B9BE0E1E55F /* [CP] Embed Pods Frameworks */,
+				0168DCA6219F814E00E1DBDB /* Swift Lint */,
 			);
 			buildRules = (
 			);
@@ -288,6 +290,42 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0168DCA6219F814E00E1DBDB /* Swift Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint > /dev/null; then\n    swiftlint\nelse \n    echo \"warning: Swiftlint not installed\"\nfi\n";
+		};
+		0168DCA7219F81DC00E1DBDB /* Swiftlint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Swiftlint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint > /dev/null; then\n    echo $PWD    \n    swiftlint\nelse \n    echo \"warning: Swiftlint not installed\"\nfi\n";
+		};
 		0ED1CAD514A05E7CA12A50B9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

@@ -9,8 +9,15 @@ tvOS 9.0+
 The following example creates a BitmovinYospacePlayer and loads a Yospace stream 
 
 ```swift
+//Optionally create a yospace configuration
+let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+
+//Optionally create a PlayerConfiguration
+let configuration = PlayerConfiguration()
+
 //Create a BitmovinYospacePlayer
-let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration)
+let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+
 
 //Add it to your player view 
 let playerBoundary = BMPBitmovinPlayerView(player: bitmovinYoSpacePlayer, frame: frame)
@@ -57,6 +64,31 @@ extension ViewController : PlayerListener {
 
 //Add your object as a listener to the BitmovinYospacePlayer
 bitmovinYoSpacePlayer.add(listener: self)
+```
+
+#### Yospace Listener
+Errors specific to initializing a Yospace session with the Yospace Ad Management SDK will be returned though the onYospaceError event. These errors happen pre playback and result in an source never being loaded into the player. These errors will not show up in the Bitmovin Analytics. Common error scenarios include 
+
+ - Passing a non Yospace source URL into the Yospace Player (6001)
+ - No analytics returns in the Yospace URL (6002)
+ - Yospace SDK unable to initialze a session (6003)
+ - Invalid player passed into the Yospace SDK (6004)
+ - Unknown error in the Yospace Ad Management SDK (6005)
+
+```swift
+//Implement the Player Listener Protocol
+
+extension ViewController: YospaceListener {
+    public func onYospaceError(event: ErrorEvent) {
+        let message = "Error: \(event.code) -  \(event.message)"
+        let alert = UIAlertController(title: "Alert", message: message, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+}
+
+//Add your object as a listener to the BitmovinYospacePlayer
+bitmovinYoSpacePlayer.add(yospaceListener: self)
 ```
 
 

@@ -8,50 +8,72 @@ enum SessionStatus: Int {
     case playing
 }
 
-public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
-    public required init(streamSource source: URL) {
-        super.init(configuration: PlayerConfiguration())
-    }
-
+public class BitmovinYospacePlayer: BitmovinPlayer {
+    // MARK: - Bitmovin Yospace Player attributes
     var sessionManger: YSSessionManager?
     var sessionStatus: SessionStatus = .notInitialised
     var adPlaying = false
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
+    var yospaceConfiguration: YospaceConfiguration?
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
     private var yospaceListeners: [YospaceListener] = []
 
-    public var rate: Float {
-        get {
-            return playbackSpeed
-        }
-        set (rate) {
+    var yospacePlayer: YospacePlayer?
 
-        }
-    }
-
-    public override init(configuration: PlayerConfiguration) {
-        sessionStatus = .notInitialised
+    // MARK: - initializer
+    /**
+     Initializea new Bitmovin Yospace player for SSAI with Yospace
+     
+     **!! The BitmovinYospacePlayer will only be able to play Yospace streams. It will error out on all other streams. Please add a YospaceListener to be notified of these errors !!**
+     
+     - Parameters:
+     - configuration: Traditional PlayerConfiguration used by Bitmovin
+     - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
+     */
+    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
         super.init(configuration: configuration)
+        sessionStatus = .notInitialised
+        self.yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
         self.add(listener: self)
     }
-    
+
     public override func destroy() {
-        resetSessionManager();
+        resetSessionManager()
         super.destroy()
     }
 
+    // MARK: loading a yospace source
+
+    /**
+     Loads a new yospace source into the player
+     
+     **!! The BitmovinYospacePlayer will only be able to play Yospace streams. It will error out on all other streams. Please add a YospaceListener to be notified of these errors !!**
+     
+     - Parameters:
+     - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
+     - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
+     */
     public func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration) {
-        resetSessionManager();
+        resetSessionManager()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
         let yospaceProperties = YSSessionProperties()
-        yospaceProperties.analyticsUserAgent = yospaceSourceConfiguration.userAgent
-        if let timeout = yospaceSourceConfiguration.timeout {
+
+        if let timeout = yospaceConfiguration?.timeout {
             yospaceProperties.timeout = timeout
         }
 
-        if(yospaceSourceConfiguration.debug) {
+        if let timeout = yospaceConfiguration?.timeout {
+            yospaceProperties.timeout = timeout
+        }
+
+        if let userAgent = yospaceConfiguration?.userAgent {
+            yospaceProperties.analyticsUserAgent = userAgent
+            yospaceProperties.analyticsUserAgent = userAgent
+        }
+
+        if let _ = yospaceConfiguration?.debug {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
             YSSessionProperties.add(_:combined!)
         }
@@ -65,7 +87,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
             case .linear:
                 loadLive(url: url, yospaceProperties: yospaceProperties)
                 break
-            case .linearStartOver:
+            case .nonLinearStartOver:
                 loadNonLinearStartOver(url: url, yospaceProperties: yospaceProperties)
                 break
             case .vod:
@@ -73,8 +95,8 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
                 break
         }
     }
-    
-    func resetSessionManager(){
+
+    func resetSessionManager() {
         self.sessionManger?.shutdown()
         sessionStatus = .notInitialised
         adPlaying = false
@@ -91,11 +113,12 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties) {
         YSSessionManager.create(forNonLinearStartOver: url, properties: yospaceProperties, delegate: self)
     }
-    
-    public func clickThroughPressed(){
-        sessionManger?.linearClickThroughDidOccur();
+
+    public func clickThroughPressed() {
+        sessionManger?.linearClickThroughDidOccur()
     }
 
+    // MARK: - event handling
     public override func add(listener: PlayerListener) {
         listeners.append(listener)
         super.add(listener: listener)
@@ -104,6 +127,20 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
     public override func remove(listener: PlayerListener) {
         listeners = listeners.filter { $0 !== listener }
         super.remove(listener: listener)
+    }
+
+    public func add(yospaceListener: YospaceListener) {
+        yospaceListeners.append(yospaceListener)
+    }
+
+    public func remove(yospaceListener: YospaceListener) {
+        yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
+    }
+
+    func handleError(code: UInt, message: String) {
+        for listener: YospaceListener in yospaceListeners {
+            listener.onYospaceError(event: ErrorEvent(code: code, message: message))
+        }
     }
 
     #if os(iOS)
@@ -125,23 +162,9 @@ public class BitmovinYospacePlayer: BitmovinPlayer, YSVideoPlayer {
         }
     }
     #endif
-
-    func handleError(code: UInt, message: String) {
-        for listener: YospaceListener in yospaceListeners {
-            listener.onYospaceError(event: ErrorEvent(code: code, message: message))
-        }
-    }
-    
-    public func add(yospaceListener: YospaceListener){
-        yospaceListeners.append(yospaceListener)
-    }
-    
-    public func remove(yospaceListener: YospaceListener){
-        yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
-    }
-    
 }
 
+// Mark: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         for listener: PlayerListener in listeners {
@@ -157,8 +180,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         adPlaying = true
-        var clickThroughUrl:URL = URL(string: "http://google.com")!
-        
+        var clickThroughUrl: URL = URL(string: "http://google.com")!
+
         if (advert.linearCreativeElement().linearClickthroughURL() != nil) {
             clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
         }
@@ -208,6 +231,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 }
 
+// Mark: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
         self.sessionManger = sessionManager
@@ -219,7 +243,9 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         //        self.theSessionManager?.setPlayerPolicyDelegate(policyHandler)
 
         do {
-            try self.sessionManger?.setVideoPlayer(self)
+            if let yospacePlayer = self.yospacePlayer {
+                try self.sessionManger?.setVideoPlayer(yospacePlayer)
+            }
         } catch {
             handleError(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger")
         }
@@ -248,12 +274,13 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func operationDidFailWithError(_ error: Error) {
         handleError(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error")
     }
+
 }
 
+// Mark: - PlayerListener
 extension BitmovinYospacePlayer: PlayerListener {
     public func onPlay(_ event: PlayEvent) {
         NSLog("On Play")
-
         if (sessionStatus == .notInitialised || sessionStatus == .ready) {
             sessionStatus = .playing
             let dictionary = [kYoPlayheadKey: currentTime]
@@ -273,9 +300,9 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
         NSLog("On Source Unloaded")
-        if(sessionStatus != .notInitialised){
+        if(sessionStatus != .notInitialised) {
             // the yospace sessionManager.shutdown() call is asynchronous. If the user just calls `load()` on second playback without calling `unload()` we end up canceling both the old session and the new session. This if statement keeps track of that
-            resetSessionManager();
+            resetSessionManager()
         }
     }
 
@@ -330,7 +357,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         NSLog("Firing %@ Notification", name)
 
         DispatchQueue.main.async(execute: {() -> Void in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self, userInfo: dictionary)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self.yospacePlayer, userInfo: dictionary)
         })
     }
 }

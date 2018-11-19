@@ -1,6 +1,6 @@
 import Foundation
 
-enum YospaceErrorCode: UInt {
+public enum YospaceErrorCode: UInt {
     case invalidSource = 6001,
     noAnalytics = 6002,
     notIntialised = 6003,

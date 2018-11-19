@@ -8,7 +8,6 @@
 import Foundation
 import BitmovinPlayer
 
-
 public protocol YospaceListener: class {
     func onYospaceError(event: ErrorEvent)
 }
