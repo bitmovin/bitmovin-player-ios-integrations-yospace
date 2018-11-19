@@ -2,7 +2,7 @@
 //  YospaceListener+PlayerListener.swift
 //  BitmovinYospaceModule-iOS
 //
-//  Created by Cory Zachman on 11/13/18.
+//  Created by Bitmovin on 11/13/18.
 //
 
 import Foundation

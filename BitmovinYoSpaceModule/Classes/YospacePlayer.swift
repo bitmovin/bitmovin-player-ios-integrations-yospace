@@ -2,7 +2,7 @@
 //  YospacePlayer.swift
 //  Pods
 //
-//  Created by Cory Zachman on 11/18/18.
+//  Created by Bitmovin on 11/18/18.
 //
 
 import Foundation

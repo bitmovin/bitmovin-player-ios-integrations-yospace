@@ -10,13 +10,25 @@ enum SessionStatus: Int {
 
 public class BitmovinYospacePlayer: BitmovinPlayer {
     // MARK: - Bitmovin Yospace Player attributes
-    var sessionManger: YSSessionManager?
+    var sessionManager: YSSessionManager?
     var sessionStatus: SessionStatus = .notInitialised
     var adPlaying = false
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var yospaceConfiguration: YospaceConfiguration?
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
+    var yospacePlayerPolicy: YospacePlayerPolicy?
+
+    // pass along the BitmovinYospacePlayerPolicy to the internal yospacePlayerPolicy which will be called by by our sessionManager
+    public var playerPolicy: BitmovinYospacePlayerPolicy? {
+        set (playerPolicy) {
+            self.yospacePlayerPolicy?.playerPolicy = playerPolicy
+        }
+        get {
+            return self.yospacePlayerPolicy?.playerPolicy
+        }
+    }
+
     private var yospaceListeners: [YospaceListener] = []
 
     var yospacePlayer: YospacePlayer?
@@ -33,6 +45,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
      */
     public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
         super.init(configuration: configuration)
+        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         sessionStatus = .notInitialised
         self.yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
         self.add(listener: self)
@@ -97,7 +110,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     func resetSessionManager() {
-        self.sessionManger?.shutdown()
+        self.sessionManager?.shutdown()
         sessionStatus = .notInitialised
         adPlaying = false
     }
@@ -115,7 +128,26 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     public func clickThroughPressed() {
-        sessionManger?.linearClickThroughDidOccur()
+        sessionManager?.linearClickThroughDidOccur()
+    }
+
+    // MARK: - playback methods
+    public override func pause() {
+        if let manager = self.sessionManager {
+            if !manager.canPause() {
+                NSLog("pause() rejected")
+                return
+            }
+        }
+        super.pause()
+    }
+
+    public override func seek(time: TimeInterval) {
+        if let manager = self.sessionManager {
+            super.seek(time: manager.willSeek(to: time))
+        } else {
+            super.seek(time: time)
+        }
     }
 
     // MARK: - event handling
@@ -234,17 +266,18 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 // Mark: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
-        self.sessionManger = sessionManager
-        self.sessionManger?.subscribe(toAnalyticEvents: self)
+        self.sessionManager = sessionManager
+        self.sessionManager?.subscribe(toAnalyticEvents: self)
 
         //TODO create policy
-        // create a playback policy object
-        //        let policyHandler = YOPlayerPolicyImpl()
-        //        self.theSessionManager?.setPlayerPolicyDelegate(policyHandler)
+
+        if let policy = self.yospacePlayerPolicy {
+            self.sessionManager?.setPlayerPolicyDelegate(policy)
+        }
 
         do {
             if let yospacePlayer = self.yospacePlayer {
-                try self.sessionManger?.setVideoPlayer(yospacePlayer)
+                try self.sessionManager?.setVideoPlayer(yospacePlayer)
             }
         } catch {
             handleError(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger")

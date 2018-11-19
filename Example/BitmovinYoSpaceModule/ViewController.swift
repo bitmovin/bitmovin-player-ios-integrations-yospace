@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  BitmovinYoSpaceModule
 //
-//  Created by Cory Zachman on 10/16/2018.
+//  Created by Bitmovin on 10/16/2018.
 //  Copyright (c) 2018 Cory Zachman. All rights reserved.
 //
 
@@ -19,6 +19,8 @@ class ViewController: UIViewController {
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
     @IBOutlet var clickButton: UIButton!
+    var policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
+
     var clickUrl: URL?
 
     override func viewDidLoad() {
@@ -30,13 +32,15 @@ class ViewController: UIViewController {
 
         // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
-        
+
         //Create a BitmovinYospacePlayer
-        bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
-        
+        bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+
         //Add your listeners
-        bitmovinYoSpacePlayer?.add(listener: self)
-        bitmovinYoSpacePlayer?.add(yospaceListener: self)
+        bitmovinYospacePlayer?.add(listener: self)
+        bitmovinYospacePlayer?.add(yospaceListener: self)
+
+        bitmovinYospacePlayer?.playerPolicy = policy
 
         guard let player = bitmovinYospacePlayer else {
             return
