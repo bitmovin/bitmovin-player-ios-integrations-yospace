@@ -12,7 +12,7 @@ import BitmovinPlayer
 import Toast_Swift
 
 class ViewController: UIViewController {
-    var bitmovinYoSpacePlayer: BitmovinYospacePlayer?
+    var bitmovinYospacePlayer: BitmovinYospacePlayer?
     @IBOutlet var playerView: UIView!
     @IBOutlet var unloadButton: UIButton!
     @IBOutlet var liveButton: UIButton!
@@ -22,29 +22,33 @@ class ViewController: UIViewController {
     var clickUrl: URL?
 
     override func viewDidLoad() {
+        clickButton.isEnabled = false
+
+        // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
-        bitmovinYoSpacePlayer = BitmovinYospacePlayer(configuration: configuration)
-        bitmovinYoSpacePlayer?.add(listener: self)
-        bitmovinYoSpacePlayer?.add(yospaceListener: self)
 
-        guard let player = bitmovinYoSpacePlayer else {
+        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+        bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+        bitmovinYospacePlayer?.add(listener: self)
+        bitmovinYospacePlayer?.add(yospaceListener: self)
+
+        guard let player = bitmovinYospacePlayer else {
             return
         }
 
         super.viewDidLoad()
 
         self.playerView.backgroundColor = .black
-            // Create player view and pass the player instance to it
+
+        // Create player view and pass the player instance to it
         let playerBoundary = BMPBitmovinPlayerView(player: player, frame: .zero)
 
+        // Size the player view
         playerBoundary.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         playerBoundary.frame = playerView.bounds
-
         playerView.addSubview(playerBoundary)
         playerView.bringSubviewToFront(playerBoundary)
-        
-        clickButton.isEnabled = false;
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,7 +57,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func unloadButtonClicked(sender: UIButton) {
-        self.bitmovinYoSpacePlayer?.unload()
+        self.bitmovinYospacePlayer?.unload()
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
@@ -65,7 +69,7 @@ class ViewController: UIViewController {
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
-        bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
@@ -81,7 +85,7 @@ class ViewController: UIViewController {
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
 
-        bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
     @IBAction func startOverButtonClicked(sender: UIButton) {
@@ -91,18 +95,18 @@ class ViewController: UIViewController {
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        let config = YospaceSourceConfiguration(yospaceAssetType: .linearStartOver)
+        let config = YospaceSourceConfiguration(yospaceAssetType: .nonLinearStartOver)
 
-        bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
     @IBAction func clickButtonClicked(sender: UIButton) {
         guard let url = clickUrl else {
             return
         }
-        bitmovinYoSpacePlayer?.clickThroughPressed()
+        bitmovinYospacePlayer?.clickThroughPressed()
         UIApplication.shared.openURL(url)
-        
+
     }
 
 }
@@ -111,7 +115,7 @@ extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
         NSLog("Ad Started")
         self.view.makeToast("Ad Started")
-        clickButton.isEnabled = true;
+        clickButton.isEnabled = true
         clickUrl = event.clickThroughUrl
     }
 
@@ -119,7 +123,7 @@ extension ViewController: PlayerListener {
         NSLog("Ad Finished")
         self.view.makeToast("Ad Finished")
 
-        clickButton.isEnabled = false;
+        clickButton.isEnabled = false
         clickUrl = nil
     }
 
@@ -141,8 +145,9 @@ extension ViewController: PlayerListener {
 }
 
 extension ViewController: YospaceListener {
-    public func onYospaceError(event: ErrorEvent){
-        let alert = UIAlertController(title: "Alert", message: "Error: \(event.code) -  \(event.message)" , preferredStyle: UIAlertController.Style.alert)
+    public func onYospaceError(event: ErrorEvent) {
+        let message = "Error: \(event.code) -  \(event.message)"
+        let alert = UIAlertController(title: "Alert", message: message, preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
 
