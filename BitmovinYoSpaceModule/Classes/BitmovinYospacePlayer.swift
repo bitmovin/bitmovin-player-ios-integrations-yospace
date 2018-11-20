@@ -18,7 +18,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
     var yospacePlayerPolicy: YospacePlayerPolicy?
-    var yospacePlayer:YospacePlayer?
+    var yospacePlayer: YospacePlayer?
 
     // pass along the BitmovinYospacePlayerPolicy to the internal yospacePlayerPolicy which will be called by by our sessionManager
     public var playerPolicy: BitmovinYospacePlayerPolicy? {
@@ -86,7 +86,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
             yospaceProperties.analyticsUserAgent = userAgent
         }
 
-        if let _ = yospaceConfiguration?.debug {
+        if yospaceConfiguration?.debug != nil {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ID3TAG.rawValue | YSEDebugFlags.DEBUG_REPORTS.rawValue)
             YSSessionProperties.add(_:combined!)
         }
@@ -97,20 +97,18 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         }
 
         switch yospaceSourceConfiguration.yospaceAssetType {
-            case .linear:
-                loadLive(url: url, yospaceProperties: yospaceProperties)
-                break
-            case .nonLinearStartOver:
-                loadNonLinearStartOver(url: url, yospaceProperties: yospaceProperties)
-                break
-            case .vod:
-                loadVOD(url: url, yospaceProperties: yospaceProperties)
-                break
+        case .linear:
+            loadLive(url: url, yospaceProperties: yospaceProperties)
+        case .nonLinearStartOver:
+            loadNonLinearStartOver(url: url, yospaceProperties: yospaceProperties)
+        case .vod:
+            loadVOD(url: url, yospaceProperties: yospaceProperties)
         }
     }
 
     func resetSessionManager() {
         self.sessionManager?.shutdown()
+        self.sessionManager = nil
         sessionStatus = .notInitialised
         adPlaying = false
     }
@@ -177,7 +175,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
 
     #if os(iOS)
     public override func skipAd() {
-        if(sessionStatus != .notInitialised) {
+        if sessionStatus != .notInitialised {
             //TODO skipAd
         } else {
             return super.skipAd()
@@ -185,18 +183,16 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     public override var isAd: Bool {
-        get {
-            if(sessionStatus != .notInitialised) {
-                return adPlaying
-            } else {
-                return super.isAd
-            }
+        if sessionStatus != .notInitialised {
+            return adPlaying
+        } else {
+            return super.isAd
         }
     }
     #endif
 }
 
-// Mark: - YSAnalyticsObserver
+// MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         for listener: PlayerListener in listeners {
@@ -214,11 +210,14 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         adPlaying = true
         var clickThroughUrl: URL = URL(string: "http://google.com")!
 
-        if (advert.linearCreativeElement().linearClickthroughURL() != nil) {
+        if advert.linearCreativeElement().linearClickthroughURL() != nil {
             clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
         }
 
+        //swiftlint:disable line_length
         let adStartedEvent: AdStartedEvent = AdStartedEvent(clickThroughUrl: clickThroughUrl, clientType: .IMA, indexInQueue: 0, duration: advert.advertDuration(), timeOffset: advert.advertStart(), skipOffset: 1, position: "0")
+        //swiftlint:enable line_length
+
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(adStartedEvent)
         }
@@ -263,7 +262,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 }
 
-// Mark: - YSAnalyticsObserver
+// MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
 
@@ -287,18 +286,15 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         case .notInitialised:
             handleError(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized")
             NSLog("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-            break
         case .initialisedNoAnalytics:
             handleError(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics")
             NSLog("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-            break
         case .initialisedWithAnalytics:
             NSLog("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
 
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
             load(sourceConfiguration: sourceConfig)
-            break
         default:
             break
         }
@@ -310,11 +306,11 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
 }
 
-// Mark: - PlayerListener
+// MARK: - PlayerListener
 extension BitmovinYospacePlayer: PlayerListener {
     public func onPlay(_ event: PlayEvent) {
         NSLog("On Play")
-        if (sessionStatus == .notInitialised || sessionStatus == .ready) {
+        if sessionStatus == .notInitialised || sessionStatus == .ready {
             sessionStatus = .playing
             let dictionary = [kYoPlayheadKey: currentTime]
             self.notify(dictionary: dictionary, name: YoPlaybackStartedNotification)
@@ -333,7 +329,7 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
         NSLog("On Source Unloaded")
-        if(sessionStatus != .notInitialised) {
+        if sessionStatus != .notInitialised {
             // the yospace sessionManager.shutdown() call is asynchronous. If the user just calls `load()` on second playback without calling `unload()` we end up canceling both the old session and the new session. This if statement keeps track of that
             resetSessionManager()
         }
@@ -357,7 +353,7 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onReady(_ event: ReadyEvent) {
         NSLog("On Ready")
-        if (sessionStatus == .notInitialised) {
+        if sessionStatus == .notInitialised {
             sessionStatus = .ready
             self.notify(dictionary: Dictionary(), name: YoPlaybackReadyNotification)
         }
@@ -375,7 +371,7 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onMetadata(_ event: MetadataEvent) {
         let meta = YSTimedMetadata.createFromMetadata(event: event)
-        if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (meta.type.count != 0) {
+        if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {
             let dictionary = [kYoMetadataKey: meta]
             self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
         }
@@ -386,7 +382,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         self.notify(dictionary: dictionary, name: YoPlaybackEndedNotification)
     }
 
-    func notify(dictionary: Dictionary<String, Any>, name: String) {
+    func notify(dictionary: [String: Any], name: String) {
         NSLog("Firing %@ Notification", name)
 
         DispatchQueue.main.async(execute: {() -> Void in

@@ -15,6 +15,7 @@ class YospacePlayer: NSObject, YSVideoPlayer {
         super.init()
     }
 
+    // swiftlint:disable implicit_getter
     var currentTime: TimeInterval {
         get {
             return self.bitmovinYospacePlayer?.currentTime ?? 0
@@ -26,6 +27,7 @@ class YospacePlayer: NSObject, YSVideoPlayer {
             return self.bitmovinYospacePlayer?.duration ?? 0
         }
     }
+    // swiftlint:enable implicit_getter
 
     var rate: Float {
         get {

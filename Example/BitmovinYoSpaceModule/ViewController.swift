@@ -27,34 +27,34 @@ class ViewController: UIViewController {
 
         createPlayer()
     }
-    
-    func createPlayer(){
+
+    func createPlayer() {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
-        
+
         // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
-        
+
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
-        
+
         //Add your listeners
         bitmovinYospacePlayer?.add(listener: self)
         bitmovinYospacePlayer?.add(yospaceListener: self)
-        
+
         let policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
         bitmovinYospacePlayer?.playerPolicy = policy
-        
+
         guard let player = bitmovinYospacePlayer else {
             return
         }
-        
+
         super.viewDidLoad()
-        
+
         self.playerView.backgroundColor = .black
 
-        if( bitmovinPlayerView == nil){
+        if bitmovinPlayerView == nil {
             // Create player view and pass the player instance to it
             bitmovinPlayerView = BMPBitmovinPlayerView(player: player, frame: .zero)
 
@@ -67,17 +67,14 @@ class ViewController: UIViewController {
             view.frame = playerView.bounds
             playerView.addSubview(view)
             playerView.bringSubviewToFront(view)
-            
-        }else {
+
+        } else {
             bitmovinPlayerView?.player = bitmovinYospacePlayer
         }
 
-
     }
-    
-    func destroyPlayer(){
-//        bitmovinYospacePlayer?.remove(listener: self)
-//        bitmovinYospacePlayer?.remove(yospaceListener: self)
+
+    func destroyPlayer() {
         bitmovinYospacePlayer?.unload()
         bitmovinYospacePlayer?.destroy()
         bitmovinYospacePlayer = nil
@@ -91,7 +88,7 @@ class ViewController: UIViewController {
     @IBAction func unloadButtonClicked(sender: UIButton) {
         self.bitmovinYospacePlayer?.unload()
     }
-    
+
     @IBAction func reloadButtonClicked(sender: UIButton) {
         destroyPlayer()
         createPlayer()
