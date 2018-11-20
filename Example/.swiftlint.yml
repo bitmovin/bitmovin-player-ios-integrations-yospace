@@ -3,10 +3,14 @@ disabled_rules:
 opt_in_rules:
 - empty_count
 - empty_string
+- control_statement
+
+included:
+- ../BitmovinYospaceModule/
 
 excluded:
 - Carthage
-- ./Pods/Toast-Swift
+- Pods
 
 line_length:
     warning: 150
