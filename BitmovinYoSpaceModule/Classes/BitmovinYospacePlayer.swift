@@ -18,6 +18,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
     var yospacePlayerPolicy: YospacePlayerPolicy?
+    var yospacePlayer:YospacePlayer?
 
     // pass along the BitmovinYospacePlayerPolicy to the internal yospacePlayerPolicy which will be called by by our sessionManager
     public var playerPolicy: BitmovinYospacePlayerPolicy? {
@@ -31,8 +32,6 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
 
     private var yospaceListeners: [YospaceListener] = []
 
-    var yospacePlayer: YospacePlayer?
-
     // MARK: - initializer
     /**
      Initializea new Bitmovin Yospace player for SSAI with Yospace
@@ -45,14 +44,15 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
      */
     public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
         super.init(configuration: configuration)
-        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         sessionStatus = .notInitialised
-        self.yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
         self.add(listener: self)
     }
 
     public override func destroy() {
         resetSessionManager()
+        yospaceListeners.removeAll()
+        listeners.removeAll()
+        sessionManager = nil
         super.destroy()
     }
 
@@ -266,19 +266,19 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 // Mark: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
+
         self.sessionManager = sessionManager
         self.sessionManager?.subscribe(toAnalyticEvents: self)
 
         //TODO create policy
+        let policy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
+        self.sessionManager?.setPlayerPolicyDelegate(policy)
 
-        if let policy = self.yospacePlayerPolicy {
-            self.sessionManager?.setPlayerPolicyDelegate(policy)
-        }
+        let yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
 
         do {
-            if let yospacePlayer = self.yospacePlayer {
                 try self.sessionManager?.setVideoPlayer(yospacePlayer)
-            }
+                self.yospacePlayer = yospacePlayer
         } catch {
             handleError(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger")
         }

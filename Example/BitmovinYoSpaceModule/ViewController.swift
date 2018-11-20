@@ -19,45 +19,68 @@ class ViewController: UIViewController {
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
     @IBOutlet var clickButton: UIButton!
-    var policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
-
+    var bitmovinPlayerView: PlayerView?
     var clickUrl: URL?
 
     override func viewDidLoad() {
         clickButton.isEnabled = false
 
+        createPlayer()
+    }
+    
+    func createPlayer(){
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
-
+        
         // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
-
+        
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
-
+        
         //Add your listeners
         bitmovinYospacePlayer?.add(listener: self)
         bitmovinYospacePlayer?.add(yospaceListener: self)
-
+        
+        let policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
         bitmovinYospacePlayer?.playerPolicy = policy
-
+        
         guard let player = bitmovinYospacePlayer else {
             return
         }
-
+        
         super.viewDidLoad()
-
+        
         self.playerView.backgroundColor = .black
 
-        // Create player view and pass the player instance to it
-        let playerBoundary = BMPBitmovinPlayerView(player: player, frame: .zero)
+        if( bitmovinPlayerView == nil){
+            // Create player view and pass the player instance to it
+            bitmovinPlayerView = BMPBitmovinPlayerView(player: player, frame: .zero)
 
-        // Size the player view
-        playerBoundary.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        playerBoundary.frame = playerView.bounds
-        playerView.addSubview(playerBoundary)
-        playerView.bringSubviewToFront(playerBoundary)
+            guard let view = bitmovinPlayerView else {
+                return
+            }
+
+            // Size the player view
+            view.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+            view.frame = playerView.bounds
+            playerView.addSubview(view)
+            playerView.bringSubviewToFront(view)
+            
+        }else {
+            bitmovinPlayerView?.player = bitmovinYospacePlayer
+        }
+
+
+    }
+    
+    func destroyPlayer(){
+//        bitmovinYospacePlayer?.remove(listener: self)
+//        bitmovinYospacePlayer?.remove(yospaceListener: self)
+        bitmovinYospacePlayer?.unload()
+        bitmovinYospacePlayer?.destroy()
+        bitmovinYospacePlayer = nil
     }
 
     override func didReceiveMemoryWarning() {
@@ -67,6 +90,11 @@ class ViewController: UIViewController {
 
     @IBAction func unloadButtonClicked(sender: UIButton) {
         self.bitmovinYospacePlayer?.unload()
+    }
+    
+    @IBAction func reloadButtonClicked(sender: UIButton) {
+        destroyPlayer()
+        createPlayer()
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
