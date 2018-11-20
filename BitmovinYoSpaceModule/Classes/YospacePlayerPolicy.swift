@@ -9,7 +9,6 @@ import Foundation
 import Yospace
 
 class YospacePlayerPolicy: NSObject, YPPolicyHandling {
-    //TODO should I keep a weak or strong reference to the users passed in policy. If we keep a weak reference we should probably call it a delegate
     weak var playerPolicy: BitmovinYospacePlayerPolicy?
 
     public convenience init(bitmovinYospacePlayerPolicy: BitmovinYospacePlayerPolicy) {
