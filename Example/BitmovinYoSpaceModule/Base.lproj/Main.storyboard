@@ -73,6 +73,14 @@
                                     <action selector="reloadButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="RRQ-QO-kwc"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dad-P4-6Jk">
+                                <rect key="frame" x="35" y="57" width="53" height="30"/>
+                                <state key="normal" title="Skip Ad"/>
+                                <connections>
+                                    <action selector="skipAdWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="MWU-US-xJD"/>
+                                    <action selector="skipAdWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="Z0p-Do-q0W"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -85,10 +93,12 @@
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="Jb3-Sj-LCR"/>
                             <constraint firstItem="8kz-qv-eyg" firstAttribute="leading" secondItem="hb3-bn-Sn4" secondAttribute="trailing" constant="-119" id="Qxj-nJ-39q"/>
                             <constraint firstItem="n0d-8r-aL9" firstAttribute="leading" secondItem="x1n-n0-LwS" secondAttribute="trailing" constant="15" id="cTH-0G-1C0"/>
+                            <constraint firstItem="Dad-P4-6Jk" firstAttribute="leading" secondItem="x1n-n0-LwS" secondAttribute="leading" id="ctA-yd-HsH"/>
                             <constraint firstItem="KEF-Cw-sKa" firstAttribute="leading" secondItem="Lyc-l3-Nsg" secondAttribute="trailing" constant="15" id="dKa-ad-BPO"/>
                             <constraint firstAttribute="trailing" secondItem="hb3-bn-Sn4" secondAttribute="trailing" id="dLw-w4-ted"/>
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="leading" secondItem="x1n-n0-LwS" secondAttribute="trailing" constant="-65" id="fBK-4x-ZkK"/>
                             <constraint firstItem="8kz-qv-eyg" firstAttribute="leading" secondItem="KEF-Cw-sKa" secondAttribute="trailing" constant="15" id="gsL-0d-GZf"/>
+                            <constraint firstItem="Dad-P4-6Jk" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="37" id="rTJ-0b-RfB"/>
                             <constraint firstItem="Lyc-l3-Nsg" firstAttribute="top" secondItem="fRY-ie-hiw" secondAttribute="top" id="tN7-lc-pgJ"/>
                             <constraint firstItem="KEF-Cw-sKa" firstAttribute="top" secondItem="Lyc-l3-Nsg" secondAttribute="top" id="ut6-bl-gZE"/>
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="uwY-hk-3hk"/>

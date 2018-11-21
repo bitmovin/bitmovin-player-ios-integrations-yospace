@@ -11,6 +11,7 @@ enum SessionStatus: Int {
 public class BitmovinYospacePlayer: BitmovinPlayer {
     // MARK: - Bitmovin Yospace Player attributes
     var sessionManager: YSSessionManager?
+    var yospaceStream: YSStream?
     var sessionStatus: SessionStatus = .notInitialised
     var adPlaying = false
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
@@ -19,6 +20,8 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     var listeners: [PlayerListener] = []
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospacePlayer: YospacePlayer?
+    var yospaceListeners: [YospaceListener] = []
+    var adBreaks: [YSAdBreak] = []
 
     // pass along the BitmovinYospacePlayerPolicy to the internal yospacePlayerPolicy which will be called by by our sessionManager
     public var playerPolicy: BitmovinYospacePlayerPolicy? {
@@ -30,7 +33,22 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
 
-    private var yospaceListeners: [YospaceListener] = []
+    public override var duration: TimeInterval {
+        return super.duration - self.adBreaks.reduce(0) {$0 + $1.adBreakDuration()}
+    }
+
+    public override var currentTime: TimeInterval {
+
+        //Check if we are in an ad break
+        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < super.currentTime}.filter {$0.adBreakEnd() > super.currentTime}
+        for currentAdBreak: YSAdBreak in currentAdBreaks {
+            return currentAdBreak.adBreakStart()
+        }
+
+        let passedAdBreakDurations = adBreaks.filter {$0.adBreakEnd() < super.currentTime}.reduce(0) { $0 + $1.adBreakDuration() }
+
+        return super.currentTime - passedAdBreakDurations
+    }
 
     // MARK: - initializer
     /**
@@ -45,14 +63,13 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
-        self.add(listener: self)
+        super.add(listener: self)
     }
 
     public override func destroy() {
         resetSessionManager()
         yospaceListeners.removeAll()
         listeners.removeAll()
-        sessionManager = nil
         super.destroy()
     }
 
@@ -109,6 +126,8 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     func resetSessionManager() {
         self.sessionManager?.shutdown()
         self.sessionManager = nil
+        self.yospaceStream = nil
+        self.adBreaks = []
         sessionStatus = .notInitialised
         adPlaying = false
     }
@@ -128,6 +147,8 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     public func clickThroughPressed() {
         sessionManager?.linearClickThroughDidOccur()
     }
+
+    // MARK: - time normalization
 
     // MARK: - playback methods
     public override func pause() {
@@ -151,12 +172,10 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     // MARK: - event handling
     public override func add(listener: PlayerListener) {
         listeners.append(listener)
-        super.add(listener: listener)
     }
 
     public override func remove(listener: PlayerListener) {
         listeners = listeners.filter { $0 !== listener }
-        super.remove(listener: listener)
     }
 
     public func add(yospaceListener: YospaceListener) {
@@ -176,9 +195,17 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     #if os(iOS)
     public override func skipAd() {
         if sessionStatus != .notInitialised {
-            //TODO skipAd
+            guard sessionManager != nil else {
+                return
+            }
+
+            let adBreak: YSAdBreak? = currentAdBreak()
+            if let currentBreak = adBreak {
+
+                super.seek(time: currentBreak.adBreakEnd())
+            }
         } else {
-            return super.skipAd()
+            super.skipAd()
         }
     }
 
@@ -190,6 +217,23 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
     #endif
+
+    func currentAdBreak() -> YSAdBreak? {
+        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < super.currentTime}.filter {$0.adBreakEnd() > super.currentTime}
+        for currentAdBreak: YSAdBreak in currentAdBreaks {
+            return currentAdBreak
+        }
+
+        return nil
+    }
+
+    public func currentTimeWithAds() -> TimeInterval {
+        return super.currentTime
+    }
+
+    public func durationWithAds() -> TimeInterval {
+        return super.duration
+    }
 }
 
 // MARK: - YSAnalyticsObserver
@@ -208,7 +252,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         adPlaying = true
-        var clickThroughUrl: URL = URL(string: "http://google.com")!
+        var clickThroughUrl: URL = URL(fileURLWithPath: "", relativeTo: nil)
 
         if advert.linearCreativeElement().linearClickthroughURL() != nil {
             clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
@@ -260,6 +304,10 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func contentDidResume(_ playheadPosition: TimeInterval) {
         NSLog("Content did resume")
     }
+
+    public func timelineUpdateReceived(_ vmap: String) {
+        NSLog("Timeline Updated")
+    }
 }
 
 // MARK: - YSAnalyticsObserver
@@ -267,17 +315,19 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
 
         self.sessionManager = sessionManager
-        self.sessionManager?.subscribe(toAnalyticEvents: self)
+        self.yospaceStream = stream
+        if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
+            self.adBreaks = timeline
+        }
 
-        //TODO create policy
+        self.sessionManager?.subscribe(toAnalyticEvents: self)
         let policy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         self.sessionManager?.setPlayerPolicyDelegate(policy)
 
-        let yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
-
         do {
-                try self.sessionManager?.setVideoPlayer(yospacePlayer)
-                self.yospacePlayer = yospacePlayer
+            let yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
+            try self.sessionManager?.setVideoPlayer(yospacePlayer)
+            self.yospacePlayer = yospacePlayer
         } catch {
             handleError(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger")
         }
@@ -308,6 +358,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
 // MARK: - PlayerListener
 extension BitmovinYospacePlayer: PlayerListener {
+
     public func onPlay(_ event: PlayEvent) {
         NSLog("On Play")
         if sessionStatus == .notInitialised || sessionStatus == .ready {
@@ -318,13 +369,18 @@ extension BitmovinYospacePlayer: PlayerListener {
             let dictionary = [kYoPlayheadKey: currentTime]
             self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         }
-
+        for listener: PlayerListener in listeners {
+            listener.onPlay?(event)
+        }
     }
 
     public func onPaused(_ event: PausedEvent) {
         NSLog("On Paused")
         let dictionary = [kYoPlayheadKey: currentTime]
         self.notify(dictionary: dictionary, name: YoPlaybackPausedNotification)
+        for listener: PlayerListener in listeners {
+            listener.onPaused?(event)
+        }
     }
 
     public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
@@ -333,22 +389,34 @@ extension BitmovinYospacePlayer: PlayerListener {
             // the yospace sessionManager.shutdown() call is asynchronous. If the user just calls `load()` on second playback without calling `unload()` we end up canceling both the old session and the new session. This if statement keeps track of that
             resetSessionManager()
         }
+        for listener: PlayerListener in listeners {
+            listener.onSourceUnloaded?(event)
+        }
     }
 
     public func onStallStarted(_ event: StallStartedEvent) {
         NSLog("On Stall Started")
         let dictionary = [kYoPlayheadKey: currentTime]
         self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
+        for listener: PlayerListener in listeners {
+            listener.onStallStarted?(event)
+        }
     }
 
     public func onStallEnded(_ event: StallEndedEvent) {
         NSLog("On Stall Ended")
         let dictionary = [kYoPlayheadKey: currentTime]
         self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
+        for listener: PlayerListener in listeners {
+            listener.onStallEnded?(event)
+        }
     }
 
     public func onError(_ event: ErrorEvent) {
         NSLog("On Error")
+        for listener: PlayerListener in listeners {
+            listener.onError?(event)
+        }
     }
 
     public func onReady(_ event: ReadyEvent) {
@@ -357,16 +425,25 @@ extension BitmovinYospacePlayer: PlayerListener {
             sessionStatus = .ready
             self.notify(dictionary: Dictionary(), name: YoPlaybackReadyNotification)
         }
+        for listener: PlayerListener in listeners {
+            listener.onReady?(event)
+        }
     }
 
     public func onMuted(_ event: MutedEvent) {
         let dictionary = [kYoMutedKey: Bool(self.isMuted)]
         self.notify(dictionary: dictionary, name: YoPlaybackVolumeChangedNotification)
+        for listener: PlayerListener in listeners {
+            listener.onMuted?(event)
+        }
     }
 
     public func onUnmuted(_ event: UnmutedEvent) {
         let dictionary = [kYoMutedKey: Bool(self.isMuted)]
         self.notify(dictionary: dictionary, name: YoPlaybackVolumeChangedNotification)
+        for listener: PlayerListener in listeners {
+            listener.onUnmuted?(event)
+        }
     }
 
     public func onMetadata(_ event: MetadataEvent) {
@@ -375,18 +452,264 @@ extension BitmovinYospacePlayer: PlayerListener {
             let dictionary = [kYoMetadataKey: meta]
             self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
         }
+        for listener: PlayerListener in listeners {
+            listener.onMetadata?(event)
+        }
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {
         let dictionary = [kYoPlayheadKey: Int(currentTime), kYoCompletedKey: Int(truncating: true)]
         self.notify(dictionary: dictionary, name: YoPlaybackEndedNotification)
+
+        for listener: PlayerListener in listeners {
+            listener.onPlaybackFinished?(event)
+        }
     }
 
     func notify(dictionary: [String: Any], name: String) {
         NSLog("Firing %@ Notification", name)
-
         DispatchQueue.main.async(execute: {() -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self.yospacePlayer, userInfo: dictionary)
         })
+    }
+
+    public func onDurationChanged(_ event: DurationChangedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onDurationChanged?(DurationChangedEvent(duration: duration))
+        }
+    }
+
+    public func onTimeChanged(_ event: TimeChangedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime))
+        }
+    }
+
+    public func onSeek(_ event: SeekEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSeek?(event)
+        }
+    }
+
+    public func onDestroy(_ event: DestroyEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onDestroy?(event)
+        }
+    }
+
+    public func onEvent(_ event: PlayerEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onEvent?(event)
+        }
+    }
+
+    public func onAdClicked(_ event: AdClickedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdClicked?(event)
+        }
+    }
+
+    public func onAdSkipped(_ event: AdSkippedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdSkipped?(event)
+        }
+    }
+
+    public func onAdStarted(_ event: AdStartedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdStarted?(event)
+        }
+    }
+
+    public func onCastStart(_ event: CastStartEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastStart?(event)
+        }
+    }
+
+    public func onAdFinished(_ event: AdFinishedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdFinished?(event)
+        }
+    }
+
+    public func onSeeked(_ event: SeekedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSeeked?(event)
+        }
+    }
+
+    public func onTimeShift(_ event: TimeShiftEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onTimeShift?(event)
+        }
+    }
+
+    public func onAdScheduled(_ event: AdScheduledEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdScheduled?(event)
+        }
+    }
+
+    public func onAudioAdded(_ event: AudioAddedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAudioAdded?(event)
+        }
+    }
+
+    public func onVideoDownloadQualityChanged(_ event: VideoDownloadQualityChangedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onVideoDownloadQualityChanged?(event)
+        }
+    }
+
+    public func onCastPlaying(_ event: CastPlayingEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastPlaying?(event)
+        }
+    }
+
+    public func onCastStarted(_ event: CastStartedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastStarted?(event)
+        }
+    }
+
+    public func onCastStopped(_ event: CastStoppedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastStopped?(event)
+        }
+    }
+
+    public func onCastAvailable(_ event: CastAvailableEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastAvailable?(event)
+        }
+    }
+
+    public func onCastPlaybackFinished(_ event: CastPlaybackFinishedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastPlaybackFinished?(event)
+        }
+    }
+
+    public func onCastPaused(_ event: CastPausedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastPaused?(event)
+        }
+    }
+
+    public func onTimeShifted(_ event: TimeShiftedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onTimeShifted?(event)
+        }
+    }
+
+    public func onAudioChanged(_ event: AudioChangedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAudioChanged?(event)
+        }
+    }
+
+    public func onAudioRemoved(_ event: AudioRemovedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAudioRemoved?(event)
+        }
+    }
+
+    public func onSourceLoaded(_ event: SourceLoadedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSourceLoaded?(event)
+        }
+    }
+
+    public func onSubtitleAdded(_ event: SubtitleAddedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSubtitleAdded?(event)
+        }
+    }
+
+    public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdBreakStarted?(event)
+        }
+    }
+
+    public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdBreakFinished?(event)
+        }
+    }
+
+    public func onAdManifestLoaded(_ event: AdManifestLoadedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onAdManifestLoaded?(event)
+        }
+    }
+
+    public func onCastTimeUpdated(_ event: CastTimeUpdatedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCastTimeUpdated?(event)
+        }
+    }
+
+    public func onSubtitleRemoved(_ event: SubtitleRemovedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSubtitleRemoved?(event)
+        }
+    }
+
+    public func onSubtitleChanged(_ event: SubtitleChangedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSubtitleChanged?(event)
+        }
+    }
+
+    public func onCueEnter(_ event: CueEnterEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCueEnter?(event)
+        }
+    }
+
+    public func onCueExit(_ event: CueExitEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onCueExit?(event)
+        }
+    }
+
+    public func onDvrWindowExceeded(_ event: DvrWindowExceededEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onDvrWindowExceeded?(event)
+        }
+    }
+
+    public func onDownloadFinished(_ event: DownloadFinishedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onDownloadFinished?(event)
+        }
+    }
+
+    public func onRenderFirstFrame(_ event: RenderFirstFrameEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onRenderFirstFrame?(event)
+        }
+    }
+
+    public func onSourceWillUnload(_ event: SourceWillUnloadEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSourceWillUnload?(event)
+        }
+    }
+
+    public func onVideoSizeChanged(_ event: VideoSizeChangedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onVideoSizeChanged?(event)
+        }
+    }
+
+    public func onConfigurationUpdated(_ event: ConfigurationUpdatedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onConfigurationUpdated?(event)
+        }
     }
 }
