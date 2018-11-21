@@ -21,7 +21,18 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospacePlayer: YospacePlayer?
     var yospaceListeners: [YospaceListener] = []
-    var adBreaks: [YSAdBreak] = []
+    var timeline: Timeline?
+    var realAdBreaks: [YSAdBreak] = []
+
+    var adBreaks: [YSAdBreak] {
+        get {
+            return realAdBreaks
+        }
+        set (adBreaks) {
+            realAdBreaks = adBreaks
+            self.timeline = Timeline(adBreaks: adBreaks)
+        }
+    }
 
     // pass along the BitmovinYospacePlayerPolicy to the internal yospacePlayerPolicy which will be called by by our sessionManager
     public var playerPolicy: BitmovinYospacePlayerPolicy? {
@@ -38,16 +49,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     public override var currentTime: TimeInterval {
-
-        //Check if we are in an ad break
-        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < super.currentTime}.filter {$0.adBreakEnd() > super.currentTime}
-        for currentAdBreak: YSAdBreak in currentAdBreaks {
-            return currentAdBreak.adBreakStart()
-        }
-
-        let passedAdBreakDurations = adBreaks.filter {$0.adBreakEnd() < super.currentTime}.reduce(0) { $0 + $1.adBreakDuration() }
-
-        return super.currentTime - passedAdBreakDurations
+        return timeline?.absoluteToRelative(time: super.currentTime) ?? 0
     }
 
     // MARK: - initializer
@@ -123,38 +125,10 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
 
-    func resetSessionManager() {
-        self.sessionManager?.shutdown()
-        self.sessionManager = nil
-        self.yospaceStream = nil
-        self.adBreaks = []
-        sessionStatus = .notInitialised
-        adPlaying = false
-    }
-
-    func loadVOD(url: URL, yospaceProperties: YSSessionProperties) {
-        YSSessionManager.create(forVoD: url, properties: yospaceProperties, delegate: self)
-    }
-
-    func loadLive(url: URL, yospaceProperties: YSSessionProperties) {
-        YSSessionManager.create(forLive: url, properties: yospaceProperties, delegate: self)
-    }
-
-    func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties) {
-        YSSessionManager.create(forNonLinearStartOver: url, properties: yospaceProperties, delegate: self)
-    }
-
-    public func clickThroughPressed() {
-        sessionManager?.linearClickThroughDidOccur()
-    }
-
-    // MARK: - time normalization
-
     // MARK: - playback methods
     public override func pause() {
         if let manager = self.sessionManager {
             if !manager.canPause() {
-                NSLog("pause() rejected")
                 return
             }
         }
@@ -163,7 +137,10 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
 
     public override func seek(time: TimeInterval) {
         if let manager = self.sessionManager {
-            super.seek(time: manager.willSeek(to: time))
+            let seekTime = manager.willSeek(to: time)
+            let absoluteSeekTime = timeline?.relativeToAbsolute(time: seekTime) ?? seekTime
+            NSLog("Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
+            super.seek(time: absoluteSeekTime)
         } else {
             super.seek(time: time)
         }
@@ -184,6 +161,31 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
 
     public func remove(yospaceListener: YospaceListener) {
         yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
+    }
+
+    public func clickThroughPressed() {
+        sessionManager?.linearClickThroughDidOccur()
+    }
+
+    func resetSessionManager() {
+        self.sessionManager?.shutdown()
+        self.sessionManager = nil
+        self.yospaceStream = nil
+        self.adBreaks = []
+        sessionStatus = .notInitialised
+        adPlaying = false
+    }
+
+    func loadVOD(url: URL, yospaceProperties: YSSessionProperties) {
+        YSSessionManager.create(forVoD: url, properties: yospaceProperties, delegate: self)
+    }
+
+    func loadLive(url: URL, yospaceProperties: YSSessionProperties) {
+        YSSessionManager.create(forLive: url, properties: yospaceProperties, delegate: self)
+    }
+
+    func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties) {
+        YSSessionManager.create(forNonLinearStartOver: url, properties: yospaceProperties, delegate: self)
     }
 
     func handleError(code: UInt, message: String) {
@@ -218,21 +220,21 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     }
     #endif
 
-    func currentAdBreak() -> YSAdBreak? {
-        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < super.currentTime}.filter {$0.adBreakEnd() > super.currentTime}
-        for currentAdBreak: YSAdBreak in currentAdBreaks {
-            return currentAdBreak
-        }
-
-        return nil
-    }
-
     public func currentTimeWithAds() -> TimeInterval {
         return super.currentTime
     }
 
     public func durationWithAds() -> TimeInterval {
         return super.duration
+    }
+
+    func currentAdBreak() -> YSAdBreak? {
+        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < currentTimeWithAds()}.filter {$0.adBreakEnd() > currentTimeWithAds()}
+        for currentAdBreak: YSAdBreak in currentAdBreaks {
+            return currentAdBreak
+        }
+
+        return nil
     }
 }
 
@@ -285,28 +287,10 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
     }
 
-    public func nonlinearClickThroughDidOccur(_ nonlinearCreative: YSNonLinearCreative) {
-
-    }
-
-    public func contentDidEnd(_ playheadPosition: TimeInterval) {
-        NSLog("Content did end")
-    }
-
-    public func contentDidPause(_ playheadPosition: TimeInterval) {
-        NSLog("Content did pause")
-    }
-
-    public func contentDidStart(_ playheadPosition: TimeInterval) {
-        NSLog("Content did start")
-    }
-
-    public func contentDidResume(_ playheadPosition: TimeInterval) {
-        NSLog("Content did resume")
-    }
-
     public func timelineUpdateReceived(_ vmap: String) {
-        NSLog("Timeline Updated")
+        if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
+            self.adBreaks = timeline
+        }
     }
 }
 
@@ -360,13 +344,12 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 extension BitmovinYospacePlayer: PlayerListener {
 
     public func onPlay(_ event: PlayEvent) {
-        NSLog("On Play")
         if sessionStatus == .notInitialised || sessionStatus == .ready {
             sessionStatus = .playing
-            let dictionary = [kYoPlayheadKey: currentTime]
+            let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
             self.notify(dictionary: dictionary, name: YoPlaybackStartedNotification)
         } else {
-            let dictionary = [kYoPlayheadKey: currentTime]
+            let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
             self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         }
         for listener: PlayerListener in listeners {
@@ -375,8 +358,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onPaused(_ event: PausedEvent) {
-        NSLog("On Paused")
-        let dictionary = [kYoPlayheadKey: currentTime]
+        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
         self.notify(dictionary: dictionary, name: YoPlaybackPausedNotification)
         for listener: PlayerListener in listeners {
             listener.onPaused?(event)
@@ -384,7 +366,6 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
-        NSLog("On Source Unloaded")
         if sessionStatus != .notInitialised {
             // the yospace sessionManager.shutdown() call is asynchronous. If the user just calls `load()` on second playback without calling `unload()` we end up canceling both the old session and the new session. This if statement keeps track of that
             resetSessionManager()
@@ -395,8 +376,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onStallStarted(_ event: StallStartedEvent) {
-        NSLog("On Stall Started")
-        let dictionary = [kYoPlayheadKey: currentTime]
+        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
         self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
         for listener: PlayerListener in listeners {
             listener.onStallStarted?(event)
@@ -404,8 +384,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onStallEnded(_ event: StallEndedEvent) {
-        NSLog("On Stall Ended")
-        let dictionary = [kYoPlayheadKey: currentTime]
+        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
         self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         for listener: PlayerListener in listeners {
             listener.onStallEnded?(event)
@@ -413,14 +392,12 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onError(_ event: ErrorEvent) {
-        NSLog("On Error")
         for listener: PlayerListener in listeners {
             listener.onError?(event)
         }
     }
 
     public func onReady(_ event: ReadyEvent) {
-        NSLog("On Ready")
         if sessionStatus == .notInitialised {
             sessionStatus = .ready
             self.notify(dictionary: Dictionary(), name: YoPlaybackReadyNotification)
@@ -458,7 +435,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {
-        let dictionary = [kYoPlayheadKey: Int(currentTime), kYoCompletedKey: Int(truncating: true)]
+        let dictionary = [kYoPlayheadKey: Int(currentTimeWithAds()), kYoCompletedKey: Int(truncating: true)]
         self.notify(dictionary: dictionary, name: YoPlaybackEndedNotification)
 
         for listener: PlayerListener in listeners {
@@ -487,7 +464,19 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onSeek(_ event: SeekEvent) {
         for listener: PlayerListener in listeners {
-            listener.onSeek?(event)
+            let position = timeline?.absoluteToRelative(time: event.position) ?? event.position
+            let seekTarget = timeline?.absoluteToRelative(time: event.seekTarget) ?? event.seekTarget
+            listener.onSeek?(SeekEvent(position: position, seekTarget: seekTarget))
+        }
+    }
+
+    /**
+     Unmodified eevents, passing thought to registered listeners
+     */
+
+    public func onSeeked(_ event: SeekedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onSeeked?(event)
         }
     }
 
@@ -530,12 +519,6 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onAdFinished(_ event: AdFinishedEvent) {
         for listener: PlayerListener in listeners {
             listener.onAdFinished?(event)
-        }
-    }
-
-    public func onSeeked(_ event: SeekedEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onSeeked?(event)
         }
     }
 

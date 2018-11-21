@@ -99,6 +99,5 @@ class YospacePlayerPolicy: NSObject, YPPolicyHandling {
 
     public func setPlaybackMode(_ playbackMode: YSEPlaybackMode) {
         NSLog(" [YospacePlayerPolicy] setPlaybackMode ")
-        //TODO is this needed
     }
 }
