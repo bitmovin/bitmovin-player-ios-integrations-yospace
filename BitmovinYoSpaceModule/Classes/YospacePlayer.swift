@@ -18,13 +18,13 @@ class YospacePlayer: NSObject, YSVideoPlayer {
     // swiftlint:disable implicit_getter
     var currentTime: TimeInterval {
         get {
-            return self.bitmovinYospacePlayer?.currentTime ?? 0
+            return self.bitmovinYospacePlayer?.currentTimeWithAds() ?? 0
         }
     }
 
     var duration: TimeInterval {
         get {
-            return self.bitmovinYospacePlayer?.duration ?? 0
+            return self.bitmovinYospacePlayer?.durationWithAds() ?? 0
         }
     }
     // swiftlint:enable implicit_getter
