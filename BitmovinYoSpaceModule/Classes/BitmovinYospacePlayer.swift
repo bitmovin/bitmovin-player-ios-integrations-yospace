@@ -49,8 +49,26 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     public override var currentTime: TimeInterval {
-        return timeline?.absoluteToRelative(time: super.currentTime) ?? 0
+        if adPlaying {
+            return timeline?.adTime(time: super.currentTime) ?? super.currentTime
+        } else {
+            return timeline?.absoluteToRelative(time: super.currentTime) ?? super.currentTime
+        }
     }
+
+    // TODO: decide if I need to override timeshift and maxTimeShift methods
+//    public override var timeShift: TimeInterval {
+//        get {
+//            return timeline?.absoluteToRelative(time: super.timeShift) ?? 0
+//        }
+//        set (timeShift) {
+//            super.timeShift = timeline?.relativeToAbsolute(time: timeShift) ?? 0
+//        }
+//    }
+//    
+//    public override var maxTimeShift: TimeInterval {
+//        return super.maxTimeShift + self.adBreaks.reduce(0) {$0 + $1.adBreakDuration()}
+//    }
 
     // MARK: - initializer
     /**
@@ -353,7 +371,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         }
         for listener: PlayerListener in listeners {
-            listener.onPlay?(event)
+            listener.onPlay?(PlayEvent(time: currentTime))
         }
     }
 
@@ -361,7 +379,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
         self.notify(dictionary: dictionary, name: YoPlaybackPausedNotification)
         for listener: PlayerListener in listeners {
-            listener.onPaused?(event)
+            listener.onPaused?(PausedEvent(time: currentTime))
         }
     }
 
