@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
-
+        
         // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
 
@@ -186,7 +186,7 @@ extension ViewController: PlayerListener {
     }
     
     public func onTimeChanged(_ event: TimeChangedEvent) {
-//        NSLog("On Time Changed: \(event.currentTime)")
+        NSLog("On Time Changed - EventTime: \(event.currentTime) Duration: \(bitmovinYospacePlayer!.duration) TimeShift: \(bitmovinYospacePlayer!.timeShift) MaxTimeShift: \(bitmovinYospacePlayer!.maxTimeShift) isLive: \(bitmovinYospacePlayer!.isLive)")
     }
 }
 

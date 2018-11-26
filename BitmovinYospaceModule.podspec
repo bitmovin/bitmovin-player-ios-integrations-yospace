@@ -17,8 +17,8 @@ TODO: Add long description of the pod here.
 
   s.source_files = 'BitmovinYospaceModule/Classes/**/*'
   
-  s.ios.dependency 'BitmovinPlayer', '~> 2.13.3'
-  s.tvos.dependency 'BitmovinPlayer', '~> 2.13.3'
+  s.ios.dependency 'BitmovinPlayer', '~> 2.14.0'
+  s.tvos.dependency 'BitmovinPlayer', '~> 2.14.0'
 
   s.ios.vendored_framework = 'lib/Yospace.framework'
   s.tvos.vendored_framework = 'lib/Yospace-tvOS.framework'

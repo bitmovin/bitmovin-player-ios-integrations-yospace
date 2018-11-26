@@ -49,16 +49,40 @@ class Timeline {
         return absoluteTime
     }
 
+    public func adTime(time: TimeInterval) -> TimeInterval {
+        if let currentAd = currentAdBreak(time: time) {
+            return time - currentAd.adBreakStart()
+        } else {
+            return time
+        }
+    }
+
     public func absoluteToRelative(time: TimeInterval) -> TimeInterval {
         let passedAdBreakDurations = adBreaks.filter {$0.adBreakEnd() < time}.reduce(0) { $0 + $1.adBreakDuration() }
 
-        //Check if we are in an ad break
-        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < time}.filter {$0.adBreakEnd() > time}
-        for currentAdBreak: YSAdBreak in currentAdBreaks {
-            return currentAdBreak.adBreakStart() - passedAdBreakDurations
+        //Check if we are in an ad break, the relative time if you are in an ad break is equal to the ad breaks start time
+        guard let currentAdBreak = currentAdBreak(time: time) else {
+            return time - passedAdBreakDurations
         }
 
-        return time - passedAdBreakDurations
+        return currentAdBreak.adBreakStart() - passedAdBreakDurations
+
+    }
+
+    func currentAdBreak(time: TimeInterval) -> YSAdBreak? {
+        return adBreaks.filter {$0.adBreakStart() < time}.filter {$0.adBreakEnd() > time}.first
+    }
+
+    func currentAd(time: TimeInterval) -> YSAdvert? {
+        guard let currentAdBreak = currentAdBreak(time: time) else {
+            return nil
+        }
+
+        guard let ads = currentAdBreak.adverts() as? [YSAdvert] else {
+            return nil
+        }
+
+        return ads.filter {$0.advertStart() < time}.filter {$0.advertEnd() > time}.first
     }
 
 }
