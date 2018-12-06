@@ -20,14 +20,9 @@
 
 /**
  An optional URL to a secondary non-Yospace stream. This URL will be returned in the event that the attempt to initialise the SDK
- using the primary URL fails. Note that this property will be ignored if using proxy initialisation.
+ using the primary URL fails. Note that this property is only relevant for direct initialisation and will be ignored if using proxy initialisation.
  */
-@property (nonatomic, copy) NSURL* failoverURL __attribute__((deprecated("This property will be renamed to 'secondaryURL' in a forthcoming release.")));
-
-/**
- @deprecated The SDK now follows redirects such that URL pattern matching is no longer required.
- */
-@property (nonatomic, copy) NSArray* csmPatterns __attribute__((deprecated("The SDK now follows redirects such that URL pattern matching is no longer required.")));
+@property (nonatomic, copy) NSURL* secondaryURL;
 
 /**
  If not nil or empty, contains one or more NSString objects, interpreted as regular expressions, used to determine whether a string that defines a URL in a received VAST document should be ignored. If the string is matched then the corresponding event, clickthrough or resource will not be created for the corresponding advert.
@@ -37,14 +32,13 @@
 /**
  Defines whether the URL passed into the SDK is known to redirect to a CSM URL. If true, the SDK obtains the actual redirect URL from the Location header in the 302 response and uses that to initialise.
  This property is relevant only for direct initialisation of the SDK, as such if it is set then property `useProxy` is ignored.
- @deprecated this property will be removed in a forthcoming release.
  */
-@property (nonatomic) BOOL isRedirectURL __attribute__((deprecated("This property will be removed in a forthcoming release.")));
+@property (nonatomic) BOOL isRedirectURL;// __attribute__((deprecated("This property will be removed in a forthcoming release.")));
 
 /**
  Defines whether the initialisation process should use a proxy object, which intercepts the master playlist to retrieve Yospace session information. If this property is `NO` then the Session Manager makes an additional specific call to the CSM to retrieve this information.
  */
-@property (nonatomic) BOOL useProxy __attribute__((deprecated("This property will not be required in a forthcoming release, proxy initialisation will be explicit through the API.")));
+@property (nonatomic) BOOL useProxy;// __attribute__((deprecated("This property will not be required in a forthcoming release, proxy initialisation will be explicit through the API.")));
 
 /**
  Defines whether to keep the proxy component alive after the master manifest is read. The default behaviour is to shutdown the proxy. This property is relevant only for Live and LivePause playback streams.
@@ -62,17 +56,46 @@
 @property (nonatomic, copy) NSString* analyticsUserAgent;
 
 /**
- If present, defines the HTTP user-agent to be used by the Session Manager when initiating a redirect request as part of initialisation.
- @deprecated This property will removed in a forthcoming release.
+ Describes whether to prefetch static resources defined in the VAST for this advert.
+ Prefetching resources allows the application to use or display the resource as soon
+ as the advert starts without the application having to fetch it first.
+ If the fetch is successful then resource is available from the Resource property of
+ the NonLinearCreative associated with the Advert.
  */
-@property (nonatomic, copy) NSString* redirectUserAgent __attribute__((deprecated("This property will removed in a forthcoming release.")));
+@property (nonatomic) BOOL prefetchStaticResources;
+
+/**
+ Describes whether to prefetch IFrame resources defined in the VAST for this advert.
+ Prefetching resources allows the application to use or display the resource as soon
+ as the advert starts without the application having to fetch it first.
+ If the fetch is successful then resource is available from the Resource property of
+ the NonLinearCreative associated with the Advert.
+ */
+@property (nonatomic) BOOL prefetchIFrameResources;
+
+/**
+ Describes whether to prefetch Industry Icons defined in the VAST for this advert.
+ Prefetching resources allows the application to use or display the resource as soon
+ as the advert starts without the application having to fetch it first.
+ If the fetch is successful then resource is available from the LinearCreative
+ associated with the Advert.
+
+ Note that the VAST specification recommends that icons are not prefetched in case a
+ vendor falsely records an icon view, when the icon may not be displayed.
+ */
+@property (nonatomic) BOOL prefetchIndustryIcons;
+
+/**
+ If present, defines the HTTP user-agent to be used by the Session Manager when initiating a redirect request as part of initialisation.
+ */
+@property (nonatomic, copy) NSString* redirectUserAgent;// __attribute__((deprecated("This property will removed in a forthcoming release.")));
 
 /**
  Defines the segment length (playlist `target duration`) for adverts in a stream. This is usually the same as the stream.
  This value must be set in order for analytics to function properly when using filler in advert breaks.
  The default value is 11 seconds.
  */
-@property (nonatomic) NSInteger targetDuration __attribute__((deprecated("Advert segment lengths will be retrieved through the network in a future release.")));
+@property (nonatomic) NSInteger targetDuration;// __attribute__((deprecated("Advert segment lengths will be retrieved through the network in a future release.")));
 
 /**
  Defines a set of debug flags that control aspects of logging output.<br/>

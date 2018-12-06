@@ -31,6 +31,10 @@ The minimum implementation required for the SDK to function correctly is:<br/>
 
 @optional
 
+/** Holds the current volume.
+ */
+@property (nonatomic) float volume;
+
 /** Initialises a video player object with a stream source.
  
  @param source the source Url

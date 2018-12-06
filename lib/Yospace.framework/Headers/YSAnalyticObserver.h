@@ -56,9 +56,9 @@
 
 /** Indicates that a linear creative tracking event for an advert occured. Valid events are defined by YSETrackingEvent and may be:<br/><br/>
  
-    - <tt>YSEImpressionEvent</tt><br/>
-    - time-based (e.g. <tt>YSEMidpointEvent</tt>, <tt>YSECompleteEvent</tt>) or<br/>
-    - interaction based (e.g. <tt>YSEMuteEvent</tt>)
+    - <code>YSEImpressionEvent</code><br/>
+    - time-based (e.g. <code>YSEMidpointEvent</code>, <code>YSECompleteEvent</code>) or<br/>
+    - interaction based (e.g. <code>YSEMuteEvent</code>)
  
  @param event The linear creative tracking event type.
  @param advert The advert.
@@ -69,7 +69,7 @@
 - (void) trackingEventDidOccur:(YSETrackingEvent)event forAdvert:(id<YSAdvert> _Nonnull)advert;
 
 /** Indicates that a nonlinear creative tracking event occured. Valid events are defined by YSETrackingEvent and may be
- <tt>creativeViewEvent</tt> or interaction-based (e.g. <tt>fullscreenEvent</tt>).
+ <code>creativeViewEvent</code> or interaction-based (e.g. <code>fullscreenEvent</code>).
  
  @param event The tracking event type.
  @param nonlinearCreative The nonlinear creative.
@@ -81,7 +81,7 @@
 
 /** Indicates that the start of an advert break was reached.
  Note that for live playback, you MUST NOT assume that the YSAdBreak payload describes the adverts will be played back in the ad break. Since the stream is linear you can only know that information once the ad break is finished.
- Instead the payload can be used to pre-load assets (if not already loaded by the SDK) and to inspect other parts of the VAST document, for example the <tt><Extensions<></tt> block.
+ Instead the payload can be used to pre-load assets (if not already loaded by the SDK) and to inspect other parts of the VAST document, for example the <code><Extensions<></code> block.
  
  @param adBreak The Ad Break.
  @since from 1.0

@@ -53,4 +53,19 @@
  */
 - (NSString* _Nullable) unitAPIFramework;
 
+/** Returns the Interactive unit's duration.
+ 
+ @return this interactive unit's duration.
+ @since from 1.8
+ */
+- (NSTimeInterval) unitDuration;
+
+/** Fires a tracking report on behalf of the VPAID, if the event exists in its list of tracking events.
+    If the event is time based, it will only be fired once for the VPAID.
+ 
+ @param event the VPAID event to fire
+ @since from 1.7
+ */
+- (void) trackingEventDidOccur:(YSETrackingEvent)event;
+
 @end

@@ -6,6 +6,7 @@
 #import "YSLinearCreative.h"
 #import "YSUIProperties.h"
 #import "YSPricing.h"
+#import "YSAdvertWrapper.h"
 
 /** The YSAdvert protocol provides an interface to an advert object, whose details are passed as a payload during analytic callbacks.
  
@@ -57,13 +58,6 @@
  */
 - (id<YSUIProperties> _Nullable) userInterfaceProperties;
 
-/** Returns a dictionary of impressions associated with this advert.
- 
- @return A dictionary of impression URLs, keyed on the impression Id.
- @since from 1.0
- */
-- (NSDictionary* _Nullable) impressions;
-
 /** Returns an object representing the Pricing for this YSAdvert.
  
  @return A protocol representing the Pricing object, or null if none exists.
@@ -112,5 +106,12 @@
  @since from 1.0
  */
 - (void) setAdvertActive:(BOOL)active;
+
+/** Returns an object representing this advert's wrapper data as a one-way 'linked list'
+ 
+ @return the top-level wrapper object data or nil if this advert was not constructed with wrapper data
+ @since from 1.8
+ */
+- (id<YSAdvertWrapper> _Nullable) advertLineage;
 
 @end

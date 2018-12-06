@@ -19,7 +19,7 @@
  */
 - (void) fullScreenModeDidChange:(BOOL)isFullScreen;
 
-/** Indicates that the user started seeking using the scrubber control. This method <b>must</b> be called on touch down event on a scrubber control (<tt>UIControlEventTouchDown</tt>)
+/** Indicates that the user started seeking using the scrubber control. This method <b>must</b> be called on touch down event on a scrubber control (<code>UIControlEventTouchDown</code>)
  and <b>must</b> be paired with a call to [seekDidEnd]([YSPlaybackEventDelegate seekDidEnd:]). A client application should call [canSeek]([YSPlayerPolicy canSeek]) on the YSPlayerPolicy protocol prior to calling this method in order to find out if seeking is allowed at the current position of the playhead.
  
  @param playhead The current playhead position.
@@ -28,7 +28,7 @@
  */
 - (void) seekDidStart:(NSTimeInterval)playhead;
 
-/** Indicates that the user finished seeking with the scrubber control. This method <b>must</b> be called on touch up event on a scrubber control (<tt>UIControlEventTouchUp|UIControlEventTouchUpOutside</tt>) or touch cancel (<tt>UIControlEventTouchCancel</tt>) and <b>must</b> be paired with a call to [seekDidStart]([YSPlaybackEventDelegate seekDidStart:]). A client application should call [willSeekTo]([YSPlayerPolicy willSeekTo:]) on the YSPlayerPolicy protocol prior to calling this method in order to obtain the actual playhead position it is allowed to scrub to based on the policy.
+/** Indicates that the user finished seeking with the scrubber control. This method <b>must</b> be called on touch up event on a scrubber control (<code>UIControlEventTouchUp|UIControlEventTouchUpOutside</code>) or touch cancel (<code>UIControlEventTouchCancel</code>) and <b>must</b> be paired with a call to [seekDidStart]([YSPlaybackEventDelegate seekDidStart:]). A client application should call [willSeekTo]([YSPlayerPolicy willSeekTo:]) on the YSPlayerPolicy protocol prior to calling this method in order to obtain the actual playhead position it is allowed to scrub to based on the policy.
  
  @param playhead The position of the playhead when the scrubber was released
  @since from 1.0

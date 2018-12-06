@@ -20,6 +20,11 @@
  */
 @property (nonatomic, readonly) YSEInitialisationState initialisationState;
 
+/**
+ Contains the initialisation result code of the Session Manager. This is a read-only property.
+ */
+@property (nonatomic, readonly) YSEInitialisationCode initialisationCode;
+
 /**---------------------------------------------------------------------------------------
  * @name Creation
  *  ---------------------------------------------------------------------------------------
@@ -93,7 +98,7 @@
  
  @param player The new player instance to associate with the Session Manager.
  @param error The address of an uninitialised NSError object.
- @return <tt>YES</tt> if the player was set and observation started successfully, <tt>NO</tt> otherwise, in which case <tt>error</tt> contains the error information.
+ @return <code>YES</code> if the player was set and observation started successfully, <code>NO</code> otherwise, in which case <code>error</code> contains the error information.
  @since from 1.0
  */
 - (BOOL) setVideoPlayer:(id<YSVideoPlayer> _Nonnull)player error:(NSError  * _Nullable * _Nullable)error;
@@ -105,7 +110,7 @@
  */
 - (void) setPlayerPolicyDelegate:(id<YPPolicyHandling> _Nonnull)policyHandler;
 
-/** Supresses or enables remote analytic tracking calls. Analytic calls are enabled by default.
+/** Suppresses or enables remote analytic tracking calls. Analytic calls are enabled by default.
  
  @param suppress If `YES` then analytics are suppressed, or enabled otherwise.
  @return NSArray of tracking events that were disabled in the current advert during the suppresion period or nil otherwise

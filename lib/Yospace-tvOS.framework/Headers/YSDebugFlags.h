@@ -49,7 +49,11 @@ typedef NS_ENUM(NSInteger, YSEDebugFlags) {
     /** when set, traces state machine state for filler content */
     DEBUG_FILLER           = (1 << 18),
     /** when set, traces Live Pause polling events */
-    DEBUG_PAUSE_POLLING    = (1 << 19)
+    DEBUG_PAUSE_POLLING    = (1 << 19),
+    /** when set, traces watchdog timer events */
+    DEBUG_WATCHDOG         = (1 << 20),
+    /** when set, enables all trace options */
+    DEBUG_ALL              = ~(-1 << 21)
 };
 
 extern YSEDebugFlags debugFlags;

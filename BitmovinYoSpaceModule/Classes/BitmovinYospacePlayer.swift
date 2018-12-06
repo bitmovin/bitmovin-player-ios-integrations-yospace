@@ -310,6 +310,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             self.adBreaks = timeline
         }
     }
+    
+    
 }
 
 // MARK: - YSAnalyticsObserver
@@ -373,6 +375,8 @@ extension BitmovinYospacePlayer: PlayerListener {
         for listener: PlayerListener in listeners {
             listener.onPlay?(PlayEvent(time: currentTime))
         }
+        NSLog("OnPlay: \(isLive)")
+
     }
 
     public func onPaused(_ event: PausedEvent) {
@@ -423,6 +427,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         for listener: PlayerListener in listeners {
             listener.onReady?(event)
         }
+        NSLog("OnReady: \(isLive)")
     }
 
     public func onMuted(_ event: MutedEvent) {

@@ -8,14 +8,32 @@
  */
 typedef NS_ENUM(NSInteger, YSEInitialisationState)
 {
-    /** The Session Manager is not initialised */
+    /** The Session is not initialised */
     YSENotInitialised,
-    /** The Session Manager is initialised with analytics enabled */
-    YSEInitialisedWithAnalytics,                            
-    /** The Session Manager is initialised, but analytics are disabled */
-    YSEInitialisedNoAnalytics,
-    /** The Session Manager is initialised, but LivePause mode is not enabled for this stream. The stream will play back in Live mode only */
-    YSEInitialisedNoPause __attribute__((deprecated("This enum value will be removed in a forthcoming release. Instead a session initialisation 'result' property will be introduced")))
+    /** The Session is initialised */
+    YSEInitialisedWithAnalytics,
+    /** The Session did not initialise: analytics are not available */
+    YSEInitialisedNoAnalytics
+};
+
+/** YSEInitialisationState defines the initialisation state for the YSSessionManager object.
+ */
+typedef NS_ENUM(NSInteger, YSEInitialisationCode)
+{
+    /** Yospace initialisation result code: OK. */
+    YSEStatusOK,
+    /** Yospace initialisation result code: failed to establish an HTTP connection. */
+    YSEConectionError,
+    /** Yospace initialisation result code: failed to complete connection or read the HTTP response before a timeout occurred. */
+    YSEConnectionTimeout,
+    /** Yospace initialisation result code: The request URL is malformed. */
+    YSEMalformedURL,
+    /** Yospace initialisation result code: the Primary URL passed in YSSessionProperties is not a Yospace initialisation URL. */
+    YSENonYospaceURL,
+    /** Yospace initialisation result code: the stream is not configured for LivePause playback; LivePause feature is not available. */
+    YSENoLivePause,
+    /** Yospace initialisation result code: the URL returned in YSStream streamSource is the secondary (non-Yospace) URL. */
+    YSEUsingSecondary
 };
 
 /** YSETrackingEvent defines the supported tracking event types. These are a superset of enumerations in the VAST and VMAP specification.

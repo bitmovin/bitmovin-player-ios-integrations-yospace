@@ -131,33 +131,6 @@
  */
 - (BOOL) canClickThrough:(NSURL* _Nonnull)url playhead:(NSTimeInterval)playhead timeline:(NSArray* _Nonnull)timeline;
 
-/** Returns to the client whether to fetch and load non-linear creative graphical elements from any VAST received from the ad server.
- If true the graphical elements will be available to retrieve from the SDK at the point an advert starts.
- If false then the client must fetch any remote resources itself, which may delay their display.
- 
- @return YES if the SDK should pre-load graphical elements.
- @since from 1.0
- */
-- (BOOL) shouldPreloadNonLinearGraphicalElements;
-
-/** Returns to the client whether to fetch and load non-linear iFrame resource elements from any VAST received from the ad server.
- If true the iFrame elements will be available to retrieve from the SDK at the point an advert starts.
- If false then the client must fetch any remote resources itself, which may delay their display.
- 
- @return YES if the SDK should pre-load iFrame resource elements.
- @since from 1.2
- */
-- (BOOL) shouldPreloadIFrameResourceElements;
-
-/** Returns to the client whether to fetch and load interactive units, for example VPAID, from any VAST received from the ad server.
- If true the interactive unit will be available to retrieve from the SDK at the point an advert starts.
- If false then the client must fetch any remote resources itself, which may delay their display.
- 
- @return YES if the SDK should pre-load interactive units.
- @since from 1.3
- */
-- (BOOL) shouldPreloadInteractiveUnits;
-
 /** Sets the playback mode that the stream is running in. The policy handler implementation may use this to modify the policy for specific
  requests, for example allowing pause in video-on-demand but not live playback.
  
