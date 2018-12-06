@@ -81,6 +81,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
      - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
      */
     public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
+        self.yospaceConfiguration = yospaceConfiguration
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
         super.add(listener: self)
@@ -114,13 +115,9 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
             yospaceProperties.timeout = timeout
         }
 
-        if let timeout = yospaceConfiguration?.timeout {
-            yospaceProperties.timeout = timeout
-        }
-
         if let userAgent = yospaceConfiguration?.userAgent {
             yospaceProperties.analyticsUserAgent = userAgent
-            yospaceProperties.analyticsUserAgent = userAgent
+            yospaceProperties.redirectUserAgent = userAgent
         }
 
         if yospaceConfiguration?.debug != nil {
@@ -310,8 +307,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             self.adBreaks = timeline
         }
     }
-    
-    
+
 }
 
 // MARK: - YSAnalyticsObserver

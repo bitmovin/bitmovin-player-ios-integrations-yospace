@@ -35,7 +35,7 @@ class ViewController: UIViewController {
         configuration.playbackConfiguration.isAutoplayEnabled = true
         
         // Create a YospaceConfiguration
-        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari 602.1.50", timeout: 5000)
 
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
