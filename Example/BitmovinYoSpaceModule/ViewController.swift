@@ -50,9 +50,7 @@ class ViewController: UIViewController {
         guard let player = bitmovinYospacePlayer else {
             return
         }
-
-        super.viewDidLoad()
-
+        
         self.playerView.backgroundColor = .black
 
         if bitmovinPlayerView == nil {
@@ -101,7 +99,8 @@ class ViewController: UIViewController {
         }
 
         let sourceConfig = SourceConfiguration()
-        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        let sourceItem = SourceItem(hlsSource: HLSSource(url: streamUrl))
+        sourceConfig.addSourceItem(item: sourceItem)
         let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
