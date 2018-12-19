@@ -1,9 +1,9 @@
 import Foundation
 
 public enum YospaceErrorCode: UInt {
-    case invalidSource = 6001,
-    noAnalytics = 6002,
-    notIntialised = 6003,
-    invalidPlayer = 6004,
-    unknownError = 6005
+    case unknownError = 1000,
+    invalidSource = 1001,
+    noAnalytics = 1002,
+    notIntialised = 1003,
+    invalidPlayer = 1004
 }

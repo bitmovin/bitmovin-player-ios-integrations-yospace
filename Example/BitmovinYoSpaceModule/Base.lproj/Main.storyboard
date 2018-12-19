@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
-    <device id="ipad12_9rounded" orientation="portrait">
+    <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -18,15 +18,15 @@
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hb3-bn-Sn4">
-                                <rect key="frame" x="0.0" y="24" width="1024" height="1322"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x1n-n0-LwS">
-                                <rect key="frame" x="35" y="32" width="30" height="30"/>
+                                <rect key="frame" x="35" y="52" width="30" height="30"/>
                                 <state key="normal" title="Live"/>
                                 <connections>
                                     <action selector="liveButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="goA-yc-r1B"/>
@@ -34,7 +34,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lyc-l3-Nsg">
-                                <rect key="frame" x="182" y="32" width="34" height="30"/>
+                                <rect key="frame" x="182" y="52" width="34" height="30"/>
                                 <state key="normal" title="Click"/>
                                 <connections>
                                     <action selector="clickButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="4ig-rS-Qzu"/>
@@ -42,7 +42,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n0d-8r-aL9">
-                                <rect key="frame" x="80" y="32" width="32" height="30"/>
+                                <rect key="frame" x="80" y="52" width="32" height="30"/>
                                 <state key="normal" title="VOD"/>
                                 <connections>
                                     <action selector="vodButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="PVN-ch-ftT"/>
@@ -50,7 +50,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fRY-ie-hiw">
-                                <rect key="frame" x="127" y="32" width="40" height="30"/>
+                                <rect key="frame" x="127" y="52" width="40" height="30"/>
                                 <state key="normal" title="NLSO"/>
                                 <connections>
                                     <action selector="startOverButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="ZAz-Yn-UpJ"/>
@@ -58,7 +58,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KEF-Cw-sKa">
-                                <rect key="frame" x="231" y="32" width="49" height="30"/>
+                                <rect key="frame" x="231" y="52" width="49" height="30"/>
                                 <state key="normal" title="Unload"/>
                                 <connections>
                                     <action selector="unloadButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="0bk-k7-BXn"/>
@@ -66,7 +66,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8kz-qv-eyg">
-                                <rect key="frame" x="295" y="32" width="47" height="30"/>
+                                <rect key="frame" x="295" y="52" width="47" height="30"/>
                                 <state key="normal" title="Reload"/>
                                 <connections>
                                     <action selector="reloadButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="LLa-lq-xSx"/>
@@ -74,11 +74,19 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dad-P4-6Jk">
-                                <rect key="frame" x="35" y="61" width="53" height="30"/>
+                                <rect key="frame" x="35" y="81" width="53" height="30"/>
                                 <state key="normal" title="Skip Ad"/>
                                 <connections>
                                     <action selector="skipAdWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="MWU-US-xJD"/>
                                     <action selector="skipAdWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="Z0p-Do-q0W"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MXV-bu-abD">
+                                <rect key="frame" x="113" y="81" width="41" height="30"/>
+                                <state key="normal" title="TrueX"/>
+                                <connections>
+                                    <action selector="trueXButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="03W-vV-w4w"/>
+                                    <action selector="trueXButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="Kpl-yY-da2"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -89,6 +97,7 @@
                             <constraint firstItem="Lyc-l3-Nsg" firstAttribute="leading" secondItem="fRY-ie-hiw" secondAttribute="trailing" constant="15" id="AZV-dl-APD"/>
                             <constraint firstItem="x1n-n0-LwS" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="CwP-Br-Ggz"/>
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="E8D-Ex-raq"/>
+                            <constraint firstItem="MXV-bu-abD" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="37" id="EIV-Nv-9x5"/>
                             <constraint firstItem="KEF-Cw-sKa" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="FjC-O3-EF5"/>
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="Jb3-Sj-LCR"/>
                             <constraint firstItem="8kz-qv-eyg" firstAttribute="leading" secondItem="hb3-bn-Sn4" secondAttribute="trailing" priority="99" constant="-119" id="Qxj-nJ-39q"/>
@@ -99,6 +108,7 @@
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="leading" secondItem="x1n-n0-LwS" secondAttribute="trailing" constant="-65" id="fBK-4x-ZkK"/>
                             <constraint firstItem="8kz-qv-eyg" firstAttribute="leading" secondItem="KEF-Cw-sKa" secondAttribute="trailing" constant="15" id="gsL-0d-GZf"/>
                             <constraint firstItem="Dad-P4-6Jk" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="37" id="rTJ-0b-RfB"/>
+                            <constraint firstItem="MXV-bu-abD" firstAttribute="leading" secondItem="Dad-P4-6Jk" secondAttribute="trailing" constant="25" id="rUR-hi-0VY"/>
                             <constraint firstItem="Lyc-l3-Nsg" firstAttribute="top" secondItem="fRY-ie-hiw" secondAttribute="top" id="tN7-lc-pgJ"/>
                             <constraint firstItem="KEF-Cw-sKa" firstAttribute="top" secondItem="Lyc-l3-Nsg" secondAttribute="top" id="ut6-bl-gZE"/>
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="uwY-hk-3hk"/>
