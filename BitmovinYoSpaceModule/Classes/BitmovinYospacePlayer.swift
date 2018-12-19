@@ -31,6 +31,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         set (adBreaks) {
             realAdBreaks = adBreaks
             self.timeline = Timeline(adBreaks: adBreaks)
+            debugPrint(self.timeline!)
         }
     }
 
@@ -55,20 +56,6 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
             return timeline?.absoluteToRelative(time: super.currentTime) ?? super.currentTime
         }
     }
-
-    // TODO: decide if I need to override timeshift and maxTimeShift methods
-//    public override var timeShift: TimeInterval {
-//        get {
-//            return timeline?.absoluteToRelative(time: super.timeShift) ?? 0
-//        }
-//        set (timeShift) {
-//            super.timeShift = timeline?.relativeToAbsolute(time: timeShift) ?? 0
-//        }
-//    }
-//    
-//    public override var maxTimeShift: TimeInterval {
-//        return super.maxTimeShift + self.adBreaks.reduce(0) {$0 + $1.adBreakDuration()}
-//    }
 
     // MARK: - initializer
     /**
@@ -113,6 +100,10 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
 
         if let timeout = yospaceConfiguration?.timeout {
             yospaceProperties.timeout = timeout
+        }
+
+        if let pollingInterval = yospaceConfiguration?.pollingInterval {
+            yospaceProperties.targetDuration = pollingInterval
         }
 
         if let userAgent = yospaceConfiguration?.userAgent {
@@ -269,8 +260,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         adPlaying = true
-        var clickThroughUrl: URL = URL(fileURLWithPath: "", relativeTo: nil)
-
+        var clickThroughUrl: URL? = nil
         if advert.linearCreativeElement().linearClickthroughURL() != nil {
             clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
         }
@@ -304,6 +294,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func timelineUpdateReceived(_ vmap: String) {
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
+            NSLog("TimelineUpdateReceived: \(timeline.count)")
             self.adBreaks = timeline
         }
     }
@@ -317,6 +308,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         self.sessionManager = sessionManager
         self.yospaceStream = stream
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
+            NSLog("Initial Ad Breaks Received: \(timeline.count)")
             self.adBreaks = timeline
         }
 
@@ -393,21 +385,21 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    public func onStallStarted(_ event: StallStartedEvent) {
-        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
-        self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
-        for listener: PlayerListener in listeners {
-            listener.onStallStarted?(event)
-        }
-    }
-
-    public func onStallEnded(_ event: StallEndedEvent) {
-        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
-        self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
-        for listener: PlayerListener in listeners {
-            listener.onStallEnded?(event)
-        }
-    }
+//    public func onStallStarted(_ event: StallStartedEvent) {
+//        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
+//        self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
+//        for listener: PlayerListener in listeners {
+//            listener.onStallStarted?(event)
+//        }
+//    }
+//
+//    public func onStallEnded(_ event: StallEndedEvent) {
+//        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
+//        self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
+//        for listener: PlayerListener in listeners {
+//            listener.onStallEnded?(event)
+//        }
+//    }
 
     public func onError(_ event: ErrorEvent) {
         for listener: PlayerListener in listeners {
@@ -443,13 +435,15 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onMetadata(_ event: MetadataEvent) {
-        let meta = YSTimedMetadata.createFromMetadata(event: event)
-        if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {
-            let dictionary = [kYoMetadataKey: meta]
-            self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
-        }
-        for listener: PlayerListener in listeners {
-            listener.onMetadata?(event)
+        if yospaceSourceConfiguration?.yospaceAssetType == YospaceAssetType.linear {
+            let meta = YSTimedMetadata.createFromMetadata(event: event)
+            if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {
+                let dictionary = [kYoMetadataKey: meta]
+                self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
+            }
+            for listener: PlayerListener in listeners {
+                listener.onMetadata?(event)
+            }
         }
     }
 

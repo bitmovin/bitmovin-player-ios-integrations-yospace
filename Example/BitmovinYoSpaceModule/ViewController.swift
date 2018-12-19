@@ -24,9 +24,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         clickButton.isEnabled = false
-
         createPlayer()
-        
     }
 
     func createPlayer() {
@@ -35,7 +33,7 @@ class ViewController: UIViewController {
         configuration.playbackConfiguration.isAutoplayEnabled = true
         
         // Create a YospaceConfiguration
-        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari 602.1.50", timeout: 5000)
+        let yospaceConfiguration = YospaceConfiguration(debug: true, userAgent: "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari 602.1.50", timeout: 5000,pollingInterval: 4)
 
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
@@ -81,7 +79,6 @@ class ViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     @IBAction func unloadButtonClicked(sender: UIButton) {
@@ -94,24 +91,19 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "http://csm-e-ces1eurxaws101j8-6x78eoil2agd.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=true&yo.ac=true") else {
+        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/extlive/turnerdev01,tbse-clear.m3u8?yo.ac=true&yo.ch=true") else {
             return
         }
-
+        
         let sourceConfig = SourceConfiguration()
-        let sourceItem = SourceItem(hlsSource: HLSSource(url: streamUrl))
-        sourceConfig.addSourceItem(item: sourceItem)
+        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
-//        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152902489/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==") else {
-//            return
-//        }
-
-        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152908799/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==") else {
+        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/access/525947592/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvcHJvZ19zZWcvbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NsZWFyLzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjL21hc3Rlcl9jbF9ub19pZnJhbWUubTN1OA==?yo.av=2&yo.ad=true") else {
             return
         }
 
@@ -132,6 +124,19 @@ class ViewController: UIViewController {
         let config = YospaceSourceConfiguration(yospaceAssetType: .nonLinearStartOver)
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+    }
+    
+    @IBAction func trueXButtonClicked(sender: UIButton){
+        guard let streamUrl = URL(string: "https://csm-e-stg.tls1.yospace.com/csm/access/525943851/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvcHJvZ19zZWcvbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NsZWFyLzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjL21hc3Rlcl9jbF9ub19pZnJhbWUubTN1OA==?yo.av=2") else {
+            return
+        }
+        
+        let sourceConfig = SourceConfiguration()
+        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
+        
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        
     }
 
     @IBAction func clickButtonClicked(sender: UIButton) {
@@ -185,7 +190,7 @@ extension ViewController: PlayerListener {
     }
     
     public func onTimeChanged(_ event: TimeChangedEvent) {
-        NSLog("On Time Changed - EventTime: \(event.currentTime) Duration: \(bitmovinYospacePlayer!.duration) TimeShift: \(bitmovinYospacePlayer!.timeShift) MaxTimeShift: \(bitmovinYospacePlayer!.maxTimeShift) isLive: \(bitmovinYospacePlayer!.isLive)")
+//        NSLog("On Time Changed - EventTime: \(event.currentTime) Duration: \(bitmovinYospacePlayer!.duration) TimeShift: \(bitmovinYospacePlayer!.timeShift) MaxTimeShift: \(bitmovinYospacePlayer!.maxTimeShift) isLive: \(bitmovinYospacePlayer!.isLive)")
     }
 }
 

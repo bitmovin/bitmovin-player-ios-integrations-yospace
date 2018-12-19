@@ -91,6 +91,12 @@ extension ViewController: YospaceListener {
 bitmovinYoSpacePlayer.add(yospaceListener: self)
 ```
 
+##### Click Through Urls
+Click through URLs will be delivered via each `AdStartedEvent`.
+
+```swift 
+bitmovinYospacePlayer?.clickThroughPressed()
+```
 
 ## Requirements
 

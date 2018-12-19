@@ -23,7 +23,7 @@ class TimelineEntry {
     var absoluteEnd: TimeInterval = 0.0
 }
 
-class Timeline {
+class Timeline: CustomDebugStringConvertible {
     var entrys: [TimelineEntry] = []
     var adBreaks: [YSAdBreak]
 
@@ -41,6 +41,14 @@ class Timeline {
             count += adBreak.adBreakDuration()
             entrys.append(timelineEntry)
         }
+    }
+
+    var debugDescription: String {
+        var str = "Timeline has \(entrys.count) ad breaks. "
+        for entry in entrys {
+            str += "[Relative Start: \(entry.relativeStart) Duration - \(entry.duration) Absolute: \(entry.absoluteStart) - \(entry.absoluteEnd) ]"
+        }
+        return str
     }
 
     public func relativeToAbsolute(time: TimeInterval) -> TimeInterval {

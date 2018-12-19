@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'BitmovinYospaceModule'
-  s.version          = '0.1.0'
+  s.version          = '0.9.0'
   s.summary          = 'A short description of BitmovinYoSpaceModule.'
 
   s.description      = <<-DESC
@@ -17,8 +17,8 @@ TODO: Add long description of the pod here.
 
   s.source_files = 'BitmovinYospaceModule/Classes/**/*'
   
-  s.ios.dependency 'BitmovinPlayer', '~> 2.14.0'
-  s.tvos.dependency 'BitmovinPlayer', '~> 2.14.0'
+  s.ios.dependency 'BitmovinPlayer', '~> 2.15'
+  s.tvos.dependency 'BitmovinPlayer', '~> 2.15'
 
   s.ios.vendored_framework = 'lib/Yospace.framework'
   s.tvos.vendored_framework = 'lib/Yospace-tvOS.framework'

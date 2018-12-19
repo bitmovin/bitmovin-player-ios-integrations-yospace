@@ -13,6 +13,7 @@ public class YospaceConfiguration {
     let debug: Bool?
     let userAgent: String?
     let timeout: TimeInterval?
+    let pollingInterval: Int?
 
     // MARK: - initializer
     /**
@@ -24,9 +25,10 @@ public class YospaceConfiguration {
      - timeout: HTTP timeout value in millisenconds to be used for Yospace HTTP requests
      
      */
-    public init (debug: Bool?, userAgent: String?, timeout: TimeInterval?) {
+    public init (debug: Bool? = nil, userAgent: String? = nil, timeout: TimeInterval? = nil, pollingInterval: Int? = nil) {
         self.debug = debug
         self.userAgent = userAgent
         self.timeout = timeout
+        self.pollingInterval = pollingInterval
     }
 }
