@@ -115,12 +115,14 @@ class ViewController: UIViewController {
     }
 
     @IBAction func startOverButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/access/event/latest/110611066?promo=130805986") else {
+        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/access/525947592/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvcHJvZ19zZWcvbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NiY3MvM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MwMDAwMDJhZS9tYXN0ZXJfZnAubTN1OAo=") else {
             return
         }
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        let drmConfiguration = FairplayConfiguration(license: URL(string: "https://fairplay.license.istreamplanet.com/api/license/a229afbf-e1d3-499e-8127-c33cd7231e58"), certificateURL: URL(string: "https://fairplay.license.istreamplanet.com/api/AppCert/a229afbf-e1d3-499e-8127-c33cd7231e58")!)
+        sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
         let config = YospaceSourceConfiguration(yospaceAssetType: .nonLinearStartOver)
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
