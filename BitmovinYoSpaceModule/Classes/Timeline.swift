@@ -23,11 +23,11 @@ class TimelineEntry {
     var absoluteEnd: TimeInterval = 0.0
 }
 
-class Timeline: CustomDebugStringConvertible {
+public class Timeline: CustomDebugStringConvertible {
     var entrys: [TimelineEntry] = []
     var adBreaks: [YSAdBreak]
 
-    init (adBreaks: [YSAdBreak]) {
+    public init (adBreaks: [YSAdBreak]) {
         self.adBreaks = adBreaks
         let sorted: [YSAdBreak] = adBreaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
         var count: Double = 0
@@ -43,7 +43,7 @@ class Timeline: CustomDebugStringConvertible {
         }
     }
 
-    var debugDescription: String {
+    public var debugDescription: String {
         var str = "Timeline has \(entrys.count) ad breaks. "
         for entry in entrys {
             str += "[Relative Start: \(entry.relativeStart) Duration - \(entry.duration) Absolute: \(entry.absoluteStart) - \(entry.absoluteEnd) ]"

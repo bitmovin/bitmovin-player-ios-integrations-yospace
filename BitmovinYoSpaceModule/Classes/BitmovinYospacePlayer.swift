@@ -31,7 +31,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         set (adBreaks) {
             realAdBreaks = adBreaks
             self.timeline = Timeline(adBreaks: adBreaks)
-            debugPrint(self.timeline!)
+            self.handTimelineUpdated()
         }
     }
 
@@ -197,6 +197,16 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     func handleError(code: UInt, message: String) {
         for listener: YospaceListener in yospaceListeners {
             listener.onYospaceError(event: ErrorEvent(code: code, message: message))
+        }
+    }
+
+    func handTimelineUpdated() {
+        guard let timeline = self.timeline else {
+            return
+        }
+
+        for listener: YospaceListener in yospaceListeners {
+            listener.onTimelineChanged(event: TimelineChangedEvent(name: "TimelineChanged", timestamp: NSDate().timeIntervalSince1970, timeline: timeline))
         }
     }
 
