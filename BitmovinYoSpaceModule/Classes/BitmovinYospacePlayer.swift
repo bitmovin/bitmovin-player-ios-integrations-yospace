@@ -346,6 +346,11 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
+            
+            if let drmConfiguration:DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
+                sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
+            }
+            
             load(sourceConfiguration: sourceConfig)
         default:
             break
