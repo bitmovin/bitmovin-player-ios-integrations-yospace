@@ -7,6 +7,7 @@
 
 import Foundation
 import Yospace
+import BitmovinPlayer
 
 enum TimelineEntryType {
     case adBreak
@@ -25,8 +26,8 @@ class TimelineEntry {
 
 public class Timeline: CustomDebugStringConvertible {
     var entrys: [TimelineEntry] = []
-    var adBreaks: [YSAdBreak]
-
+    private var adBreaks: [YSAdBreak]
+    
     public init (adBreaks: [YSAdBreak]) {
         self.adBreaks = adBreaks
         let sorted: [YSAdBreak] = adBreaks.sorted { $0.adBreakStart() < $1.adBreakStart() }

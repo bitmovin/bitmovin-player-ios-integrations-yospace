@@ -450,6 +450,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onMetadata(_ event: MetadataEvent) {
+        NSLog("On Metadata Fired")
         if yospaceSourceConfiguration?.yospaceAssetType == YospaceAssetType.linear {
             let meta = YSTimedMetadata.createFromMetadata(event: event)
             if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {

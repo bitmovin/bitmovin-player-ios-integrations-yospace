@@ -19,6 +19,9 @@ class ViewController: UIViewController {
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
     @IBOutlet var clickButton: UIButton!
+    @IBOutlet var textField: UITextField!
+    @IBOutlet var assetType: UISegmentedControl!
+    
     var bitmovinPlayerView: PlayerView?
     var clickUrl: URL?
 
@@ -91,7 +94,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/extlive/turnerdev01,tbse-clear.m3u8?yo.ac=true&yo.dr=true&yo.ch=true") else {
+        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/extlive/turnerdev01,tbse-clear.m3u8?yo.ac=true&yo.dr=true&yo.ch=true&yo.dr=true") else {
             return
         }
         
@@ -100,6 +103,32 @@ class ViewController: UIViewController {
         let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+    }
+    
+    @IBAction func customButtonClicked(sender: UIButton) {
+        let yospaceSourceConfiguration: YospaceSourceConfiguration?
+        guard let url = textField.text else {
+            return
+        }
+        
+        guard let streamUrl = URL(string: url) else {
+            return
+        }
+        
+        let sourceConfig = SourceConfiguration()
+        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        
+        if (assetType.selectedSegmentIndex == 0) {
+            yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
+        }else {
+            yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .vod)
+        }
+        
+        guard let conf = yospaceSourceConfiguration else {
+            return
+        }
+        
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: conf)
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
@@ -115,13 +144,37 @@ class ViewController: UIViewController {
     }
 
     @IBAction func startOverButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/access/525947592/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvcHJvZ19zZWcvbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NiY3MvM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MwMDAwMDJhZS9tYXN0ZXJfZnAubTN1OAo=") else {
+        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/access/525947592/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvZnVsbF9sZW4vbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NiY3MvM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MwMDAwMDJiMC9tYXN0ZXJfZnAubTN1OAo=?yo.av=2&yo.ad=true") else {
             return
         }
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let drmConfiguration = FairplayConfiguration(license: URL(string: "https://fairplay.license.istreamplanet.com/api/license/a229afbf-e1d3-499e-8127-c33cd7231e58"), certificateURL: URL(string: "https://fairplay.license.istreamplanet.com/api/AppCert/a229afbf-e1d3-499e-8127-c33cd7231e58")!)
+        
+        drmConfiguration.prepareCertificate = { (data: Data) -> Data in
+            guard let certString = String(data: data, encoding: .utf8),
+                let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: "")) else {
+                    return data
+            }
+            return certResult
+        }
+        drmConfiguration.prepareContentId = { (contentId: String) -> String in
+            let prepared = contentId.replacingOccurrences(of: "skd://", with: "")
+            let components : [String] = prepared.components(separatedBy: "/")
+            return components[2]
+        }
+        drmConfiguration.prepareMessage = { (spcData: Data, assetID: String) -> Data in
+            return spcData
+        }
+        drmConfiguration.prepareLicense = { (ckcData: Data) -> Data in
+            guard let ckcString = String(data: ckcData, encoding: .utf8),
+                let ckcResult = Data(base64Encoded: ckcString.replacingOccurrences(of: "\"", with: "")) else {
+                    return ckcData
+            }
+            return ckcResult
+        }
+        
         sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
         let config = YospaceSourceConfiguration(yospaceAssetType: .nonLinearStartOver)
 
@@ -189,6 +242,10 @@ extension ViewController: PlayerListener {
     
     public func onDurationChanged(_ event: DurationChangedEvent) {
         NSLog("On Duration Changed: \(event.duration)")
+    }
+    
+    public func onError(_ event: ErrorEvent) {
+        NSLog("On Error: \(event.code)")
     }
     
     public func onTimeChanged(_ event: TimeChangedEvent) {
