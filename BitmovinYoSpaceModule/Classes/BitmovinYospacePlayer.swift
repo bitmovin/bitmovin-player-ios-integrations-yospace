@@ -1,6 +1,9 @@
 import UIKit
 import BitmovinPlayer
 import Yospace
+#if os(iOS)
+import TruexAdRenderer
+#endif
 
 enum SessionStatus: Int {
     case notInitialised
@@ -23,6 +26,10 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     var yospaceListeners: [YospaceListener] = []
     var timeline: Timeline?
     var realAdBreaks: [YSAdBreak] = []
+    var truexConfiguration: TruexConfiguration?
+    #if os(iOS)
+    var truexAdRenderer: BitmovinTruexAdRenderer?
+    #endif
 
     var adBreaks: [YSAdBreak] {
         get {
@@ -67,15 +74,24 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
      - configuration: Traditional PlayerConfiguration used by Bitmovin
      - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
      */
-    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
+    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?, truexConfiguration: TruexConfiguration? = nil) {
         self.yospaceConfiguration = yospaceConfiguration
+        self.truexConfiguration = truexConfiguration
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
         super.add(listener: self)
+        #if os(iOS)
+
+        guard let truexConfiguration = truexConfiguration else {
+            return
+        }
+        self.truexAdRenderer = BitmovinTruexAdRenderer(bitmovinPlayer: self, view: truexConfiguration.view, userId: truexConfiguration.userId, vastConfigUrl: truexConfiguration.vastConfigUrl)
+
+        #endif
     }
 
     public override func destroy() {
-        resetSessionManager()
+        resetYospaceSession()
         yospaceListeners.removeAll()
         listeners.removeAll()
         super.destroy()
@@ -93,7 +109,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
      - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
      */
     public func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration) {
-        resetSessionManager()
+        resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
         let yospaceProperties = YSSessionProperties()
@@ -141,7 +157,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         super.pause()
     }
 
-    public override func seek(time: TimeInterval) {
+public override func seek(time: TimeInterval) {
         if let manager = self.sessionManager {
             let seekTime = manager.willSeek(to: time)
             let absoluteSeekTime = timeline?.relativeToAbsolute(time: seekTime) ?? seekTime
@@ -173,13 +189,14 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         sessionManager?.linearClickThroughDidOccur()
     }
 
-    func resetSessionManager() {
+    func resetYospaceSession() {
         self.sessionManager?.shutdown()
         self.sessionManager = nil
         self.yospaceStream = nil
         self.adBreaks = []
         sessionStatus = .notInitialised
         adPlaying = false
+        self.truexAdRenderer?.resetAdRenderer()
     }
 
     func loadVOD(url: URL, yospaceProperties: YSSessionProperties) {
@@ -260,6 +277,16 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(AdBreakStartedEvent())
         }
+        #if os(iOS)
+        guard let truexAdRenderer = truexAdRenderer else {
+            return
+        }
+        if truexAdRenderer.adFree {
+            super.seek(time: adBreak.adBreakEnd())
+        } else {
+            truexAdRenderer.renderTruex(adverts: adBreak.adverts())
+        }
+        #endif
     }
 
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
@@ -346,11 +373,11 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
-            
-            if let drmConfiguration:DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
+
+            if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
                 sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
             }
-            
+
             load(sourceConfiguration: sourceConfig)
         default:
             break
@@ -393,7 +420,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
         if sessionStatus != .notInitialised {
             // the yospace sessionManager.shutdown() call is asynchronous. If the user just calls `load()` on second playback without calling `unload()` we end up canceling both the old session and the new session. This if statement keeps track of that
-            resetSessionManager()
+            resetYospaceSession()
         }
         for listener: PlayerListener in listeners {
             listener.onSourceUnloaded?(event)
@@ -461,6 +488,11 @@ extension BitmovinYospacePlayer: PlayerListener {
                 listener.onMetadata?(event)
             }
         }
+    }
+
+    public func onMetadataParsed(_ event: MetadataParsedEvent) {
+        NSLog("On Metadata Parsed")
+
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {

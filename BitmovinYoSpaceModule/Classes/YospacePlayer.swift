@@ -18,6 +18,7 @@ class YospacePlayer: NSObject, YSVideoPlayer {
     // swiftlint:disable implicit_getter
     var currentTime: TimeInterval {
         get {
+            NSLog("Current Time \(String(describing: self.bitmovinYospacePlayer?.currentTimeWithAds()))")
             return self.bitmovinYospacePlayer?.currentTimeWithAds() ?? 0
         }
     }
