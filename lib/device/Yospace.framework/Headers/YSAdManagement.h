@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, YSEInitialisationState)
     YSEInitialisedNoAnalytics
 };
 
-/** YSEInitialisationState defines the initialisation state for the YSSessionManager object.
+/** YSEInitialisationCode defines the initialisation codes for the YSSessionManager object.
  */
 typedef NS_ENUM(NSInteger, YSEInitialisationCode)
 {

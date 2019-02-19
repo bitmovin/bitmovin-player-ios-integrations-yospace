@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/YOVersion.h</key>
 		<data>
-		eIijKRUS/sJQbd3MfnvNUDrS5p0=
+		P70BvGPUf9jwoE0iLhFu7zlFfMw=
 		</data>
 		<key>Headers/YPPolicyHandling.h</key>
 		<data>
@@ -18,7 +18,7 @@
 		</data>
 		<key>Headers/YSAdManagement.h</key>
 		<data>
-		Ya6cWQ9BxoHGViYF8u0tOH5QafI=
+		1NIR+jYg2CVNW1OAvWGwMGCvYmk=
 		</data>
 		<key>Headers/YSAdManagementError.h</key>
 		<data>
@@ -122,7 +122,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		Ue49u+YbpbuDIdZ4idUZkMKXyek=
+		NJP6mFeLaja0Wsuq8bYG9xBjEHE=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -135,11 +135,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			eIijKRUS/sJQbd3MfnvNUDrS5p0=
+			P70BvGPUf9jwoE0iLhFu7zlFfMw=
 			</data>
 			<key>hash2</key>
 			<data>
-			eXql+Kmhhi8L8TD1qOtL3wV+hQo2+k7WXBCEEjxlBhY=
+			rApU16PrLsAANWU2GZlYOdm7EdcH5xfjaIXcqYgUVS4=
 			</data>
 		</dict>
 		<key>Headers/YPPolicyHandling.h</key>
@@ -168,11 +168,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Ya6cWQ9BxoHGViYF8u0tOH5QafI=
+			1NIR+jYg2CVNW1OAvWGwMGCvYmk=
 			</data>
 			<key>hash2</key>
 			<data>
-			5snwMq+dYWtWMLjj4mfBKfp2QDnFdlAcg72liWOz+Zk=
+			253ovD7wGSOOmfHyel+2Dvb6jMQGQj7Icul1iIEDYXU=
 			</data>
 		</dict>
 		<key>Headers/YSAdManagementError.h</key>

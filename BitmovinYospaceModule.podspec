@@ -3,9 +3,7 @@ Pod::Spec.new do |s|
   s.version          = '0.9.2'
   s.summary          = 'A short description of BitmovinYoSpaceModule.'
 
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
+  s.description      = 'A short description of BitmovinYoSpaceModule.'
 
   s.homepage         = 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
