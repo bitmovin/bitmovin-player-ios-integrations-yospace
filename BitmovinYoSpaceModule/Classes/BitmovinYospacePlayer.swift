@@ -11,7 +11,7 @@ enum SessionStatus: Int {
     case playing
 }
 
-public class BitmovinYospacePlayer: BitmovinPlayer {
+open class BitmovinYospacePlayer: BitmovinPlayer {
     // MARK: - Bitmovin Yospace Player attributes
     var sessionManager: YSSessionManager?
     var yospaceStream: YSStream?
@@ -52,11 +52,11 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
 
-    public override var duration: TimeInterval {
+    open override var duration: TimeInterval {
         return super.duration - self.adBreaks.reduce(0) {$0 + $1.adBreakDuration()}
     }
 
-    public override var currentTime: TimeInterval {
+    open override var currentTime: TimeInterval {
         if adPlaying {
             return timeline?.adTime(time: super.currentTime) ?? super.currentTime
         } else {
@@ -90,7 +90,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         #endif
     }
 
-    public override func destroy() {
+    open override func destroy() {
         resetYospaceSession()
         yospaceListeners.removeAll()
         listeners.removeAll()
@@ -148,7 +148,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     // MARK: - playback methods
-    public override func pause() {
+    open override func pause() {
         if let manager = self.sessionManager {
             if !manager.canPause() {
                 return
@@ -157,7 +157,7 @@ public class BitmovinYospacePlayer: BitmovinPlayer {
         super.pause()
     }
 
-public override func seek(time: TimeInterval) {
+    open override func seek(time: TimeInterval) {
         if let manager = self.sessionManager {
             let seekTime = manager.willSeek(to: time)
             let absoluteSeekTime = timeline?.relativeToAbsolute(time: seekTime) ?? seekTime
@@ -169,11 +169,11 @@ public override func seek(time: TimeInterval) {
     }
 
     // MARK: - event handling
-    public override func add(listener: PlayerListener) {
+    open override func add(listener: PlayerListener) {
         listeners.append(listener)
     }
 
-    public override func remove(listener: PlayerListener) {
+    open override func remove(listener: PlayerListener) {
         listeners = listeners.filter { $0 !== listener }
     }
 
@@ -228,7 +228,7 @@ public override func seek(time: TimeInterval) {
     }
 
     #if os(iOS)
-    public override func skipAd() {
+    open override func skipAd() {
         if sessionStatus != .notInitialised {
             guard sessionManager != nil else {
                 return
@@ -244,7 +244,7 @@ public override func seek(time: TimeInterval) {
         }
     }
 
-    public override var isAd: Bool {
+    open override var isAd: Bool {
         if sessionStatus != .notInitialised {
             return adPlaying
         } else {
