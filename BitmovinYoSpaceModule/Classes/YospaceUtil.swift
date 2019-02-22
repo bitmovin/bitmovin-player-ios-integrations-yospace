@@ -5,8 +5,7 @@ import BitmovinPlayer
 extension YSTimedMetadata {
     public static func createFromMetadata (event: MetadataEvent) -> YSTimedMetadata {
         let meta = YSTimedMetadata()
-        for entry: MetadataEntry in event.metadata.entries {
-            if entry.metadataType == BMPMetadataType.ID3 {
+        for entry: MetadataEntry in event.metadata.entries where entry.metadataType == BMPMetadataType.ID3 {
                 guard let metadata = entry as? AVMetadataItem else {
                     continue
                 }
@@ -39,25 +38,6 @@ extension YSTimedMetadata {
                     }
                 default:
                     continue
-                }
-            } else if entry.metadataType == BMPMetadataType.daterange {
-                guard let metadata = entry as? AVMetadataItem else {
-                    continue
-                }
-                guard let key = metadata.key, let value = metadata.value else {
-                    continue
-                }
-
-                print("Key: \(key) - \(value)")
-                switch key.description {
-                case "X-COM-YOSPACE-YMID":
-                    print("Case: \(key) - \(value)")
-                    // swiftlint:disable force_cast
-                    meta.mediaId = value as! String
-                default:
-                    continue
-                }
-
             }
         }
         return meta

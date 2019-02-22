@@ -479,19 +479,58 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onMetadata(_ event: MetadataEvent) {
         NSLog("On Metadata Fired")
         if yospaceSourceConfiguration?.yospaceAssetType == YospaceAssetType.linear {
-            let meta = YSTimedMetadata.createFromMetadata(event: event)
-            if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {
-                let dictionary = [kYoMetadataKey: meta]
-                self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
-            }
-            for listener: PlayerListener in listeners {
-                listener.onMetadata?(event)
+            if event.metadataType == BMPMetadataType.ID3 {
+                trackId3(event)
+            } else {
+                trackEmsg(event)
             }
         }
     }
 
     public func onMetadataParsed(_ event: MetadataParsedEvent) {
         NSLog("On Metadata Parsed")
+    }
+
+    func trackId3(_ event: MetadataEvent) {
+        let meta = YSTimedMetadata.createFromMetadata(event: event)
+        if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {
+            let dictionary = [kYoMetadataKey: meta]
+            self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
+        }
+        for listener: PlayerListener in listeners {
+            listener.onMetadata?(event)
+        }
+    }
+
+    func trackEmsg(_ event: MetadataEvent) {
+
+        guard let metadata: DaterangeMetadata = event.metadata as? DaterangeMetadata else {
+            return
+        }
+
+        for entry: MetadataEntry in metadata.entries where entry.metadataType == BMPMetadataType.daterange {
+            guard let entry = entry as? AVMetadataItem else {
+                continue
+            }
+
+            guard let key = entry.key, let value = entry.stringValue else {
+                continue
+            }
+
+            switch key.description {
+            case "X-COM-YOSPACE-YMID":
+                print("Key: \(key) - \(value)")
+                let yoMetdata = YSTimedMetadata()
+                yoMetdata.mediaId = value
+                yoMetdata.type = "S"
+                yoMetdata.segmentNumber = 1
+                yoMetdata.segmentCount = 1
+
+                self.notify(dictionary: [kYoMetadataKey: yoMetdata], name: YoTimedMetadataNotification)
+            default:
+                continue
+            }
+        }
 
     }
 
