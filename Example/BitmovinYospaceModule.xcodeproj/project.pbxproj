@@ -406,12 +406,16 @@
 				"${PODS_ROOT}/BitmovinPlayer/iOS/BitmovinPlayer.framework",
 				"${PODS_ROOT}/../../lib/Yospace.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
+				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.0/TruexAdRenderer.framework",
+				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.0/TruexAdRenderer.framework.dSYM",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Yospace.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TruexAdRenderer.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/TruexAdRenderer.framework.dSYM",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
