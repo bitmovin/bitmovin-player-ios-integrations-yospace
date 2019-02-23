@@ -1,9 +1,6 @@
 import UIKit
 import BitmovinPlayer
 import Yospace
-#if os(iOS)
-import TruexAdRenderer
-#endif
 
 enum SessionStatus: Int {
     case notInitialised
@@ -196,7 +193,9 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         self.adBreaks = []
         sessionStatus = .notInitialised
         adPlaying = false
+        #if(iOS)
         self.truexAdRenderer?.resetAdRenderer()
+        #endif
     }
 
     func loadVOD(url: URL, yospaceProperties: YSSessionProperties) {
