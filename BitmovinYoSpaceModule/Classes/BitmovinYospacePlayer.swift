@@ -193,7 +193,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         self.adBreaks = []
         sessionStatus = .notInitialised
         adPlaying = false
-        #if(iOS)
+        #if os(iOS)
         self.truexAdRenderer?.resetAdRenderer()
         #endif
     }
