@@ -1,8 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'BitmovinYospaceModule'
   s.version          = '0.9.2'
-  s.summary          = 'A short description of BitmovinYoSpaceModule.'
-
+  s.summary          = 'A short description of BitmovinYoSpaceModule.' 
   s.description      = 'A short description of BitmovinYoSpaceModule.'
 
   s.homepage         = 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace'
@@ -10,6 +9,7 @@ Pod::Spec.new do |s|
   s.author           = { 'Cory Zachman' => 'cory.zachman@bitmovin.com' }
   s.source           = { :git => 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace.git', :tag => s.version.to_s }
 
+  s.swift_version = '4.2'
   s.ios.deployment_target = '9.0'
   s.tvos.deployment_target = '9.0'
 
