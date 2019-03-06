@@ -1,6 +1,0 @@
-framework module Yospace_tvOS {
-  umbrella header "Yospace_tvOS.h"
-
-  export *
-  module * { export * }
-}
