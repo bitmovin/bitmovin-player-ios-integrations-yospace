@@ -71,20 +71,11 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
      - configuration: Traditional PlayerConfiguration used by Bitmovin
      - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
      */
-    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?, truexConfiguration: TruexConfiguration? = nil) {
+    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
         self.yospaceConfiguration = yospaceConfiguration
-        self.truexConfiguration = truexConfiguration
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
         super.add(listener: self)
-        #if os(iOS)
-
-        guard let truexConfiguration = truexConfiguration else {
-            return
-        }
-        self.truexAdRenderer = BitmovinTruexAdRenderer(bitmovinPlayer: self, view: truexConfiguration.view, userId: truexConfiguration.userId, vastConfigUrl: truexConfiguration.vastConfigUrl)
-
-        #endif
     }
 
     open override func destroy() {
@@ -105,7 +96,19 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
      - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
      - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
      */
-    open func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration) {
+    open func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration, truexConfiguration: TruexConfiguration? = nil) {
+        #if os(iOS)
+        if let truexConfiguration = truexConfiguration {
+            self.truexConfiguration = truexConfiguration
+            if self.truexAdRenderer != nil {
+                self.truexAdRenderer = BitmovinTruexAdRenderer(bitmovinPlayer: self, view: truexConfiguration.view, userId: truexConfiguration.userId, vastConfigUrl: truexConfiguration.vastConfigUrl)
+            }
+        }else {
+            self.truexConfiguration = nil
+            self.truexAdRenderer = nil
+        }
+        #endif
+
         resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
