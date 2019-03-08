@@ -100,10 +100,11 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         #if os(iOS)
         if let truexConfiguration = truexConfiguration {
             self.truexConfiguration = truexConfiguration
-            if self.truexAdRenderer != nil {
-                self.truexAdRenderer = BitmovinTruexAdRenderer(bitmovinPlayer: self, view: truexConfiguration.view, userId: truexConfiguration.userId, vastConfigUrl: truexConfiguration.vastConfigUrl)
-            }
-        }else {
+            self.truexAdRenderer = BitmovinTruexAdRenderer(bitmovinPlayer: self,
+                                                           view: truexConfiguration.view,
+                                                           userId: truexConfiguration.userId,
+                                                           vastConfigUrl: truexConfiguration.vastConfigUrl)
+        } else {
             self.truexConfiguration = nil
             self.truexAdRenderer = nil
         }
@@ -225,7 +226,9 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
 
         for listener: YospaceListener in yospaceListeners {
-            listener.onTimelineChanged(event: TimelineChangedEvent(name: "TimelineChanged", timestamp: NSDate().timeIntervalSince1970, timeline: timeline))
+            listener.onTimelineChanged(event: TimelineChangedEvent(name: "TimelineChanged",
+                                                                   timestamp: NSDate().timeIntervalSince1970,
+                                                                   timeline: timeline))
         }
     }
 
