@@ -23,6 +23,5 @@ Pod::Spec.new do |s|
 
   s.ios.vendored_framework = 'lib/Yospace.framework'
   s.tvos.vendored_framework = 'lib/Yospace-tvOS.framework'
-  s.static_framework = true;
   
 end
