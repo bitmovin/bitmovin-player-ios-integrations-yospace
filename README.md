@@ -2,7 +2,7 @@
 
 ##### Platforms 
 iOS 9.0+
-tvOS 9.0+
+tvOS 9.2+
 
 ## Example
 
