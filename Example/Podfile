@@ -16,6 +16,6 @@ end
 
 target 'BitmovinYospaceModule_Example_tvOS' do
     use_frameworks!
-    platform :tvos, '9.0'
+    platform :tvos, '9.2'
     shared_pods    
 end
