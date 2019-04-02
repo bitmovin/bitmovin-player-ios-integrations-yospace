@@ -2,7 +2,7 @@ source 'https://www.github.com/socialvibe/cocoapod-specs'
 
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
-    pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.19.0-rc.1'
+    pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.19.0'
 end
 
 target 'BitmovinYospaceModule_Example' do
