@@ -21,7 +21,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospacePlayer: YospacePlayer?
     var yospaceListeners: [YospaceListener] = []
-    var timeline: Timeline?
+    var timeline: AdTimeline?
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
     #if os(iOS)
@@ -34,7 +34,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
         set (adBreaks) {
             realAdBreaks = adBreaks
-            self.timeline = Timeline(adBreaks: adBreaks)
+            self.timeline = AdTimeline(adBreaks: adBreaks)
             self.handTimelineUpdated()
         }
     }
@@ -226,7 +226,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
 
         for listener: YospaceListener in yospaceListeners {
-            listener.onTimelineChanged(event: TimelineChangedEvent(name: "TimelineChanged",
+            listener.onTimelineChanged(event: AdTimelineChangedEvent(name: "TimelineChanged",
                                                                    timestamp: NSDate().timeIntervalSince1970,
                                                                    timeline: timeline))
         }
