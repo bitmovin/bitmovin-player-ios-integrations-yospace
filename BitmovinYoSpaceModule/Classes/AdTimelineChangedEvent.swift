@@ -7,12 +7,12 @@
 
 import Foundation
 
-public class TimelineChangedEvent {
+public class AdTimelineChangedEvent {
     public let name: String
     public let timestamp: Double
-    public let timeline: Timeline
+    public let timeline: AdTimeline
 
-    public init(name: String, timestamp: Double, timeline: Timeline) {
+    public init(name: String, timestamp: Double, timeline: AdTimeline) {
         self.name = name
         self.timeline = timeline
         self.timestamp = timestamp
