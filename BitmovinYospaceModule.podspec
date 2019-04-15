@@ -11,17 +11,17 @@ Pod::Spec.new do |s|
 
   s.swift_version = '4.2'
   s.ios.deployment_target = '9.0'
-  s.tvos.deployment_target = '9.0'
+  s.tvos.deployment_target = '9.2'
 
   s.ios.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.exclude_files = 'BitmovinYospaceModule/Classes/BitmovinTruexAdRenderer.swift'
 
-  s.ios.dependency 'BitmovinPlayer', '~> 2.19.0-rc.1'
-  s.ios.dependency 'TruexAdRenderer-iOS', '~> 3.2.0'
-  s.tvos.dependency 'BitmovinPlayer', '~> 2.19.0-rc.1'
+  s.ios.dependency 'BitmovinPlayer', '2.19.0'
+  s.ios.dependency 'TruexAdRenderer-iOS', '3.2.0'
+  s.tvos.dependency 'BitmovinPlayer', '2.19.0'
 
-  s.ios.vendored_framework = 'lib/Yospace.framework'
-  s.tvos.vendored_framework = 'lib/Yospace-tvOS.framework'
+  s.ios.vendored_framework = 'lib/ios/Yospace.framework'
+  s.tvos.vendored_framework = 'lib/tvOS/Yospace.framework'
   
 end
