@@ -10,26 +10,47 @@ import Yospace
 import BitmovinPlayer
 
 public class AdBreak {
-    init() {
+    public private(set) var relativeStart: TimeInterval = 0.0
+    public private(set) var duration: TimeInterval = 0.0
+    public private(set) var absoluteStart: TimeInterval = 0.0
+    public private(set) var absoluteEnd: TimeInterval = 0.0
+    public private(set) var identifier: String = "unknown"
+    public private(set) var ads: [Ad] = []
+
+    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval) {
+        self.identifier = identifier
+        self.absoluteStart = absoluteStart
+        self.absoluteEnd = absoluteEnd
+        self.duration = duration
+        self.relativeStart = relativeStart
     }
-    var relativeStart: TimeInterval = 0.0
-    var duration: TimeInterval = 0.0
-    var absoluteStart: TimeInterval = 0.0
-    var absoluteEnd: TimeInterval = 0.0
-    var identifier: String = "unknown"
-    var ads: [Ad] = []
+
+    //swiftlint:disable identifier_name
+    func appendAd(ad: Ad) {
+        self.ads.append(ad)
+    }
+    //swiftlint:enable identifier_name
+
 }
 
 //swiftlint:disable type_name
 public class Ad {
-    init() {
+    public private(set) var relativeStart: TimeInterval = 0.0
+    public private(set) var identifier: String = "unknown"
+    public private(set) var duration: TimeInterval = 0.0
+    public private(set) var hasInteractiveUnit = false
+    public private(set) var absoluteStart: TimeInterval = 0.0
+    public private(set) var absoluteEnd: TimeInterval = 0.0
+
+    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool) {
+        self.identifier = identifier
+        self.absoluteStart = absoluteStart
+        self.absoluteEnd = absoluteEnd
+        self.duration = duration
+        self.relativeStart = relativeStart
+        self.hasInteractiveUnit = hasInteractiveUnit
     }
-    var position: TimeInterval = 0.0
-    var identifier: String = "unknown"
-    var duration: TimeInterval = 0.0
-    var hasInteractiveUnit = false
-    var absoluteStart: TimeInterval = 0.0
-    var absoluteEnd: TimeInterval = 0.0
+
 }
 //swiftlint:enable type_name
 
@@ -40,22 +61,21 @@ public class AdTimeline: CustomDebugStringConvertible {
         let sorted: [YSAdBreak] = adBreaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
         var count: Double = 0
         for adBreak in sorted {
-            let adBreakEntry: AdBreak = AdBreak()
-            adBreakEntry.identifier = adBreak.adBreakIdentifier()
-            adBreakEntry.absoluteStart = adBreak.adBreakStart()
-            adBreakEntry.duration = adBreak.adBreakDuration()
-            adBreakEntry.absoluteEnd = adBreak.adBreakEnd()
-            adBreakEntry.relativeStart = adBreak.adBreakStart() - count
+            let adBreakEntry: AdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
+                                                absoluteStart: adBreak.adBreakStart(),
+                                                absoluteEnd: adBreak.adBreakEnd(),
+                                                duration: adBreak.adBreakDuration(),
+                                                relativeStart: adBreak.adBreakStart() - count)
+
             for advertisement in adBreak.adverts() {
                 if let advert: YSAdvert = advertisement as? YSAdvert {
-                    let newAd: Ad = Ad()
-                    newAd.identifier = advert.advertIdentifier()
-                    newAd.position = adBreakEntry.relativeStart
-                    newAd.absoluteStart = advert.advertStart()
-                    newAd.absoluteEnd = advert.advertEnd()
-                    newAd.duration = advert.advertDuration()
-                    newAd.hasInteractiveUnit = advert.hasLinearInteractiveUnit()
-                    adBreakEntry.ads.append(newAd)
+                    let newAd: Ad = Ad(identifier: advert.advertIdentifier(),
+                                       absoluteStart: advert.advertStart(),
+                                       absoluteEnd: advert.advertEnd(),
+                                       duration: advert.advertDuration(),
+                                       relativeStart: adBreakEntry.relativeStart,
+                                       hasInteractiveUnit: advert.hasLinearInteractiveUnit())
+                    adBreakEntry.appendAd(ad: newAd)
                 }
             }
             count += adBreak.adBreakDuration()
