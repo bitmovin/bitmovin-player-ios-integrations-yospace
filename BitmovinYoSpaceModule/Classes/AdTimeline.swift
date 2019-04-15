@@ -17,10 +17,11 @@ class AdBreak {
     var absoluteStart: TimeInterval = 0.0
     var absoluteEnd: TimeInterval = 0.0
     var identifier: String = "unknown"
-    var ads: [Advertisement] = []
+    var ads: [Ad] = []
 }
 
-class Advertisement {
+//swiftlint:disable type_name
+class Ad {
     init() {
     }
     var position: TimeInterval = 0.0
@@ -30,6 +31,7 @@ class Advertisement {
     var absoluteStart: TimeInterval = 0.0
     var absoluteEnd: TimeInterval = 0.0
 }
+//swiftlint:enable type_name
 
 public class AdTimeline: CustomDebugStringConvertible {
     var entrys: [AdBreak] = []
@@ -46,7 +48,7 @@ public class AdTimeline: CustomDebugStringConvertible {
             adBreakEntry.relativeStart = adBreak.adBreakStart() - count
             for advertisement in adBreak.adverts() {
                 if let advert: YSAdvert = advertisement as? YSAdvert {
-                    let newAd: Advertisement = Advertisement()
+                    let newAd: Ad = Ad()
                     newAd.identifier = advert.advertIdentifier()
                     newAd.position = adBreakEntry.relativeStart
                     newAd.absoluteStart = advert.advertStart()
@@ -99,7 +101,7 @@ public class AdTimeline: CustomDebugStringConvertible {
         return entrys.filter {$0.absoluteStart < time}.filter {$0.absoluteEnd > time}.first
     }
 
-    func currentAd(time: TimeInterval) -> Advertisement? {
+    func currentAd(time: TimeInterval) -> Ad? {
         guard let currentAdBreak = currentAdBreak(time: time) else {
             return nil
         }
