@@ -266,11 +266,11 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         return super.duration
     }
 
-    func getActiveAdBreak() -> AdBreak? {
+    public func getActiveAdBreak() -> AdBreak? {
         return self.timeline?.currentAdBreak(time: self.currentTime)
     }
 
-    func getActiveAd() -> Ad? {
+    public func getActiveAd() -> Ad? {
         return self.timeline?.currentAd(time: self.currentTime)
     }
 }
