@@ -9,7 +9,7 @@ import Foundation
 import Yospace
 import BitmovinPlayer
 
-class AdBreak {
+public class AdBreak {
     init() {
     }
     var relativeStart: TimeInterval = 0.0
@@ -21,7 +21,7 @@ class AdBreak {
 }
 
 //swiftlint:disable type_name
-class Ad {
+public class Ad {
     init() {
     }
     var position: TimeInterval = 0.0
