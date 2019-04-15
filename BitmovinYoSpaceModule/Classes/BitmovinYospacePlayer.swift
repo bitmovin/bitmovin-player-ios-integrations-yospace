@@ -239,10 +239,10 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
                 return
             }
 
-            let adBreak: YSAdBreak? = currentAdBreak()
+            let adBreak: AdBreak? = getActiveAdBreak()
             if let currentBreak = adBreak {
 
-                super.seek(time: currentBreak.adBreakEnd())
+                super.seek(time: currentBreak.absoluteEnd)
             }
         } else {
             super.skipAd()
@@ -266,13 +266,12 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         return super.duration
     }
 
-    func currentAdBreak() -> YSAdBreak? {
-        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < currentTimeWithAds()}.filter {$0.adBreakEnd() > currentTimeWithAds()}
-        for currentAdBreak: YSAdBreak in currentAdBreaks {
-            return currentAdBreak
-        }
+    func getActiveAdBreak() -> AdBreak? {
+        return self.timeline?.currentAdBreak(time: self.currentTime)
+    }
 
-        return nil
+    func getActiveAd() -> Advertisement? {
+        return self.timeline?.currentAd(time: self.currentTime)
     }
 }
 

@@ -17,10 +17,10 @@ class AdBreak {
     var absoluteStart: TimeInterval = 0.0
     var absoluteEnd: TimeInterval = 0.0
     var identifier: String = "unknown"
-    var ads: [Ad] = []
+    var ads: [Advertisement] = []
 }
 
-class Ad {
+class Advertisement {
     init() {
     }
     var position: TimeInterval = 0.0
@@ -44,9 +44,9 @@ public class AdTimeline: CustomDebugStringConvertible {
             adBreakEntry.duration = adBreak.adBreakDuration()
             adBreakEntry.absoluteEnd = adBreak.adBreakEnd()
             adBreakEntry.relativeStart = adBreak.adBreakStart() - count
-            for ad in adBreak.adverts() {
-                if let advert: YSAdvert = ad as? YSAdvert {
-                    let newAd: Ad = Ad()
+            for advertisement in adBreak.adverts() {
+                if let advert: YSAdvert = advertisement as? YSAdvert {
+                    let newAd: Advertisement = Advertisement()
                     newAd.identifier = advert.advertIdentifier()
                     newAd.position = adBreakEntry.relativeStart
                     newAd.absoluteStart = advert.advertStart()
@@ -99,7 +99,7 @@ public class AdTimeline: CustomDebugStringConvertible {
         return entrys.filter {$0.absoluteStart < time}.filter {$0.absoluteEnd > time}.first
     }
 
-    func currentAd(time: TimeInterval) -> Ad? {
+    func currentAd(time: TimeInterval) -> Advertisement? {
         guard let currentAdBreak = currentAdBreak(time: time) else {
             return nil
         }
