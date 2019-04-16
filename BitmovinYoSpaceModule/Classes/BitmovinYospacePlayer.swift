@@ -24,6 +24,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var timeline: AdTimeline?
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
+    var sourceLoadedFired: Bool = false
     #if os(iOS)
     var truexAdRenderer: BitmovinTruexAdRenderer?
     #endif
@@ -97,6 +98,15 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
      - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
      */
     open func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration, truexConfiguration: TruexConfiguration? = nil) {
+
+        if let sourceItem = sourceConfiguration.firstSourceItem {
+            sourceLoadedFired = true;
+            let sourceLoadedEvent: SourceLoadedEvent = SourceLoadedEvent(sourceItem: sourceItem, streamType: .HLS)
+            for listener: PlayerListener in listeners {
+                listener.onSourceLoaded?(sourceLoadedEvent)
+            }
+        }
+
         #if os(iOS)
         if let truexConfiguration = truexConfiguration {
             self.truexConfiguration = truexConfiguration
@@ -197,6 +207,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         self.adBreaks = []
         sessionStatus = .notInitialised
         adPlaying = false
+        sourceLoadedFired = false;
         #if os(iOS)
         self.truexAdRenderer?.resetAdRenderer()
         #endif
@@ -666,9 +677,13 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onSourceLoaded(_ event: SourceLoadedEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onSourceLoaded?(event)
+        if !sourceLoadedFired {
+            sourceLoadedFired = true;
+            for listener: PlayerListener in listeners {
+                listener.onSourceLoaded?(event)
+            }
         }
+
     }
 
     public func onSubtitleAdded(_ event: SubtitleAddedEvent) {
