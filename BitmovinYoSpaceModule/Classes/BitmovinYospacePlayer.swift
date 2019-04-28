@@ -398,6 +398,12 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 extension BitmovinYospacePlayer: PlayerListener {
 
     public func onPlay(_ event: PlayEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onPlay?(PlayEvent(time: currentTime))
+        }
+    }
+    
+    public func onPlaying(_ event: PlayingEvent) {
         if sessionStatus == .notInitialised || sessionStatus == .ready {
             sessionStatus = .playing
             let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
@@ -407,10 +413,8 @@ extension BitmovinYospacePlayer: PlayerListener {
             self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         }
         for listener: PlayerListener in listeners {
-            listener.onPlay?(PlayEvent(time: currentTime))
+            listener.onPlaying?(PlayEvent(time: currentTime))
         }
-        NSLog("OnPlay: \(isLive)")
-
     }
 
     public func onPaused(_ event: PausedEvent) {
