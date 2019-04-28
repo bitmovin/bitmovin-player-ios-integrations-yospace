@@ -10,5 +10,5 @@ import BitmovinPlayer
 
 public protocol YospaceListener: class {
     func onYospaceError(event: ErrorEvent)
-    func onTimelineChanged(event: TimelineChangedEvent)
+    func onTimelineChanged(event: AdTimelineChangedEvent)
 }
