@@ -21,7 +21,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospacePlayer: YospacePlayer?
     var yospaceListeners: [YospaceListener] = []
-    var timeline: Timeline?
+    var timeline: AdTimeline?
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
     #if os(iOS)
@@ -34,7 +34,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
         set (adBreaks) {
             realAdBreaks = adBreaks
-            self.timeline = Timeline(adBreaks: adBreaks)
+            self.timeline = AdTimeline(adBreaks: adBreaks)
             self.handTimelineUpdated()
         }
     }
@@ -226,7 +226,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
 
         for listener: YospaceListener in yospaceListeners {
-            listener.onTimelineChanged(event: TimelineChangedEvent(name: "TimelineChanged",
+            listener.onTimelineChanged(event: AdTimelineChangedEvent(name: "TimelineChanged",
                                                                    timestamp: NSDate().timeIntervalSince1970,
                                                                    timeline: timeline))
         }
@@ -239,10 +239,10 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
                 return
             }
 
-            let adBreak: YSAdBreak? = currentAdBreak()
+            let adBreak: AdBreak? = getActiveAdBreak()
             if let currentBreak = adBreak {
 
-                super.seek(time: currentBreak.adBreakEnd())
+                super.seek(time: currentBreak.absoluteEnd)
             }
         } else {
             super.skipAd()
@@ -266,13 +266,12 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         return super.duration
     }
 
-    func currentAdBreak() -> YSAdBreak? {
-        let currentAdBreaks = adBreaks.filter {$0.adBreakStart() < currentTimeWithAds()}.filter {$0.adBreakEnd() > currentTimeWithAds()}
-        for currentAdBreak: YSAdBreak in currentAdBreaks {
-            return currentAdBreak
-        }
+    public func getActiveAdBreak() -> AdBreak? {
+        return self.timeline?.currentAdBreak(time: self.currentTime)
+    }
 
-        return nil
+    public func getActiveAd() -> Ad? {
+        return self.timeline?.currentAd(time: self.currentTime)
     }
 }
 
@@ -399,6 +398,12 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 extension BitmovinYospacePlayer: PlayerListener {
 
     public func onPlay(_ event: PlayEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onPlay?(PlayEvent(time: currentTime))
+        }
+    }
+    
+    public func onPlaying(_ event: PlayingEvent) {
         if sessionStatus == .notInitialised || sessionStatus == .ready {
             sessionStatus = .playing
             let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
@@ -408,10 +413,8 @@ extension BitmovinYospacePlayer: PlayerListener {
             self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         }
         for listener: PlayerListener in listeners {
-            listener.onPlay?(PlayEvent(time: currentTime))
+            listener.onPlaying?(PlayEvent(time: currentTime))
         }
-        NSLog("OnPlay: \(isLive)")
-
     }
 
     public func onPaused(_ event: PausedEvent) {

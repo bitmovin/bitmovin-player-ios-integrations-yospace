@@ -264,7 +264,7 @@ extension ViewController: YospaceListener {
         self.present(alert, animated: true, completion: nil)
     }
     
-    public func onTimelineChanged(event: TimelineChangedEvent) {
+    public func onTimelineChanged(event: AdTimelineChangedEvent) {
         NSLog("Timeline Changed: \(event.timeline.debugDescription)")
     }
 }
