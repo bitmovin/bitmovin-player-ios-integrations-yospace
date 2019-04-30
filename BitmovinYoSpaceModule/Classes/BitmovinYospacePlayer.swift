@@ -402,7 +402,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onPlay?(PlayEvent(time: currentTime))
         }
     }
-    
+
     public func onPlaying(_ event: PlayingEvent) {
         if sessionStatus == .notInitialised || sessionStatus == .ready {
             sessionStatus = .playing
@@ -413,7 +413,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
         }
         for listener: PlayerListener in listeners {
-            listener.onPlaying?(PlayEvent(time: currentTime))
+            listener.onPlaying?(PlayingEvent(time: currentTime))
         }
     }
 
