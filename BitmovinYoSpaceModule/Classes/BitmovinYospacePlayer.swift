@@ -76,6 +76,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
         super.add(listener: self)
+        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
     }
 
     open override func destroy() {
@@ -354,7 +355,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         }
 
         self.sessionManager?.subscribe(toAnalyticEvents: self)
-        let policy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
+        let policy = self.yospacePlayerPolicy ?? YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         self.sessionManager?.setPlayerPolicyDelegate(policy)
 
         do {
