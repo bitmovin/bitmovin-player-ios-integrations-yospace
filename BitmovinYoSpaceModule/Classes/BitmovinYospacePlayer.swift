@@ -21,7 +21,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospacePlayer: YospacePlayer?
     var yospaceListeners: [YospaceListener] = []
-    var timeline: AdTimeline?
+    public private(set) var timeline: AdTimeline?
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
     #if os(iOS)
