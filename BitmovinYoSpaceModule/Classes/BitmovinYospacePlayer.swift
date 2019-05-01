@@ -34,7 +34,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
         set (adBreaks) {
             realAdBreaks = adBreaks
-            self.timeline = AdTimeline(adBreaks: adBreaks)
+            self.timeline = AdTimeline(breaks: adBreaks)
             self.handTimelineUpdated()
         }
     }
