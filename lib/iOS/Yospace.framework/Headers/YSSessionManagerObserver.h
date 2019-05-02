@@ -1,5 +1,5 @@
 /*
- * COPYRIGHT © 2018 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
+ * COPYRIGHT © 2019 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
  */
 
 #import <Foundation/Foundation.h>
@@ -45,19 +45,5 @@
  @since from 1.0
  */
 - (void) operationDidFailWithError:(NSError* _Nonnull)error;
-
-@optional
-
-/**---------------------------------------------------------------------------------------
- * @name Monitoring
- *  ---------------------------------------------------------------------------------------
- */
-
-/** Requests the current playhead position.
- 
- @return The playhead position
- @since from 1.0
- */
-- (NSTimeInterval) playheadPosition __attribute__((deprecated("Not required: SDK now uses currentTime attribute of YSVideoPlayer")));
 
 @end

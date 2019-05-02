@@ -1,5 +1,5 @@
 /*
- * COPYRIGHT © 2018 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
+ * COPYRIGHT © 2019 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
  */
 
 #import "YSSessionManagerObserver.h"
@@ -88,7 +88,7 @@
 + (void) createForVoD:(NSURL* _Nonnull)url properties:(YSSessionProperties* _Nonnull)properties delegate:(id<YSSessionManagerObserver> _Nonnull)delegate;
 
 /** Shuts down the Session Manager and cleans up timers and observers.
- This method should be called when playback of the stream has stopped. 
+ This method must be called on the Main Thread and when playback of the stream has stopped. 
  
  @since from 1.1
  */
@@ -117,19 +117,6 @@
  @since from 1.4
  */
 - (NSArray* _Nullable) suppressAnalytics:(BOOL)suppress;
-
-/**---------------------------------------------------------------------------------------
- * @name Data Model
- *  ---------------------------------------------------------------------------------------
- */
-
-/** If the stream is LivePause, VoD or vLive, returns the timeline as an array of YSAdBreak objects, or nil if the stream is live.
- 
- @return Array of YSAdBreak objects, or nil.
- @since from 1.0
- @see YSAdBreak
- */
-- (NSArray* _Nullable) timeline __attribute__((deprecated("Use method on YSStream instead")));
 
 /**---------------------------------------------------------------------------------------
  * @name Subscription
