@@ -21,7 +21,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospacePlayer: YospacePlayer?
     var yospaceListeners: [YospaceListener] = []
-    var timeline: AdTimeline?
+    public private(set) var timeline: AdTimeline?
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
     #if os(iOS)
@@ -34,7 +34,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
         set (adBreaks) {
             realAdBreaks = adBreaks
-            self.timeline = AdTimeline(adBreaks: adBreaks)
+            self.timeline = AdTimeline(breaks: adBreaks)
             self.handTimelineUpdated()
         }
     }
@@ -76,6 +76,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
         super.add(listener: self)
+        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
     }
 
     open override func destroy() {
@@ -354,7 +355,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         }
 
         self.sessionManager?.subscribe(toAnalyticEvents: self)
-        let policy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
+        let policy = self.yospacePlayerPolicy ?? YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         self.sessionManager?.setPlayerPolicyDelegate(policy)
 
         do {
