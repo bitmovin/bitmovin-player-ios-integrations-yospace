@@ -1,5 +1,5 @@
 /*
- * COPYRIGHT © 2018 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
+ * COPYRIGHT © 2019 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
  */
 
 #import <Foundation/Foundation.h>
@@ -135,4 +135,15 @@ typedef NS_ENUM(NSInteger, YSEPlaybackMode){
     YSENonlinearStartoverMode,
     /** Live Pause playback mode */
     YSELivePauseMode
+};
+
+/** YSEResourceType defines the possible modes that the Session Manager runs in.
+ */
+typedef NS_ENUM(NSUInteger, YSEResourceType){
+    /** static resource */
+    YSEStaticResource,
+    /** html resource */
+    YSEHTMLResource,
+    /** iframe resource */
+    YSEIFrameResource
 };
