@@ -55,10 +55,10 @@ public class Ad {
 //swiftlint:enable type_name
 
 public class AdTimeline: CustomDebugStringConvertible {
-    var entrys: [AdBreak] = []
+    public private(set) var adBreaks: [AdBreak] = []
 
-    public init (adBreaks: [YSAdBreak]) {
-        let sorted: [YSAdBreak] = adBreaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
+    public init (breaks: [YSAdBreak]) {
+        let sorted: [YSAdBreak] = breaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
         var count: Double = 0
         for adBreak in sorted {
             let adBreakEntry: AdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
@@ -79,20 +79,20 @@ public class AdTimeline: CustomDebugStringConvertible {
                 }
             }
             count += adBreak.adBreakDuration()
-            entrys.append(adBreakEntry)
+            adBreaks.append(adBreakEntry)
         }
     }
 
     public var debugDescription: String {
-        var str = "Timeline has \(entrys.count) ad breaks. "
-        for entry in entrys {
+        var str = "Timeline has \(adBreaks.count) ad breaks. "
+        for entry in adBreaks {
             str += "[Relative Start: \(entry.relativeStart) Duration - \(entry.duration) Absolute: \(entry.absoluteStart) - \(entry.absoluteEnd) ]"
         }
         return str
     }
 
     public func relativeToAbsolute(time: TimeInterval) -> TimeInterval {
-        let passedAdBreakDurations = entrys.filter {$0.relativeStart < time}.reduce(0) { $0 + $1.duration }
+        let passedAdBreakDurations = adBreaks.filter {$0.relativeStart < time}.reduce(0) { $0 + $1.duration }
         let absoluteTime: TimeInterval = time + passedAdBreakDurations
         return absoluteTime
     }
@@ -106,7 +106,7 @@ public class AdTimeline: CustomDebugStringConvertible {
     }
 
     public func absoluteToRelative(time: TimeInterval) -> TimeInterval {
-        let passedAdBreakDurations = entrys.filter {$0.absoluteEnd < time}.reduce(0) { $0 + $1.duration}
+        let passedAdBreakDurations = adBreaks.filter {$0.absoluteEnd < time}.reduce(0) { $0 + $1.duration}
 
         //Check if we are in an ad break, the relative time if you are in an ad break is equal to the ad breaks start time
         guard let currentAdBreak = currentAdBreak(time: time) else {
@@ -118,7 +118,7 @@ public class AdTimeline: CustomDebugStringConvertible {
     }
 
     func currentAdBreak(time: TimeInterval) -> AdBreak? {
-        return entrys.filter {$0.absoluteStart < time}.filter {$0.absoluteEnd > time}.first
+        return adBreaks.filter {$0.absoluteStart < time}.filter {$0.absoluteEnd > time}.first
     }
 
     func currentAd(time: TimeInterval) -> Ad? {
