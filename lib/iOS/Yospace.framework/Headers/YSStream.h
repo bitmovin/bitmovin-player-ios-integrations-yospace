@@ -1,5 +1,5 @@
 /*
- * COPYRIGHT © 2018 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
+ * COPYRIGHT © 2019 YOSPACE TECHNOLOGIES LTD. ALL RIGHTS RESERVED.
  */
 
 #import <Foundation/Foundation.h>
@@ -96,5 +96,36 @@
  @since from 1.0
  */
 - (BOOL) hasPostrollAdBreak;
+
+/** Provides a relative content playhead position to the client, discounting the sum of all ad break
+ durations prior to the absolute playhead position provided. This allows the client to return
+ to the same content position if a nonlinear stream is stopped before playback ends.
+ 
+ @return for nonlinear playback, the relative content position for a given absolute playhead position.
+            For live playback this method returns zero.
+ @see [playheadForContentPosition:]([YSStream playheadForContentPosition:])
+ @since from 1.9
+ */
+- (NSTimeInterval) contentPositionForPlayhead:(NSTimeInterval)playhead;
+
+/** Provides an absolute playhead position to the client calculating the sum of all ad break durations
+ prior to that absolute playhead position plus the relative content playhead position.
+ This allows the client to return to the same content position if a nonlinear stream is stopped
+ before playback ends.
+ 
+ @return for nonlinear playback, the absolute playhead position for any given relative content position.
+         For live playback this method returns zero.
+ @see [contentPositionForPlayhead:]([YSStream contentPositionForPlayhead:])
+ @since from 1.9
+ */
+- (NSTimeInterval) playheadForContentPosition:(NSTimeInterval)position;
+
+/** Sets all adverts inactive in all ad breaks prior to the given playhead position. If the playhead
+ is within an advert then that advert is NOT marked as inactive. This method allows client applications
+ to seek to a position before playback begins. This method has no effect for linear playback.
+ @see [setAdvertActive:]([YSAdvert setAdvertActive])
+ @since from 1.9
+ */
+- (void) setAdBreaksInactivePriorTo:(NSTimeInterval) playhead;
 
 @end
