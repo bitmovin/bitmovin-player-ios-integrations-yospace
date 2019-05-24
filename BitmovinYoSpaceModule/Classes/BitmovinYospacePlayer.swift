@@ -344,7 +344,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
-
         self.sessionManager = sessionManager
         self.yospaceStream = stream
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
@@ -366,11 +365,24 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
         switch sessionManager.initialisationState {
         case .notInitialised:
-            handleError(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized")
             NSLog("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+                NSLog("Attempting to playback the stream url without Yospace")
+                self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
+                load(sourceConfiguration: sourceConfiguration)
+            } else {
+                handleError(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized")
+            }
         case .initialisedNoAnalytics:
-            handleError(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics")
             NSLog("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+                NSLog("Attempting to playback the stream url without Yospace")
+                self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
+                load(sourceConfiguration: sourceConfiguration)
+            } else {
+                handleError(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics")
+            }
+
         case .initialisedWithAnalytics:
             NSLog("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
 
@@ -388,7 +400,14 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
     }
 
     public func operationDidFailWithError(_ error: Error) {
-        handleError(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error")
+        if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+            NSLog("Attempting to playback the stream url without Yospace")
+            self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
+            load(sourceConfiguration: sourceConfiguration)
+        }
+        else {
+            handleError(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error")
+        }
     }
 
 }
@@ -453,6 +472,12 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onError(_ event: ErrorEvent) {
         for listener: PlayerListener in listeners {
             listener.onError?(event)
+        }
+    }
+
+    public func onWarning(_ event: WarningEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onWarning?(event)
         }
     }
 
