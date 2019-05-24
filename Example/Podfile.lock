@@ -1,6 +1,6 @@
 PODS:
   - BitmovinPlayer (2.19.0)
-  - BitmovinYospaceModule (0.9.5):
+  - BitmovinYospaceModule (0.9.6):
     - BitmovinPlayer (= 2.19.0)
     - TruexAdRenderer-iOS (= 3.2.0)
   - Toast-Swift (4.0.0)
@@ -36,7 +36,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   BitmovinPlayer: 234641f3f3f330b0abb1dd4583eccfca7325ee87
-  BitmovinYospaceModule: ba73ea597a50b3a7c89d37970a2a910f4b080f1a
+  BitmovinYospaceModule: eb75b7152dec62db5fdd9ee3cf479e08471c3288
   Toast-Swift: 594b5c5e5129f15438e410207e43287f027b3c00
   TruexAdRenderer-iOS: a6774e89e93b9726032bfd443b56f59ab361a408
 
