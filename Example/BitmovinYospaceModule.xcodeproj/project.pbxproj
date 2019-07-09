@@ -378,8 +378,6 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS-frameworks.sh",
 				"${PODS_ROOT}/BitmovinPlayer/tvOS/BitmovinPlayer.framework",
@@ -387,8 +385,6 @@
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-tvOS/BitmovinYospaceModule.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Yospace.framework",
