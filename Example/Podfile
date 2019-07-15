@@ -11,7 +11,7 @@ target 'BitmovinYospaceModule_Example' do
     shared_pods
     #Not needed for normal use. Just added to make the UI cleaner
     pod 'Toast-Swift', git: 'git@github.com:scalessec/Toast-Swift.git', tag: '4.0.0'
-    pod 'TruexAdRenderer-iOS', '3.2.0'
+    pod 'TruexAdRenderer-iOS', '3.2.1'
 end
 
 target 'BitmovinYospaceModule_Example_tvOS' do
