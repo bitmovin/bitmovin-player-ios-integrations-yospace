@@ -259,7 +259,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     }
     #endif
 
-    public func currentTimeWithAds() -> TimeInterval {
+    open func currentTimeWithAds() -> TimeInterval {
         return super.currentTime
     }
 
