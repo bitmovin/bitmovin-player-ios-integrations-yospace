@@ -38,11 +38,8 @@ class ViewController: UIViewController {
         // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: true, userAgent: "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari 602.1.50", timeout: 5000,pollingInterval: 4)
         
-        // Create a TruexConfiguration
-        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
-        
         //Create a BitmovinYospacePlayer
-        bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration, truexConfiguration: truexConfiguration)
+        bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
 
         //Add your listeners
         bitmovinYospacePlayer?.add(listener: self)
@@ -193,8 +190,11 @@ class ViewController: UIViewController {
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
         
-        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        // Create a TruexConfiguration
+        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
         
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config, truexConfiguration: truexConfiguration)
+
     }
 
     @IBAction func clickButtonClicked(sender: UIButton) {
@@ -264,7 +264,7 @@ extension ViewController: YospaceListener {
         self.present(alert, animated: true, completion: nil)
     }
     
-    public func onTimelineChanged(event: TimelineChangedEvent) {
+    public func onTimelineChanged(event: AdTimelineChangedEvent) {
         NSLog("Timeline Changed: \(event.timeline.debugDescription)")
     }
 }
