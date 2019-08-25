@@ -2,7 +2,7 @@
 
 ##### Platforms 
 iOS 9.0+
-tvOS 9.0+
+tvOS 9.2+
 
 ## Example
 
@@ -106,8 +106,8 @@ BitmovinYospacePlayer is available through [CocoaPods](http://cocoapods.org). To
 it, simply add the following line to your Podfile:
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'0.1.0'
-  pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.13.0'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'0.9.8'
+  pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.29.0'
 
   use_frameworks!
 ```
