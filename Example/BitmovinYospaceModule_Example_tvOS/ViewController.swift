@@ -19,7 +19,7 @@ class ViewController: UIViewController {
     @IBOutlet var startOverButton: UIButton!
     var clickUrl: URL?
     var policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
-
+    
     override func viewDidLoad() {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
@@ -68,7 +68,10 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "http://csm-e-ces1eurxaws101j8-6x78eoil2agd.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=true&yo.ac=true") else {
+//        guard let streamUrl = URL(string: "http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=false&yo.ac=true") else {
+//            return
+//        }
+        guard let streamUrl = URL(string: "https://ssai.cdn.turner.com/csmp/cmaf/live/2000073/tbse-clear/master.m3u8?yo.aas=true&yo.av=2&yo.ch=true&yo.ac=true&yo.po=-4&yo.dr=true") else {
             return
         }
 
@@ -139,6 +142,14 @@ extension ViewController: PlayerListener {
 
     public func onAdClicked(_ event: AdClickedEvent) {
         NSLog("Ad Clicked")
+    }
+    
+    public func onTimeChanged(_ event: TimeChangedEvent) {
+        NSLog("On Time Changed: \(event.currentTime)")
+    }
+    
+    public func onError(_ event: ErrorEvent) {
+        NSLog("On Error: \(event.code) - \(event.message)")
     }
 }
 

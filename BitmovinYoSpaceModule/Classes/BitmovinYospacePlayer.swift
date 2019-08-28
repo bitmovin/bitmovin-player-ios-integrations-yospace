@@ -24,6 +24,8 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     public private(set) var timeline: AdTimeline?
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
+    var dateRangeEmitter: DateRangeEmitter?
+
     #if os(iOS)
     var truexAdRenderer: BitmovinTruexAdRenderer?
     #endif
@@ -77,6 +79,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         sessionStatus = .notInitialised
         super.add(listener: self)
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
+        self.dateRangeEmitter = DateRangeEmitter(player: self)
     }
 
     open override func destroy() {
@@ -279,6 +282,10 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
+        if isLive {
+            self.adBreaks = [adBreak]
+        }
+        
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(AdBreakStartedEvent())
         }
@@ -406,8 +413,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
             NSLog("Attempting to playback the stream url without Yospace")
             self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
             load(sourceConfiguration: sourceConfiguration)
-        }
-        else {
+        } else {
             handleError(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error")
         }
     }
@@ -537,35 +543,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     func trackEmsg(_ event: MetadataEvent) {
-
-        guard let metadata: DaterangeMetadata = event.metadata as? DaterangeMetadata else {
-            return
-        }
-
-        for entry: MetadataEntry in metadata.entries where entry.metadataType == BMPMetadataType.daterange {
-            guard let entry = entry as? AVMetadataItem else {
-                continue
-            }
-
-            guard let key = entry.key, let value = entry.stringValue else {
-                continue
-            }
-
-            switch key.description {
-            case "X-COM-YOSPACE-YMID":
-                print("Key: \(key) - \(value)")
-                let yoMetdata = YSTimedMetadata()
-                yoMetdata.mediaId = value
-                yoMetdata.type = "S"
-                yoMetdata.segmentNumber = 1
-                yoMetdata.segmentCount = 1
-
-                self.notify(dictionary: [kYoMetadataKey: yoMetdata], name: YoTimedMetadataNotification)
-            default:
-                continue
-            }
-        }
-
+        self.dateRangeEmitter?.trackEmsg(event)
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {
@@ -578,7 +556,6 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     func notify(dictionary: [String: Any], name: String) {
-        NSLog("Firing %@ Notification", name)
         DispatchQueue.main.async(execute: {() -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self.yospacePlayer, userInfo: dictionary)
         })
