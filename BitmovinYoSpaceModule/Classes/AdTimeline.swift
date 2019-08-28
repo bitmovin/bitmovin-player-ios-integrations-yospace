@@ -9,7 +9,7 @@ import Foundation
 import Yospace
 import BitmovinPlayer
 
-public class AdBreak {
+public class AdBreak: CustomDebugStringConvertible {
     public private(set) var relativeStart: TimeInterval = 0.0
     public private(set) var duration: TimeInterval = 0.0
     public private(set) var absoluteStart: TimeInterval = 0.0
@@ -30,11 +30,15 @@ public class AdBreak {
         self.ads.append(ad)
     }
     //swiftlint:enable identifier_name
+    
+    public var debugDescription: String {
+        return "id=\(self.identifier) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd) ads=\(ads.map{$0.identifier})"
+    }
 
 }
 
 //swiftlint:disable type_name
-public class Ad {
+public class Ad: CustomDebugStringConvertible {
     public private(set) var relativeStart: TimeInterval = 0.0
     public private(set) var identifier: String = "unknown"
     public private(set) var duration: TimeInterval = 0.0
@@ -49,6 +53,10 @@ public class Ad {
         self.duration = duration
         self.relativeStart = relativeStart
         self.hasInteractiveUnit = hasInteractiveUnit
+    }
+    
+    public var debugDescription: String {
+        return "id=\(self.identifier) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd)"
     }
 
 }
