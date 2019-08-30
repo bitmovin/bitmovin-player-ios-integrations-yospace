@@ -47,7 +47,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             }
         }
     }
-    
+
     var adBreaks: [YSAdBreak] {
         get {
             return realAdBreaks
@@ -323,11 +323,11 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
             liveAdBreak = bitmovinAdBreak
         }
-        
+
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(adBreakStartEvent)
         }
-        
+
         #if os(iOS)
         guard let truexAdRenderer = truexAdRenderer else {
             return
@@ -360,7 +360,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                     duration: advert.advertDuration(),
                     relativeStart: currentTimeWithAds(),
                     hasInteractiveUnit: advert.hasLinearInteractiveUnit())
-        
+
         let adStartedEvent: AdStartedEvent = AdStartedEvent(clickThroughUrl: clickThroughUrl,
                                                             clientType: .IMA, indexInQueue: 0,
                                                             duration: advert.advertDuration(),
@@ -856,16 +856,4 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onConfigurationUpdated?(event)
         }
     }
-}
-
-public struct TimeRange {
-    /**
-     * start of the time range
-     */
-    public var start: TimeInterval
-
-    /**
-     * end of the time range
-     */
-    public var end: TimeInterval
 }
