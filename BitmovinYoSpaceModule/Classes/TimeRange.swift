@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct TimeRange {
+public class TimeRange {
     /**
      * start of the time range
      */
@@ -17,4 +17,9 @@ public struct TimeRange {
      * end of the time range
      */
     public var end: TimeInterval
+    
+    init(start: TimeInterval, end: TimeInterval) {
+        self.start = start
+        self.end = end
+    }
 }
