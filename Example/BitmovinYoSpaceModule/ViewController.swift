@@ -22,7 +22,8 @@ class ViewController: UIViewController {
     @IBOutlet var textField: UITextField!
     @IBOutlet var assetType: UISegmentedControl!
     @IBOutlet var adLabel: UILabel!
-    
+    @IBOutlet var currentTime: UILabel!
+
     var bitmovinPlayerView: PlayerView?
     var clickUrl: URL?
 
@@ -38,7 +39,7 @@ class ViewController: UIViewController {
         configuration.playbackConfiguration.isMuted = true
         
         // Create a YospaceConfiguration
-        let yospaceConfiguration = YospaceConfiguration(debug: false, timeout: 5000)
+        let yospaceConfiguration = YospaceConfiguration(debug: true, timeout: 5000)
         
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
@@ -234,7 +235,11 @@ extension ViewController: PlayerListener {
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        NSLog("Ad Break Started \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
+        if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
+            NSLog("Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
+        }else {
+            NSLog("Ad Break Started")
+        }
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
@@ -257,6 +262,7 @@ extension ViewController: PlayerListener {
     
     public func onTimeChanged(_ event: TimeChangedEvent) {
 //        NSLog("On Time Changed - EventTime: \(event.currentTime) Duration: \(bitmovinYospacePlayer!.duration) TimeShift: \(bitmovinYospacePlayer!.timeShift) MaxTimeShift: \(bitmovinYospacePlayer!.maxTimeShift) isLive: \(bitmovinYospacePlayer!.isLive)")
+        self.currentTime.text = String(format: "time: %.1f",event.currentTime)
     }
 }
 

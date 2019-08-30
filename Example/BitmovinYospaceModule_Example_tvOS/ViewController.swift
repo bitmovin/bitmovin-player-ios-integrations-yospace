@@ -123,21 +123,25 @@ class ViewController: UIViewController {
 
 extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
-        NSLog("Ad Started")
+        NSLog("Ad Started \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
         clickUrl = event.clickThroughUrl
     }
-
+    
     public func onAdFinished(_ event: AdFinishedEvent) {
-        NSLog("Ad Finished")
-        clickUrl = nil
+        NSLog("Ad Finished \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
     }
-
+    
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        NSLog("Ad Break Started")
+        if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
+            NSLog("Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
+        }else {
+            NSLog("Ad Break Started")
+        }
     }
-
+    
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        NSLog("Ad Break Finished")
+        NSLog("Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
+        
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
@@ -145,7 +149,7 @@ extension ViewController: PlayerListener {
     }
     
     public func onTimeChanged(_ event: TimeChangedEvent) {
-        NSLog("On Time Changed: \(event.currentTime)")
+
     }
     
     public func onError(_ event: ErrorEvent) {
