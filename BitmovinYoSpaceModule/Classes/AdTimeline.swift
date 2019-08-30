@@ -31,7 +31,7 @@ public class AdBreak: CustomDebugStringConvertible {
         self.absoluteEnd = ysAdBreak.adBreakEnd()
         self.duration = ysAdBreak.adBreakDuration()
         self.relativeStart = ysAdBreak.adBreakStart()
-        
+
         for advertisement in ysAdBreak.adverts() {
             if let advert: YSAdvert = advertisement as? YSAdvert {
                 let newAd: Ad = Ad(ysAd: advert, relativeStart: self.relativeStart)
@@ -69,7 +69,7 @@ public class Ad: CustomDebugStringConvertible {
         self.relativeStart = relativeStart
         self.hasInteractiveUnit = hasInteractiveUnit
     }
-    
+
     init (ysAd: YSAdvert, relativeStart: TimeInterval) {
         self.identifier = ysAd.advertIdentifier()
         self.absoluteStart = ysAd.advertStart()
