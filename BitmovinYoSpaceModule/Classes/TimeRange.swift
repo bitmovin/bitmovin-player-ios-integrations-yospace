@@ -18,7 +18,7 @@ public class TimeRange {
      */
     public var end: TimeInterval
     
-    init(start: TimeInterval, end: TimeInterval) {
+    public init(start: TimeInterval, end: TimeInterval) {
         self.start = start
         self.end = end
     }
