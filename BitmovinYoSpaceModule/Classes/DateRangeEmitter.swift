@@ -22,7 +22,22 @@ class DateRangeEmitter: NSObject {
     var deviceOffsetFromPDT: TimeInterval = 0
     let adEventOffset = 0.1 // Offset from the start and end of the ad that we will send the S and E event
     let mEventInterval = 2.0 //Interval at which we will send M event
-
+    var seekableRange: TimeRange {
+        guard let player = player else {
+            return TimeRange(start: 0, end: 0)
+        }
+        if player.isLive {
+            let currentTime = player.currentTimeWithAds()
+            let timeShift = player.timeShift
+            let maxTimeShift = player.maxTimeShift
+            let start = currentTime + maxTimeShift - timeShift
+            let end = currentTime - timeShift
+            return TimeRange(start: start, end: end)
+        } else {
+            return TimeRange(start: 0, end: player.duration)
+        }
+    }
+    
     init(player: BitmovinYospacePlayer) {
         super.init()
         self.player = player
@@ -182,7 +197,7 @@ extension DateRangeEmitter: PlayerListener {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         initialPDT = Date(timeIntervalSince1970: player.currentTimeWithAds())
         deviceOffsetFromPDT = Date().timeIntervalSince(initialPDT)
-        let relativePlayheadTime = player.currentTimeWithAds() - player.seekableRange.start
+        let relativePlayheadTime = player.currentTimeWithAds() - seekableRange.start
         // swiftlint:disable line_length
         NSLog("[DateRangeEmitter] initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)")
         // swiftlint:enable line_length
