@@ -17,7 +17,7 @@ struct TimedMetadataEvent {
 class DateRangeEmitter: NSObject {
     weak var player: BitmovinYospacePlayer?
     var timedMetadataEvents: [TimedMetadataEvent] = []
-    var processedDaterangeMetadata = [String: Date]()
+    var processedDaterangeMetadata: [String: Date] = [:]
     var initialPDT: Date = Date()
     var deviceOffsetFromPDT: TimeInterval = 0
     let adEventOffset = 0.1 // Offset from the start and end of the ad that we will send the S and E event
@@ -53,6 +53,10 @@ class DateRangeEmitter: NSObject {
 
         let previousMetadataDate: Date? = processedDaterangeMetadata[mediaId]
 
+        /**
+         * Compare the date between the metadata I have seen and the current metadata I received. If this is less than 15 seconds
+         * it probably is a duplicate
+         */
         if  let date = previousMetadataDate, dateRangeMetadata.startDate.timeIntervalSince(date) < 15.0 {
             NSLog("[DateRangeEmitter] - duplicate metadata received - \(mediaId) \(dateRangeMetadata.startDate)")
             return
