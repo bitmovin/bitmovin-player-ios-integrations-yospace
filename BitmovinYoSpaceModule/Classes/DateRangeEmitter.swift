@@ -52,7 +52,6 @@ class DateRangeEmitter: NSObject {
         generateEventsForDateRange(mediaId: mediaId, startDate: dateRangeMetadata.startDate, endDate: endDate, player: player)
     }
 
-    
     /**
      Parse the mediaId our of the DaterangeMetadata
     */
@@ -77,7 +76,6 @@ class DateRangeEmitter: NSObject {
         return mediaId
     }
 
-    
     /**
      Generate all of our YSTimedMetadata events based on the EXT-X-DATERANGE tag that we just processed
     */
