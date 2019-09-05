@@ -37,7 +37,7 @@ class DateRangeEmitter: NSObject {
             return TimeRange(start: 0, end: player.duration)
         }
     }
-    
+
     init(player: BitmovinYospacePlayer) {
         super.init()
         self.player = player
