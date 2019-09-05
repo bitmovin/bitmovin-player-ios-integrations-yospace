@@ -96,20 +96,20 @@ class DateRangeEmitter: NSObject {
         startMetdata.offset = adEventOffset
         startMetdata.timestamp = Date(timeIntervalSince1970: startWallclock)
         currentTime += adEventOffset
-        let startEvent = TimedMetadataEvent(time: currentTime, metadata: startMetdata)
-        timedMetadataEvents.append(startEvent)
+        let startTimedMetadataEvent = TimedMetadataEvent(time: currentTime, metadata: startMetdata)
+        timedMetadataEvents.append(startTimedMetadataEvent)
 
-        var iterator = 0.1 + mEventInterval
+        var iterator = adEventOffset + mEventInterval
         while iterator < duration {
-            let metadata = YSTimedMetadata()
-            metadata.mediaId = mediaId
-            metadata.type = "M"
-            metadata.segmentCount = 1
-            metadata.segmentNumber = 1
-            metadata.offset = iterator
-            metadata.timestamp = Date(timeIntervalSince1970: startWallclock + iterator)
-            let dateRangeEvent = TimedMetadataEvent(time: currentTime + iterator, metadata: metadata)
-            timedMetadataEvents.append(dateRangeEvent)
+            let  midMetadata = YSTimedMetadata()
+             midMetadata.mediaId = mediaId
+             midMetadata.type = "M"
+             midMetadata.segmentCount = 1
+             midMetadata.segmentNumber = 1
+             midMetadata.offset = iterator
+             midMetadata.timestamp = Date(timeIntervalSince1970: startWallclock + iterator)
+            let timedMetadataEvent = TimedMetadataEvent(time: currentTime + iterator, metadata:  midMetadata)
+            timedMetadataEvents.append(timedMetadataEvent)
             iterator += mEventInterval
         }
 
@@ -120,8 +120,8 @@ class DateRangeEmitter: NSObject {
         endMetadata.segmentNumber = 1
         endMetadata.timestamp = Date(timeIntervalSince1970: endDate.timeIntervalSince1970 + deviceOffsetFromPDT - adEventOffset)
         endMetadata.offset = duration - adEventOffset
-        let endEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: endMetadata)
-        timedMetadataEvents.append(endEvent)
+        let endTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: endMetadata)
+        timedMetadataEvents.append(endTimedMetadataEvent)
 
         NSLog("[DateRangeEmitter] TimedMetadataEvents - \(timedMetadataEvents.map {$0.metadata.timestamp})" )
     }
@@ -137,7 +137,7 @@ extension DateRangeEmitter: PlayerListener {
 
         let currentTime = player?.currentTimeWithAds() ?? event.currentTime
 
-        // If our players currentTime is passed the nextEvents time, send a YSTimedMetadata event
+        // If our players currentTime is passed the nextEvents time, send a YSTimedMetadata event and remove it from our list
         if (currentTime - nextEvent.time) >= -1 {
             timedMetadataEvents.removeFirst(1)
             let yoMetadata = nextEvent.metadata
@@ -185,7 +185,10 @@ extension DateRangeEmitter: PlayerListener {
         initialPDT = Date(timeIntervalSince1970: player.currentTimeWithAds())
         deviceOffsetFromPDT = Date().timeIntervalSince(initialPDT)
         let relativePlayheadTime = player.currentTimeWithAds() - player.seekableRange.start
-        NSLog("[DateRangeEmitter] pdt=\(dateFormatter.string(from: initialPDT)) startOffset=\(deviceOffsetFromPDT) time=\(relativePlayheadTime)")
+        // swiftlint:disable line_length
+        NSLog("[DateRangeEmitter] initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)")
+        // swiftlint:enable line_length
+
     }
 
 }
