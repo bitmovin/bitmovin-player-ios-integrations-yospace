@@ -17,6 +17,8 @@ class ViewController: UIViewController {
     @IBOutlet var liveButton: UIButton!
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
+    @IBOutlet var adLabel: UILabel!
+    
     var clickUrl: URL?
     var policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
     
@@ -26,7 +28,7 @@ class ViewController: UIViewController {
         configuration.playbackConfiguration.isAutoplayEnabled = true
 
         // Create a YospaceConfiguration
-        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+        let yospaceConfiguration = YospaceConfiguration(debug: true, userAgent: "Custom User Agent", timeout: 5000)
 
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
@@ -71,7 +73,7 @@ class ViewController: UIViewController {
 //        guard let streamUrl = URL(string: "http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=false&yo.ac=true") else {
 //            return
 //        }
-        guard let streamUrl = URL(string: "https://ssai.cdn.turner.com/csmp/cmaf/live/2000073/tbse-clear/master.m3u8?yo.aas=true&yo.av=2&yo.ch=true&yo.ac=true&yo.po=-4&yo.dr=true") else {
+        guard let streamUrl = URL(string: "https://ssai.cdn.turner.com/csmp/cmaf/live/2000073/tbse-clear-novpaid/master.m3u8?yo.aas=true&yo.av=2&yo.ch=true&yo.ac=true&yo.po=-4&yo.dr=true") else {
             return
         }
 
@@ -149,7 +151,10 @@ extension ViewController: PlayerListener {
     }
     
     public func onTimeChanged(_ event: TimeChangedEvent) {
-
+        guard let player = bitmovinYospacePlayer else {
+            return
+        }
+        self.adLabel.text = "Ad: \(player.isAd) time=\(Double(round(10*player.currentTime)/10))"
     }
     
     public func onError(_ event: ErrorEvent) {

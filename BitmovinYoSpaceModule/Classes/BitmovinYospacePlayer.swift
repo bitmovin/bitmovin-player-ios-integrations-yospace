@@ -258,7 +258,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
 
-    #if os(iOS)
     open override func skipAd() {
         if sessionStatus != .notInitialised {
             guard sessionManager != nil else {
@@ -282,7 +281,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             return super.isAd
         }
     }
-    #endif
 
     open func currentTimeWithAds() -> TimeInterval {
         return super.currentTime
