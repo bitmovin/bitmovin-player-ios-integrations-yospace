@@ -515,9 +515,12 @@ extension BitmovinYospacePlayer: PlayerListener {
         for listener: PlayerListener in listeners {
             listener.onError?(event)
         }
-
         let error = NSError(domain: "Bitmovin", code: Int(event.code), userInfo: [NSLocalizedDescriptionKey: event.message])
-        let dictionary = [kYoPlayheadKey: Int(currentTimeWithAds()), kYoErrorKey: error] as [String: Any]
+        var time = currentTimeWithAds()
+        if time.isInfinite || time.isNaN {
+            time = 0
+        }
+        let dictionary = [kYoPlayheadKey: Int(time), kYoErrorKey: error] as [String: Any]
         self.notify(dictionary: dictionary, name: YoPlaybackErrorNotification)
     }
 
