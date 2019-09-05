@@ -33,21 +33,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var truexAdRenderer: BitmovinTruexAdRenderer?
     #endif
 
-    open var seekableRange: TimeRange {
-        get {
-            if self.isLive {
-                let currentTime = self.currentTime
-                let timeShift = self.timeShift
-                let maxTimeShift = self.maxTimeShift
-                let start = currentTime + maxTimeShift - timeShift
-                let end = currentTime - timeShift
-                return TimeRange(start: start, end: end)
-            } else {
-                return TimeRange(start: 0, end: self.duration)
-            }
-        }
-    }
-
     var adBreaks: [YSAdBreak] {
         get {
             return realAdBreaks
