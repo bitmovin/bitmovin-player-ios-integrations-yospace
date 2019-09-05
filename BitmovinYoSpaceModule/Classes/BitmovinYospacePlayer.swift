@@ -226,7 +226,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     func handleError(code: UInt, message: String) {
-    for listener: YospaceListener in yospaceListeners {
+        for listener: YospaceListener in yospaceListeners {
             listener.onYospaceError(event: ErrorEvent(code: code, message: message))
         }
     }
@@ -299,10 +299,10 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
         if isLive {
             let bitmovinAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
-                                                   absoluteStart: adBreak.adBreakStart() + timebase,
-                                                   absoluteEnd: adBreak.adBreakEnd() + timebase,
-                                                   duration: adBreak.adBreakDuration(),
-                                                   relativeStart: adBreak.adBreakStart())
+                                          absoluteStart: adBreak.adBreakStart(),
+                                          absoluteEnd: adBreak.adBreakEnd() + timebase,
+                                          duration: adBreak.adBreakDuration(),
+                                          relativeStart: adBreak.adBreakStart())
             adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
             liveAdBreak = bitmovinAdBreak
         }
@@ -559,9 +559,12 @@ extension BitmovinYospacePlayer: PlayerListener {
         if yospaceSourceConfiguration?.yospaceAssetType == YospaceAssetType.linear {
             if event.metadataType == BMPMetadataType.ID3 {
                 trackId3(event)
-            } else {
+            } else if event.metadataType == BMPMetadataType.daterange {
                 trackDateRange(event)
             }
+        }
+        for listener: PlayerListener in listeners {
+            listener.onMetadata?(event)
         }
     }
 
@@ -574,9 +577,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             let dictionary = [kYoMetadataKey: meta]
             self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
         }
-        for listener: PlayerListener in listeners {
-            listener.onMetadata?(event)
-        }
+
     }
 
     func trackDateRange(_ event: MetadataEvent) {
