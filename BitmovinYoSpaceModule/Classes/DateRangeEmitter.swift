@@ -102,13 +102,13 @@ class DateRangeEmitter: NSObject {
         var iterator = adEventOffset + mEventInterval
         while iterator < duration {
             let  midMetadata = YSTimedMetadata()
-             midMetadata.mediaId = mediaId
-             midMetadata.type = "M"
-             midMetadata.segmentCount = 1
-             midMetadata.segmentNumber = 1
-             midMetadata.offset = iterator
-             midMetadata.timestamp = Date(timeIntervalSince1970: startWallclock + iterator)
-            let timedMetadataEvent = TimedMetadataEvent(time: currentTime + iterator, metadata:  midMetadata)
+            midMetadata.mediaId = mediaId
+            midMetadata.type = "M"
+            midMetadata.segmentCount = 1
+            midMetadata.segmentNumber = 1
+            midMetadata.offset = iterator
+            midMetadata.timestamp = Date(timeIntervalSince1970: startWallclock + iterator)
+            let timedMetadataEvent = TimedMetadataEvent(time: currentTime + iterator, metadata: midMetadata)
             timedMetadataEvents.append(timedMetadataEvent)
             iterator += mEventInterval
         }
