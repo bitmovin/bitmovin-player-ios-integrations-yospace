@@ -228,7 +228,7 @@ extension ViewController: PlayerListener {
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
-        NSLog("Ad Finished \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
+        NSLog("Ad Finished")
         self.adLabel.text = "Ad: false"
         clickButton.isEnabled = false
         clickUrl = nil

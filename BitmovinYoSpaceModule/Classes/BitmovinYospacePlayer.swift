@@ -571,7 +571,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             if event.metadataType == BMPMetadataType.ID3 {
                 trackId3(event)
             } else {
-                trackEmsg(event)
+                trackDateRange(event)
             }
         }
     }
@@ -590,7 +590,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    func trackEmsg(_ event: MetadataEvent) {
+    func trackDateRange(_ event: MetadataEvent) {
         self.dateRangeEmitter?.trackEmsg(event)
     }
 

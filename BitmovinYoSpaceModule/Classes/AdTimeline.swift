@@ -25,21 +25,6 @@ public class AdBreak: CustomDebugStringConvertible {
         self.relativeStart = relativeStart
     }
 
-    init(ysAdBreak: YSAdBreak) {
-        self.identifier = ysAdBreak.adBreakIdentifier()
-        self.absoluteStart = ysAdBreak.adBreakStart()
-        self.absoluteEnd = ysAdBreak.adBreakEnd()
-        self.duration = ysAdBreak.adBreakDuration()
-        self.relativeStart = ysAdBreak.adBreakStart()
-
-        for advertisement in ysAdBreak.adverts() {
-            if let advert: YSAdvert = advertisement as? YSAdvert {
-                let newAd: Ad = Ad(ysAd: advert, relativeStart: self.relativeStart)
-                self.appendAd(ad: newAd)
-            }
-        }
-    }
-
     //swiftlint:disable identifier_name
     func appendAd(ad: Ad) {
         self.ads.append(ad)
@@ -68,15 +53,6 @@ public class Ad: CustomDebugStringConvertible {
         self.duration = duration
         self.relativeStart = relativeStart
         self.hasInteractiveUnit = hasInteractiveUnit
-    }
-
-    init (ysAd: YSAdvert, relativeStart: TimeInterval) {
-        self.identifier = ysAd.advertIdentifier()
-        self.absoluteStart = ysAd.advertStart()
-        self.absoluteEnd = ysAd.advertEnd()
-        self.duration = ysAd.advertDuration()
-        self.relativeStart = relativeStart
-        self.hasInteractiveUnit = ysAd.hasLinearInteractiveUnit()
     }
 
     public var debugDescription: String {
