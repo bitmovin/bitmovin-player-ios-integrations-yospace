@@ -54,8 +54,8 @@ class DateRangeEmitter: NSObject {
 
         let previousMetadataDate: Date? = timedMetadataDictionary[mediaId];
         
-        if  let date = previousMetadataDate, date.timeIntervalSince(dateRangeMetadata.startDate) < 15.0 {
-            NSLog("[DateRangeEmitter] - duplicate metadata received")
+        if  let date = previousMetadataDate, dateRangeMetadata.startDate.timeIntervalSince(date) < 15.0 {
+            NSLog("[DateRangeEmitter] - duplicate metadata received - \(mediaId) \(dateRangeMetadata.startDate)")
             return
         }
 
