@@ -299,7 +299,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
         if isLive {
             let bitmovinAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
-                                          absoluteStart: adBreak.adBreakStart(),
+                                          absoluteStart: adBreak.adBreakStart() + timebase,
                                           absoluteEnd: adBreak.adBreakEnd() + timebase,
                                           duration: adBreak.adBreakDuration(),
                                           relativeStart: adBreak.adBreakStart())
