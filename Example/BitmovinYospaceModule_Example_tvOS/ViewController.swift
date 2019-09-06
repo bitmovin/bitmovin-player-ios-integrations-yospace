@@ -17,16 +17,18 @@ class ViewController: UIViewController {
     @IBOutlet var liveButton: UIButton!
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
+    @IBOutlet var adLabel: UILabel!
+    
     var clickUrl: URL?
     var policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
-
+    
     override func viewDidLoad() {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
 
         // Create a YospaceConfiguration
-        let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+        let yospaceConfiguration = YospaceConfiguration(debug: true, userAgent: "Custom User Agent", timeout: 5000)
 
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
@@ -68,7 +70,10 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "http://csm-e-ces1eurxaws101j8-6x78eoil2agd.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=true&yo.ac=true") else {
+//        guard let streamUrl = URL(string: "http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=false&yo.ac=true") else {
+//            return
+//        }
+        guard let streamUrl = URL(string: "https://ssai.cdn.turner.com/csmp/cmaf/live/2000073/tbse-clear-novpaid/master.m3u8?yo.aas=true&yo.av=2&yo.ch=true&yo.ac=true&yo.po=-4&yo.dr=true") else {
             return
         }
 
@@ -120,25 +125,40 @@ class ViewController: UIViewController {
 
 extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
-        NSLog("Ad Started")
+        NSLog("Ad Started \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
         clickUrl = event.clickThroughUrl
     }
-
+    
     public func onAdFinished(_ event: AdFinishedEvent) {
-        NSLog("Ad Finished")
-        clickUrl = nil
+        NSLog("Ad Finished \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
     }
-
+    
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        NSLog("Ad Break Started")
+        if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
+            NSLog("Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
+        }else {
+            NSLog("Ad Break Started")
+        }
     }
-
+    
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        NSLog("Ad Break Finished")
+        NSLog("Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
+        
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
         NSLog("Ad Clicked")
+    }
+    
+    public func onTimeChanged(_ event: TimeChangedEvent) {
+        guard let player = bitmovinYospacePlayer else {
+            return
+        }
+        self.adLabel.text = "Ad: \(player.isAd) time=\(Double(round(10*player.currentTime)/10))"
+    }
+    
+    public func onError(_ event: ErrorEvent) {
+        NSLog("On Error: \(event.code) - \(event.message)")
     }
 }
 
