@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="14460.31" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="14490.70" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="appleTV" orientation="landscape">
         <adaptation id="light"/>
     </device>
     <dependencies>
         <deployment identifier="tvOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -58,11 +58,19 @@
                                     <action selector="unloadButtonClickedWithSender:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="5L7-E9-1HF"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ad: false time=0.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k5z-3F-Pd7">
+                                <rect key="frame" x="983" y="40" width="827" height="46"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="2WK-52-IEe" firstAttribute="leading" secondItem="p9v-PE-h6n" secondAttribute="leading" id="0rb-OU-DAN"/>
+                            <constraint firstItem="k5z-3F-Pd7" firstAttribute="centerY" secondItem="cDr-wq-veW" secondAttribute="centerY" id="3mV-9Z-I70"/>
                             <constraint firstItem="Jas-lY-gGY" firstAttribute="top" secondItem="wu6-TO-1qx" secondAttribute="top" constant="-40" id="91E-Te-vYV"/>
+                            <constraint firstItem="k5z-3F-Pd7" firstAttribute="leading" secondItem="cDr-wq-veW" secondAttribute="trailing" constant="78" id="9KM-cZ-3hA"/>
                             <constraint firstItem="p9v-PE-h6n" firstAttribute="leading" secondItem="wu6-TO-1qx" secondAttribute="leading" constant="20" id="CMm-8c-oHA"/>
                             <constraint firstItem="p9v-PE-h6n" firstAttribute="top" secondItem="wu6-TO-1qx" secondAttribute="top" constant="-40" id="EgY-d5-yF0"/>
                             <constraint firstItem="2WK-52-IEe" firstAttribute="leading" secondItem="wu6-TO-1qx" secondAttribute="leading" constant="20" id="HHd-G2-flH"/>
@@ -75,6 +83,7 @@
                             <constraint firstItem="NgI-Xp-zXK" firstAttribute="top" secondItem="wu6-TO-1qx" secondAttribute="top" constant="-40" id="fIH-gV-hMN"/>
                             <constraint firstItem="2WK-52-IEe" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="54" id="ffX-Zc-4xG"/>
                             <constraint firstAttribute="trailing" secondItem="2WK-52-IEe" secondAttribute="trailing" constant="110" id="ile-X0-56M"/>
+                            <constraint firstItem="wu6-TO-1qx" firstAttribute="trailing" secondItem="k5z-3F-Pd7" secondAttribute="trailing" constant="20" id="mjU-8o-bdV"/>
                             <constraint firstItem="2WK-52-IEe" firstAttribute="top" secondItem="NgI-Xp-zXK" secondAttribute="bottom" constant="8" id="qqo-Yi-hJD"/>
                             <constraint firstItem="wu6-TO-1qx" firstAttribute="trailing" secondItem="cDr-wq-veW" secondAttribute="trailing" constant="925" id="rlN-ct-dsm"/>
                             <constraint firstItem="cDr-wq-veW" firstAttribute="leading" secondItem="NgI-Xp-zXK" secondAttribute="trailing" constant="31" id="uA8-QD-SaW"/>
@@ -83,6 +92,7 @@
                         <viewLayoutGuide key="safeArea" id="wu6-TO-1qx"/>
                     </view>
                     <connections>
+                        <outlet property="adLabel" destination="k5z-3F-Pd7" id="VzX-nX-Rg0"/>
                         <outlet property="liveButton" destination="Jas-lY-gGY" id="lRd-xf-r8E"/>
                         <outlet property="playerView" destination="2WK-52-IEe" id="BwC-c2-uhi"/>
                         <outlet property="startOverButton" destination="NgI-Xp-zXK" id="u6Q-FF-pfs"/>

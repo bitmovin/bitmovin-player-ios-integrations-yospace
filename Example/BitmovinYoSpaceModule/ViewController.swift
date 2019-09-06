@@ -21,7 +21,9 @@ class ViewController: UIViewController {
     @IBOutlet var clickButton: UIButton!
     @IBOutlet var textField: UITextField!
     @IBOutlet var assetType: UISegmentedControl!
-    
+    @IBOutlet var adLabel: UILabel!
+    @IBOutlet var currentTime: UILabel!
+
     var bitmovinPlayerView: PlayerView?
     var clickUrl: URL?
 
@@ -34,9 +36,10 @@ class ViewController: UIViewController {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
+        configuration.playbackConfiguration.isMuted = true
         
         // Create a YospaceConfiguration
-        let yospaceConfiguration = YospaceConfiguration(debug: true, userAgent: "Mozilla/5.0 (iPod; CPU iPhone OS 12_0 like macOS) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/12.0 Mobile/14A5335d Safari 602.1.50", timeout: 5000,pollingInterval: 4)
+        let yospaceConfiguration = YospaceConfiguration(debug: true, timeout: 5000)
         
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
@@ -94,9 +97,13 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/extlive/turnerdev01,tbse-clear.m3u8?yo.ac=true&yo.dr=true&yo.ch=true&yo.dr=true") else {
+        guard let streamUrl = URL(string: "https://ssai.cdn.turner.com/csmp/cmaf/live/2000073/tbse-clear-novpaid/master.m3u8?yo.aas=true&yo.av=2&yo.ch=true&yo.ac=true&yo.po=-4&yo.dr=true") else {
             return
         }
+        
+//        guard let streamUrl = URL(string: "http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=false&yo.ac=true") else {
+//            return
+//        }
         
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
@@ -214,28 +221,30 @@ class ViewController: UIViewController {
 
 extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
-        NSLog("Ad Started")
-        self.view.makeToast("Ad Started")
+        NSLog("Ad Started \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
+        self.adLabel.text = "Ad: true"
         clickButton.isEnabled = true
         clickUrl = event.clickThroughUrl
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
         NSLog("Ad Finished")
-        self.view.makeToast("Ad Finished")
-
+        self.adLabel.text = "Ad: false"
         clickButton.isEnabled = false
         clickUrl = nil
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        NSLog("Ad Break Started")
-        self.view.makeToast("Ad Break Started")
+        if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
+            NSLog("Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
+        }else {
+            NSLog("Ad Break Started")
+        }
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        NSLog("Ad Break Finished")
-        self.view.makeToast("Ad Break Finished")
+        NSLog("Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
+        
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
@@ -253,6 +262,7 @@ extension ViewController: PlayerListener {
     
     public func onTimeChanged(_ event: TimeChangedEvent) {
 //        NSLog("On Time Changed - EventTime: \(event.currentTime) Duration: \(bitmovinYospacePlayer!.duration) TimeShift: \(bitmovinYospacePlayer!.timeShift) MaxTimeShift: \(bitmovinYospacePlayer!.maxTimeShift) isLive: \(bitmovinYospacePlayer!.isLive)")
+        self.currentTime.text = String(format: "time: %.1f",event.currentTime)
     }
 }
 
