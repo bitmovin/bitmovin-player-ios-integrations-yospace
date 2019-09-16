@@ -18,10 +18,10 @@ class ViewController: UIViewController {
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var startOverButton: UIButton!
     @IBOutlet var adLabel: UILabel!
-    
+
     var clickUrl: URL?
     var policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
-    
+
     override func viewDidLoad() {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
@@ -128,35 +128,35 @@ extension ViewController: PlayerListener {
         NSLog("Ad Started \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
         clickUrl = event.clickThroughUrl
     }
-    
+
     public func onAdFinished(_ event: AdFinishedEvent) {
         NSLog("Ad Finished \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
     }
-    
+
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
         if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
             NSLog("Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
-        }else {
+        } else {
             NSLog("Ad Break Started")
         }
     }
-    
+
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
         NSLog("Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
-        
+
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
         NSLog("Ad Clicked")
     }
-    
+
     public func onTimeChanged(_ event: TimeChangedEvent) {
         guard let player = bitmovinYospacePlayer else {
             return
         }
         self.adLabel.text = "Ad: \(player.isAd) time=\(Double(round(10*player.currentTime)/10))"
     }
-    
+
     public func onError(_ event: ErrorEvent) {
         NSLog("On Error: \(event.code) - \(event.message)")
     }
@@ -169,9 +169,8 @@ extension ViewController: YospaceListener {
         alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
-    
-    public func onTimelineChanged(event: AdTimelineChangedEvent){
-        
-        
+
+    public func onTimelineChanged(event: AdTimelineChangedEvent) {
+
     }
 }
