@@ -107,7 +107,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
      - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
      - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
      */
-    open func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration, truexConfiguration: TruexConfiguration? = nil) {
+    open func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration? = nil, truexConfiguration: TruexConfiguration? = nil) {
         #if os(iOS)
         if let truexConfiguration = truexConfiguration {
             self.truexConfiguration = truexConfiguration
@@ -146,6 +146,11 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
         guard let url: URL = self.sourceConfiguration?.firstSourceItem?.hlsSource?.url else {
             handleError(code: YospaceErrorCode.invalidSource.rawValue, message: "Invalid source provided. Yospace URL must be HLS")
+            return
+        }
+
+        guard let yospaceSourceConfiguration = yospaceSourceConfiguration else {
+            load(sourceConfiguration: sourceConfiguration)
             return
         }
 
