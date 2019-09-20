@@ -9,7 +9,6 @@
 import UIKit
 import BitmovinYospaceModule
 import BitmovinPlayer
-import Toast_Swift
 
 class ViewController: UIViewController {
     var bitmovinYospacePlayer: BitmovinYospacePlayer?
@@ -263,7 +262,6 @@ extension ViewController: PlayerListener {
 
     public func onAdClicked(_ event: AdClickedEvent) {
         NSLog("[ViewController] Ad Clicked")
-        self.view.makeToast("Ad Clicked")
     }
 
     public func onDurationChanged(_ event: DurationChangedEvent) {
