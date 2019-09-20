@@ -2,15 +2,13 @@ source 'https://www.github.com/socialvibe/cocoapod-specs'
 
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
-    pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.29.0'
+    pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.31.0'
 end
 
 target 'BitmovinYospaceModule_Example' do
     use_frameworks!
     platform :ios, '9.0'
     shared_pods
-    #Not needed for normal use. Just added to make the UI cleaner
-    pod 'Toast-Swift', git: 'git@github.com:scalessec/Toast-Swift.git', tag: '4.0.0'
     pod 'TruexAdRenderer-iOS', '3.2.1'
 end
 

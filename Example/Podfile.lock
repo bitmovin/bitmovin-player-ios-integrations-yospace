@@ -1,15 +1,13 @@
 PODS:
-  - BitmovinPlayer (2.29.0)
+  - BitmovinPlayer (2.31.0)
   - BitmovinYospaceModule (0.9.9):
-    - BitmovinPlayer (= 2.29.0)
+    - BitmovinPlayer (= 2.31.0)
     - TruexAdRenderer-iOS (= 3.2.1)
-  - Toast-Swift (4.0.0)
   - TruexAdRenderer-iOS (3.2.1)
 
 DEPENDENCIES:
-  - BitmovinPlayer (from `https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git`, tag `2.29.0`)
+  - BitmovinPlayer (from `https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git`, tag `2.31.0`)
   - BitmovinYospaceModule (from `../`)
-  - "Toast-Swift (from `git@github.com:scalessec/Toast-Swift.git`, tag `4.0.0`)"
   - TruexAdRenderer-iOS (= 3.2.1)
 
 SPEC REPOS:
@@ -19,27 +17,20 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   BitmovinPlayer:
     :git: https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git
-    :tag: 2.29.0
+    :tag: 2.31.0
   BitmovinYospaceModule:
     :path: "../"
-  Toast-Swift:
-    :git: "git@github.com:scalessec/Toast-Swift.git"
-    :tag: 4.0.0
 
 CHECKOUT OPTIONS:
   BitmovinPlayer:
     :git: https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git
-    :tag: 2.29.0
-  Toast-Swift:
-    :git: "git@github.com:scalessec/Toast-Swift.git"
-    :tag: 4.0.0
+    :tag: 2.31.0
 
 SPEC CHECKSUMS:
-  BitmovinPlayer: 1af800b2e91f4793a40c04a3ac8d778cd3d7fc75
-  BitmovinYospaceModule: 18db939651cd0d56e9c6e03c12684aaecabf0e43
-  Toast-Swift: 594b5c5e5129f15438e410207e43287f027b3c00
+  BitmovinPlayer: 29dd8f21eccf1393075e5992034a09b18574f693
+  BitmovinYospaceModule: 3720a11d27c108344ec94b4433177f93dd71434d
   TruexAdRenderer-iOS: ae88dfba906c2ec8ad6f4a6ad150e42f2bbc3726
 
-PODFILE CHECKSUM: bce2fc588dee0566c1a04e9eb4f550f1e047a2fa
+PODFILE CHECKSUM: 4b1b46d38082753ddd42b99722dc8cda96bfb2a7
 
 COCOAPODS: 1.6.1
