@@ -17,7 +17,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     var vastConfigUrl: String
     var userId: String
     var adFree = false
-    
+
     init(bitmovinPlayer: BitmovinYospacePlayer, view: UIView, userId: String = "", vastConfigUrl: String = "") {
         self.bitmovinPlayer = bitmovinPlayer
         self.view = view
@@ -66,30 +66,16 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
         self.bitmovinPlayer?.play()
 
         if !adFree {
-            guard let adBreak = self.bitmovinPlayer?.getActiveAdBreak(), let advertisement = self.bitmovinPlayer?.getActiveAd() else {
+            guard let advertisement = self.bitmovinPlayer?.getActiveAd() else {
                 return
             }
-
-            guard let listeners = self.bitmovinPlayer?.listeners else {
-                return
-            }
-
-            let adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: adBreak)
-
             let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: advertisement.clickThroughUrl,
                                                                               clientType: .unknown, indexInQueue: 0,
                                                                               duration: advertisement.duration,
                                                                               timeOffset: advertisement.relativeStart,
                                                                               skipOffset: 1,
                                                                               position: "0")
-
-            for listener: PlayerListener in listeners {
-                listener.onAdBreakStarted?(adBreakStartEvent)
-            }
-
-            for listener: PlayerListener in listeners {
-                listener.onAdStarted?(adStartedEvent)
-            }
+            fireAdStarted(adStartedEvent)
         }
     }
 
@@ -100,10 +86,6 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
 
         for listener: PlayerListener in listeners {
             listener.onAdFinished?(AdFinishedEvent())
-        }
-
-        for listener: PlayerListener in listeners {
-            listener.onAdBreakFinished?(AdBreakFinishedEvent())
         }
     }
 
@@ -123,10 +105,8 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     public func onAdStarted(_ campaignName: String!) {
         NSLog("Truex onAdStarted \(String(describing: campaignName))")
         self.bitmovinPlayer?.pause()
-
         let adBreakStartEvent = AdBreakStartedEvent()
         let ad = self.bitmovinPlayer?.getActiveAd()
-
         let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: nil,
                                                             clientType: .unknown, indexInQueue: 0,
                                                             duration: ad?.duration ?? 0,
@@ -134,18 +114,8 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
                                                             skipOffset: 1,
                                                             position: "0")
         adStartedEvent.truexAd = true
-
-        guard let listeners = self.bitmovinPlayer?.listeners else {
-            return
-        }
-
-        for listener: PlayerListener in listeners {
-            listener.onAdBreakStarted?(adBreakStartEvent)
-        }
-
-        for listener: PlayerListener in listeners {
-            listener.onAdStarted?(adStartedEvent)
-        }
+        fireAdBreakStarted(adBreakStartEvent)
+        fireAdStarted(adStartedEvent)
 
     }
 
@@ -169,6 +139,28 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
             }
         }
         return trueXAd
+    }
+
+    private func fireAdStarted(_ adStartedEvent: AdStartedEvent) {
+        guard let listeners = self.bitmovinPlayer?.listeners else {
+            return
+        }
+
+        for listener: PlayerListener in listeners {
+            listener.onAdStarted?(adStartedEvent)
+        }
+
+        bitmovinPlayer?.adPlaying = true
+    }
+
+    private func fireAdBreakStarted(_ adBreakStartedEvent: AdBreakStartedEvent) {
+        guard let listeners = self.bitmovinPlayer?.listeners else {
+            return
+        }
+
+        for listener: PlayerListener in listeners {
+            listener.onAdBreakStarted?(adBreakStartedEvent)
+        }
     }
 
 }
