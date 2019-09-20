@@ -48,19 +48,16 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
 
     public func onAdCompleted(_ timeSpent: Int) {
         NSLog("Truex onAdCompleted")
-        self.bitmovinPlayer?.play()
         exitTrueXAd()
     }
 
     public func onAdError(_ errorMessage: String!) {
         NSLog("Truex onAdError \(String(describing: errorMessage))")
-        self.bitmovinPlayer?.play()
         exitTrueXAd()
     }
 
     public func onNoAdsAvailable() {
         NSLog("Truex onNoAdsAvailable")
-        self.bitmovinPlayer?.play()
         exitTrueXAd()
     }
 
@@ -71,8 +68,8 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
         }
 
         self.bitmovinPlayer?.forceSeek(time: advertisement.absoluteEnd+1)
-
         fireAdCompletionEvents()
+        self.bitmovinPlayer?.play()
     }
 
     func fireAdCompletionEvents() {
