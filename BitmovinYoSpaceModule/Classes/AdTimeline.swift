@@ -45,14 +45,16 @@ public class Ad: CustomDebugStringConvertible {
     public private(set) var hasInteractiveUnit = false
     public private(set) var absoluteStart: TimeInterval = 0.0
     public private(set) var absoluteEnd: TimeInterval = 0.0
+    public private(set) var clickThroughUrl: URL?
 
-    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool) {
+    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool, clickThroughUrl: URL?) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
         self.duration = duration
         self.relativeStart = relativeStart
         self.hasInteractiveUnit = hasInteractiveUnit
+        self.clickThroughUrl = clickThroughUrl
     }
 
     public var debugDescription: String {
@@ -82,7 +84,8 @@ public class AdTimeline: CustomDebugStringConvertible {
                                        absoluteEnd: advert.advertEnd(),
                                        duration: advert.advertDuration(),
                                        relativeStart: adBreakEntry.relativeStart,
-                                       hasInteractiveUnit: advert.hasLinearInteractiveUnit())
+                                       hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
+                                       clickThroughUrl: advert.linearCreativeElement().linearClickthroughURL())
                     adBreakEntry.appendAd(ad: newAd)
                 }
             }

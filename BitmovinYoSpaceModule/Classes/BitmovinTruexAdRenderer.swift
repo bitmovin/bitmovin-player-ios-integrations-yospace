@@ -16,9 +16,8 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     var view: UIView
     var vastConfigUrl: String
     var userId: String
-
     var adFree = false
-
+    
     init(bitmovinPlayer: BitmovinYospacePlayer, view: UIView, userId: String = "", vastConfigUrl: String = "") {
         self.bitmovinPlayer = bitmovinPlayer
         self.view = view
@@ -62,14 +61,36 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     func exitTrueXAd() {
-        guard let advertisement: Ad = self.bitmovinPlayer?.getActiveAd() else {
-            fireAdCompletionEvents()
-            return
-        }
-
-        self.bitmovinPlayer?.forceSeek(time: advertisement.absoluteEnd+1)
         fireAdCompletionEvents()
+        self.bitmovinPlayer?.trueXRendering = false
         self.bitmovinPlayer?.play()
+
+        if !adFree {
+            guard let adBreak = self.bitmovinPlayer?.getActiveAdBreak(), let advertisement = self.bitmovinPlayer?.getActiveAd() else {
+                return
+            }
+
+            guard let listeners = self.bitmovinPlayer?.listeners else {
+                return
+            }
+
+            let adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: adBreak)
+
+            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: advertisement.clickThroughUrl,
+                                                                              clientType: .unknown, indexInQueue: 0,
+                                                                              duration: advertisement.duration,
+                                                                              timeOffset: advertisement.relativeStart,
+                                                                              skipOffset: 1,
+                                                                              position: "0")
+
+            for listener: PlayerListener in listeners {
+                listener.onAdBreakStarted?(adBreakStartEvent)
+            }
+
+            for listener: PlayerListener in listeners {
+                listener.onAdStarted?(adStartedEvent)
+            }
+        }
     }
 
     func fireAdCompletionEvents() {
@@ -89,6 +110,10 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     public func onAdFreePod() {
         NSLog("Truex onAdFreePod")
         adFree = true
+        guard let advertisement: Ad = self.bitmovinPlayer?.getActiveAd() else {
+            return
+        }
+        self.bitmovinPlayer?.forceSeek(time: advertisement.absoluteEnd+1)
     }
 
     public func onPopupWebsite(_ url: String!) {

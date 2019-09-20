@@ -361,7 +361,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                         absoluteEnd: advert.advertEnd() + timebase,
                         duration: advert.advertDuration(),
                         relativeStart: currentTimeWithAds(),
-                        hasInteractiveUnit: advert.hasLinearInteractiveUnit())
+                        hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
+                        clickThroughUrl: clickThroughUrl)
 
             let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: clickThroughUrl,
                                                                 clientType: .IMA, indexInQueue: 0,
