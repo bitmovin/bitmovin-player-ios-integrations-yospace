@@ -61,7 +61,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     func exitTrueXAd() {
-        fireAdCompletionEvents()
+        fireAdFinished()
         self.bitmovinPlayer?.trueXRendering = false
         self.bitmovinPlayer?.play()
 
@@ -76,16 +76,6 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
                                                                               skipOffset: 1,
                                                                               position: "0")
             fireAdStarted(adStartedEvent)
-        }
-    }
-
-    func fireAdCompletionEvents() {
-        guard let listeners = self.bitmovinPlayer?.listeners else {
-            return
-        }
-
-        for listener: PlayerListener in listeners {
-            listener.onAdFinished?(AdFinishedEvent())
         }
     }
 
@@ -160,6 +150,16 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
 
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(adBreakStartedEvent)
+        }
+    }
+
+    func fireAdFinished() {
+        guard let listeners = self.bitmovinPlayer?.listeners else {
+            return
+        }
+
+        for listener: PlayerListener in listeners {
+            listener.onAdFinished?(AdFinishedEvent())
         }
     }
 
