@@ -25,6 +25,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var timebase: TimeInterval = 0
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
+    var trueXRendering = false
     var dateRangeEmitter: DateRangeEmitter?
     var liveAdBreak: AdBreak?
     var liveAd: Ad?
@@ -185,6 +186,10 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
 
+    func forceSeek(time: TimeInterval) {
+        super.seek(time: time)
+    }
+
     // MARK: - event handling
     open override func add(listener: PlayerListener) {
         listeners.append(listener)
@@ -213,6 +218,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         self.adBreaks = []
         sessionStatus = .notInitialised
         adPlaying = false
+        trueXRendering = false
         #if os(iOS)
         self.truexAdRenderer?.resetAdRenderer()
         #endif
@@ -301,21 +307,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         var adBreakStartEvent: AdBreakStartedEvent = AdBreakStartedEvent()
-
-        if isLive {
-            let bitmovinAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
-                                          absoluteStart: adBreak.adBreakStart() + timebase,
-                                          absoluteEnd: adBreak.adBreakEnd() + timebase,
-                                          duration: adBreak.adBreakDuration(),
-                                          relativeStart: adBreak.adBreakStart())
-            adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
-            liveAdBreak = bitmovinAdBreak
-        }
-
-        for listener: PlayerListener in listeners {
-            listener.onAdBreakStarted?(adBreakStartEvent)
-        }
-
         #if os(iOS)
         guard let truexAdRenderer = truexAdRenderer else {
             return
@@ -323,41 +314,66 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         if truexAdRenderer.adFree {
             super.seek(time: adBreak.adBreakEnd())
         } else {
-            truexAdRenderer.renderTruex(adverts: adBreak.adverts())
+            trueXRendering = truexAdRenderer.renderTruex(adverts: adBreak.adverts())
+            NSLog("Rendering TrueX Ad - \(trueXRendering)")
         }
         #endif
+
+        if !trueXRendering {
+            if isLive {
+                let bitmovinAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
+                                              absoluteStart: adBreak.adBreakStart() + timebase,
+                                              absoluteEnd: adBreak.adBreakEnd() + timebase,
+                                              duration: adBreak.adBreakDuration(),
+                                              relativeStart: adBreak.adBreakStart())
+                adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
+                liveAdBreak = bitmovinAdBreak
+            }
+
+            for listener: PlayerListener in listeners {
+                listener.onAdBreakStarted?(adBreakStartEvent)
+            }
+        }
+
     }
 
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
         liveAdBreak = nil
-        for listener: PlayerListener in listeners {
-            listener.onAdBreakFinished?(AdBreakFinishedEvent())
+        if !trueXRendering {
+            for listener: PlayerListener in listeners {
+                listener.onAdBreakFinished?(AdBreakFinishedEvent())
+            }
         }
+        trueXRendering = false
+
     }
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
-        adPlaying = true
-        var clickThroughUrl: URL? = nil
-        if advert.linearCreativeElement().linearClickthroughURL() != nil {
-            clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
-        }
+        if !trueXRendering {
+            adPlaying = true
+            var clickThroughUrl: URL? = nil
+            if advert.linearCreativeElement().linearClickthroughURL() != nil {
+                clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
+            }
 
-        liveAd = Ad(identifier: advert.advertIdentifier(),
-                    absoluteStart: advert.advertStart() + timebase,
-                    absoluteEnd: advert.advertEnd() + timebase,
-                    duration: advert.advertDuration(),
-                    relativeStart: currentTimeWithAds(),
-                    hasInteractiveUnit: advert.hasLinearInteractiveUnit())
+            liveAd = Ad(identifier: advert.advertIdentifier(),
+                        absoluteStart: advert.advertStart() + timebase,
+                        absoluteEnd: advert.advertEnd() + timebase,
+                        duration: advert.advertDuration(),
+                        relativeStart: currentTimeWithAds(),
+                        hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
+                        clickThroughUrl: clickThroughUrl)
 
-        let adStartedEvent: AdStartedEvent = AdStartedEvent(clickThroughUrl: clickThroughUrl,
-                                                            clientType: .IMA, indexInQueue: 0,
-                                                            duration: advert.advertDuration(),
-                                                            timeOffset: advert.advertStart() + timebase,
-                                                            skipOffset: 1,
-                                                            position: "0")
+            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: clickThroughUrl,
+                                                                clientType: .IMA, indexInQueue: 0,
+                                                                duration: advert.advertDuration(),
+                                                                timeOffset: advert.advertStart() + timebase,
+                                                                skipOffset: 1,
+                                                                position: "0")
 
-        for listener: PlayerListener in listeners {
-            listener.onAdStarted?(adStartedEvent)
+            for listener: PlayerListener in listeners {
+                listener.onAdStarted?(adStartedEvent)
+            }
         }
         return []
     }
@@ -365,9 +381,13 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertDidEnd(_ advert: YSAdvert) {
         adPlaying = false
         liveAd = nil
-        for listener: PlayerListener in listeners {
-            listener.onAdFinished?(AdFinishedEvent())
+        if !trueXRendering {
+            for listener: PlayerListener in listeners {
+                listener.onAdFinished?(AdFinishedEvent())
+            }
         }
+        trueXRendering = false
+
     }
 
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
