@@ -96,11 +96,11 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
         NSLog("Truex onAdStarted \(String(describing: campaignName))")
         self.bitmovinPlayer?.pause()
         let adBreakStartEvent = AdBreakStartedEvent()
-        let ad = self.bitmovinPlayer?.getActiveAd()
+        let advertisement = self.bitmovinPlayer?.getActiveAd()
         let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: nil,
                                                             clientType: .unknown, indexInQueue: 0,
-                                                            duration: ad?.duration ?? 0,
-                                                            timeOffset: ad?.relativeStart ?? 0,
+                                                            duration: advertisement?.duration ?? 0,
+                                                            timeOffset: advertisement?.relativeStart ?? 0,
                                                             skipOffset: 1,
                                                             position: "0")
         adStartedEvent.truexAd = true
