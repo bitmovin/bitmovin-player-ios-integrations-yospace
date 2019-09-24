@@ -40,7 +40,7 @@
 
 /** Returns the window end point of a Live Pause stream releative to the streamStart.
  
- @return The stream window start if in Live Pause mode, or 0 if in any other mode.
+ @return The stream window end if in Live Pause mode, or 0 if in any other mode.
  @since from 1.6
  */
 - (NSTimeInterval) streamWindowEnd;
