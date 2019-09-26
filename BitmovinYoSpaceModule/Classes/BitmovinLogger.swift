@@ -16,12 +16,12 @@ import Foundation
 // - warning: Log type warning
 // - severe: Log type severe
 enum LogEvent: String {
-    case e = "[Error]"
-    case i = "[Info]"
-    case d = "[Debug]"
-    case v = "[Verbose]"
-    case w = "[Warning]"
-    case s = "[Severe]"
+    case error = "[Error]"
+    case info = "[Info]"
+    case debug = "[Debug]"
+    case verbose = "[Verbose]"
+    case warning = "[Warning]"
+    case severe = "[Severe]"
 }
 
 class BitmovinLogger {
@@ -37,38 +37,32 @@ class BitmovinLogger {
     }
     
     class func e(message: String) {
-        if isDebug {
-            print("\(LogEvent.e.rawValue): \(message)")
-        }
+        printLog(event: LogEvent.error, message: message)
     }
     
     class func i(message: String) {
-        if isDebug {
-            print("\(LogEvent.i.rawValue): \(message)")
-        }
+        printLog(event: LogEvent.info, message: message)
     }
     
     class func d(message: String) {
-        if isDebug {
-            print("\(LogEvent.d.rawValue): \(message)")
-        }
+        printLog(event: LogEvent.debug, message: message)
     }
     
     class func v(message: String) {
-        if isDebug {
-            print("\(LogEvent.v.rawValue): \(message)")
-        }
+        printLog(event: LogEvent.verbose, message: message)
     }
     
     class func w(message: String) {
-        if isDebug {
-            print("\(LogEvent.w.rawValue): \(message)")
-        }
+        printLog(event: LogEvent.warning, message: message)
     }
     
     class func s(message: String) {
+        printLog(event: LogEvent.severe, message: message)
+    }
+    
+    private class func printLog(event: LogEvent, message: String) {
         if isDebug {
-            print("\(LogEvent.s.rawValue): \(message)")
+            print("\(event.rawValue): \(message)")
         }
     }
 }
