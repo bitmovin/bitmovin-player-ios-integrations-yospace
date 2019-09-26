@@ -18,86 +18,86 @@ class YospacePlayerPolicy: NSObject, YPPolicyHandling {
 
     // MARK: YPPolicyHandling
     public func canStart(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canStart")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canStart")
         return true
     }
 
     public func canStop(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canStop")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canStop")
         return true
     }
 
     public func canPause(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canPause")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canPause")
         return self.playerPolicy?.canPause() ?? true
     }
 
     public func canRewind(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canRewind")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canRewind")
         return true
     }
 
     public func canSkip(_ playhead: TimeInterval, timeline: [Any], duration: TimeInterval) -> TimeInterval {
-        NSLog("[YospacePlayerPolicy] canSkip")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canSkip")
         return self.playerPolicy?.canSkip() ?? -1
     }
 
     public func canSeek(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canSeek")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canSeek")
         return self.playerPolicy?.canSeek() ?? true
     }
 
     public func willSeek(to position: TimeInterval, timeline: [Any]) -> TimeInterval {
-        NSLog("[YospacePlayerPolicy] willSeek")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] willSeek")
         return self.playerPolicy?.canSeekTo(seekTarget: position) ?? position
     }
 
     public func canMute(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canMute")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canMute")
         return true
     }
 
     public func canGoFullScreen(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canGoFullScreen")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canGoFullScreen")
         return true
     }
 
     public func canExitFullScreen(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canExitFullScreen")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canExitFullScreen")
         return true
     }
 
     public func canExpandCreative(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canExpandCreative")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canExpandCreative")
         return true
     }
 
     public func canCollapseCreative(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canCollapseCreative")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canCollapseCreative")
         return true
     }
 
     public func canClickThrough(_ url: URL, playhead: TimeInterval, timeline: [Any]) -> Bool {
-        NSLog("[YospacePlayerPolicy] canClickThrough")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] canClickThrough")
         return true
     }
 
     public func shouldPreloadNonLinearGraphicalElements() -> Bool {
-        NSLog("[YospacePlayerPolicy] shouldPreloadNonLinearGraphicalElements")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] shouldPreloadNonLinearGraphicalElements")
         return true
     }
 
     public func shouldPreloadIFrameResourceElements() -> Bool {
-        NSLog("[YospacePlayerPolicy] shouldPreloadIFrameResourceElements")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] shouldPreloadIFrameResourceElements")
         return true
     }
 
     public func shouldPreloadInteractiveUnits() -> Bool {
-        NSLog("[YospacePlayerPolicy] shouldPreloadInteractiveUnits")
+        BitmovinLogger.d(message: "[YospacePlayerPolicy] shouldPreloadInteractiveUnits")
         return true
     }
 
     public func setPlaybackMode(_ playbackMode: YSEPlaybackMode) {
-        NSLog(" [YospacePlayerPolicy] setPlaybackMode ")
+        BitmovinLogger.d(message: " [YospacePlayerPolicy] setPlaybackMode ")
     }
 }

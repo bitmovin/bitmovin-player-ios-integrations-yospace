@@ -45,7 +45,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     public func onAdCompleted(_ timeSpent: Int) {
-        NSLog("Truex onAdCompleted")
+        BitmovinLogger.d(message: "Truex onAdCompleted")
         self.bitmovinPlayer?.play()
     }
 
