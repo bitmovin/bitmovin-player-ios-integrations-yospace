@@ -400,7 +400,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
-        BitmovinLogger.d(message: "Tracking Event Did Occur %@", YospaceUtil.trackingEventString(event: event))
+        BitmovinLogger.d(message: "Tracking Event Did Occur %@ \(YospaceUtil.trackingEventString(event: event))")
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
