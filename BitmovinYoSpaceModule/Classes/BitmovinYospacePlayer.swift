@@ -88,6 +88,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         super.add(listener: self)
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         self.dateRangeEmitter = DateRangeEmitter(player: self)
+        updateLoggingVisibility(isLoggingEnabled: yospaceConfiguration?.debug ?? false)
     }
 
     open override func destroy() {
@@ -179,7 +180,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         if let manager = self.sessionManager {
             let seekTime = manager.willSeek(to: time)
             let absoluteSeekTime = timeline?.relativeToAbsolute(time: seekTime) ?? seekTime
-            NSLog("Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
+            BitmovinLogger.d(message: "Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
             super.seek(time: absoluteSeekTime)
         } else {
             super.seek(time: time)
@@ -301,6 +302,14 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             return self.timeline?.currentAd(time: self.currentTimeWithAds())
         }
     }
+    
+    private func updateLoggingVisibility(isLoggingEnabled: Bool) {
+        if isLoggingEnabled {
+            BitmovinLogger.enableLogging()
+        } else {
+            BitmovinLogger.disableLogging()
+        }
+    }
 }
 
 // MARK: - YSAnalyticsObserver
@@ -315,7 +324,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             super.seek(time: adBreak.adBreakEnd())
         } else {
             trueXRendering = truexAdRenderer.renderTruex(adverts: adBreak.adverts())
-            NSLog("Rendering TrueX Ad - \(trueXRendering)")
+            BitmovinLogger.d(message: "Rendering TrueX Ad - \(trueXRendering)")
         }
         #endif
 
@@ -391,7 +400,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
-        NSLog("Tracking Event Did Occur %@", YospaceUtil.trackingEventString(event: event))
+        BitmovinLogger.d(message: "Tracking Event Did Occur %@", YospaceUtil.trackingEventString(event: event))
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
@@ -402,7 +411,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func timelineUpdateReceived(_ vmap: String) {
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
-            NSLog("TimelineUpdateReceived: \(timeline.count)")
+            BitmovinLogger.d(message: "TimelineUpdateReceived: \(timeline.count)")
             self.adBreaks = timeline
         }
     }
@@ -415,7 +424,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         self.sessionManager = sessionManager
         self.yospaceStream = stream
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
-            NSLog("Initial Ad Breaks Received: \(timeline.count)")
+            BitmovinLogger.d(message: "Initial Ad Breaks Received: \(timeline.count)")
             self.adBreaks = timeline
         }
 
@@ -433,18 +442,18 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
         switch sessionManager.initialisationState {
         case .notInitialised:
-            NSLog("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            BitmovinLogger.e(message: "Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
             if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-                NSLog("Attempting to playback the stream url without Yospace")
+                BitmovinLogger.w(message: "Attempting to playback the stream url without Yospace")
                 self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
                 load(sourceConfiguration: sourceConfiguration)
             } else {
                 handleError(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized")
             }
         case .initialisedNoAnalytics:
-            NSLog("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            BitmovinLogger.d(message: "No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
             if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-                NSLog("Attempting to playback the stream url without Yospace")
+                BitmovinLogger.w(message: "Attempting to playback the stream url without Yospace")
                 self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
                 load(sourceConfiguration: sourceConfiguration)
             } else {
@@ -452,7 +461,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
             }
 
         case .initialisedWithAnalytics:
-            NSLog("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            BitmovinLogger.d(message: "With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
 
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
@@ -469,7 +478,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
     public func operationDidFailWithError(_ error: Error) {
         if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-            NSLog("Attempting to playback the stream url without Yospace")
+            BitmovinLogger.w(message: "Attempting to playback the stream url without Yospace")
             self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
             load(sourceConfiguration: sourceConfiguration)
         } else {

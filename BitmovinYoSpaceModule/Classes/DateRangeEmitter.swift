@@ -58,7 +58,7 @@ class DateRangeEmitter: NSObject {
          * it probably is a duplicate
          */
         if  let date = previousMetadataDate, dateRangeMetadata.startDate.timeIntervalSince(date) < 15.0 {
-            NSLog("[DateRangeEmitter] - duplicate metadata received - \(mediaId) \(dateRangeMetadata.startDate)")
+            BitmovinLogger.d(message: "[DateRangeEmitter] - duplicate metadata received - \(mediaId) \(dateRangeMetadata.startDate)")
             return
         }
 
@@ -103,7 +103,7 @@ class DateRangeEmitter: NSObject {
         var currentTime =  player.currentTimeWithAds()
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
-        NSLog("[DateRangeEmitter] - handling daterange mediaId=\(mediaId) duration=\(duration) currentTime=\(currentTime) startDate=\(startDate)")
+        BitmovinLogger.d(message: "[DateRangeEmitter] - handling daterange mediaId=\(mediaId) duration=\(duration) currentTime=\(currentTime) startDate=\(startDate)")
 
         let startMetdata = YSTimedMetadata()
         startMetdata.mediaId = mediaId
@@ -140,7 +140,7 @@ class DateRangeEmitter: NSObject {
         let endTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: endMetadata)
         timedMetadataEvents.append(endTimedMetadataEvent)
 
-        NSLog("[DateRangeEmitter] TimedMetadataEvents - \(timedMetadataEvents.map {$0.metadata.timestamp})" )
+        BitmovinLogger.d(message: "[DateRangeEmitter] TimedMetadataEvents - \(timedMetadataEvents.map {$0.metadata.timestamp})" )
     }
 }
 
@@ -159,7 +159,7 @@ extension DateRangeEmitter: PlayerListener {
             timedMetadataEvents.removeFirst(1)
             let yoMetadata = nextEvent.metadata
             // swiftlint:disable line_length
-            NSLog("[DateRangeEmitter] - Sending YSTimedMetada: currentDate=\(NSDate().timeIntervalSince1970) currentTime=\(currentTime) eventTime=\(nextEvent.time) mid=\(yoMetadata.mediaId) type=\(yoMetadata.type) tD=\(yoMetadata.timestamp) tN=\(yoMetadata.timestamp.timeIntervalSince1970) sN=\(yoMetadata.segmentNumber) sC=\(yoMetadata.segmentCount) o=\(yoMetadata.offset)")
+            BitmovinLogger.d(message: "[DateRangeEmitter] - Sending YSTimedMetada: currentDate=\(NSDate().timeIntervalSince1970) currentTime=\(currentTime) eventTime=\(nextEvent.time) mid=\(yoMetadata.mediaId) type=\(yoMetadata.type) tD=\(yoMetadata.timestamp) tN=\(yoMetadata.timestamp.timeIntervalSince1970) sN=\(yoMetadata.segmentNumber) sC=\(yoMetadata.segmentCount) o=\(yoMetadata.offset)")
             // swiftlint:enable line_length
             self.player?.notify(dictionary: [kYoMetadataKey: yoMetadata], name: YoTimedMetadataNotification)
         }
@@ -176,23 +176,23 @@ extension DateRangeEmitter: PlayerListener {
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        NSLog("[DateRangeEmitter] - onAdBreakStarted")
+        BitmovinLogger.d(message: "[DateRangeEmitter] - onAdBreakStarted")
     }
 
     public func onAdStarted(_ event: AdStartedEvent) {
-        NSLog("[DateRangeEmitter] - onAdStarted")
+        BitmovinLogger.d(message: "[DateRangeEmitter] - onAdStarted")
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
-        NSLog("[DateRangeEmitter] - onAdFinished")
+        BitmovinLogger.d(message: "[DateRangeEmitter] - onAdFinished")
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        NSLog("[DateRangeEmitter] - onAdBreakFinished")
+        BitmovinLogger.d(message: "[DateRangeEmitter] - onAdBreakFinished")
     }
 
     public func onReady(_ event: ReadyEvent) {
-        NSLog("[DateRangeEmitter] - onReady")
+        BitmovinLogger.d(message: "[DateRangeEmitter] - onReady")
         guard let player = player else {
             return
         }
