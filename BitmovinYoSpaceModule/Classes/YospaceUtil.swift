@@ -16,7 +16,7 @@ extension YSTimedMetadata {
 
                 switch key.description {
                 case "YPRG":
-                    NSLog("Programme metadata - ignoring")
+                    BitmovinLogger.d(message: "Programme metadata - ignoring")
                 case "YTYP":
                     if let type  = String(data: data, encoding: String.Encoding.utf8) {
                         meta.type = String(type[type.index(type.startIndex, offsetBy: 1)...])
