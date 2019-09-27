@@ -122,6 +122,20 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             self.truexAdRenderer = nil
         }
         #endif
+        
+        var logMessage = "Load: "
+        if let url = sourceConfiguration.firstSourceItem?.hlsSource?.url {
+            logMessage.append("Source=\(url.absoluteString)")
+        }
+        if let yospaceSourceConfiguration = yospaceSourceConfiguration {
+            logMessage.append(", YospaceAssetType=\(yospaceSourceConfiguration.yospaceAssetType.rawValue)")
+            logMessage.append(", YospaceRetry=\(yospaceSourceConfiguration.retryExcludingYospace)")
+        }
+        if let truexConfiguration = truexConfiguration {
+            logMessage.append(", TruexUserId=\(truexConfiguration.userId)")
+            logMessage.append(", TruexVastConfigUrl=\(truexConfiguration.vastConfigUrl)")
+        }
+        BitmovinLogger.d(message: logMessage)
 
         resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
@@ -166,6 +180,11 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
 
+    open override func unload() {
+        BitmovinLogger.d(message: "Unload: ")
+        super.unload()
+    }
+    
     // MARK: - playback methods
     open override func pause() {
         if let manager = self.sessionManager {
