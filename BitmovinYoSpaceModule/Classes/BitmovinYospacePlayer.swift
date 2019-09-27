@@ -183,11 +183,13 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             BitmovinLogger.d(message: "Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
             super.seek(time: absoluteSeekTime)
         } else {
+            BitmovinLogger.d(message: "Seeking to: \(time)")
             super.seek(time: time)
         }
     }
 
     func forceSeek(time: TimeInterval) {
+        BitmovinLogger.d(message: "Seeking to: \(time)")
         super.seek(time: time)
     }
 
@@ -263,7 +265,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
             let adBreak: AdBreak? = getActiveAdBreak()
             if let currentBreak = adBreak {
-
                 super.seek(time: currentBreak.absoluteEnd)
             }
         } else {
@@ -321,10 +322,12 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             return
         }
         if truexAdRenderer.adFree {
+            BitmovinLogger.d(message: "Skipping Ad Break due to TrueX ad free experience")
             super.seek(time: adBreak.adBreakEnd())
         } else {
+            BitmovinLogger.d(message: "Rendering TrueX Ad")
             trueXRendering = truexAdRenderer.renderTruex(adverts: adBreak.adverts())
-            BitmovinLogger.d(message: "Rendering TrueX Ad - \(trueXRendering)")
+            BitmovinLogger.d(message: "TrueX Ad Rendered - \(trueXRendering)")
         }
         #endif
 
@@ -339,6 +342,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 liveAdBreak = bitmovinAdBreak
             }
 
+            BitmovinLogger.d(message: "Yospace AdBreakStartedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdBreakStarted?(adBreakStartEvent)
             }
@@ -349,6 +353,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
         liveAdBreak = nil
         if !trueXRendering {
+            BitmovinLogger.d(message: "Yospace AdBreakFinishedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdBreakFinished?(AdBreakFinishedEvent())
             }
@@ -380,6 +385,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                                                                 skipOffset: 1,
                                                                 position: "0")
 
+            BitmovinLogger.d(message: "Yospace AdStartedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdStarted?(adStartedEvent)
             }
@@ -391,12 +397,12 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         adPlaying = false
         liveAd = nil
         if !trueXRendering {
+            BitmovinLogger.d(message: "Yospace AdFinishedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdFinished?(AdFinishedEvent())
             }
         }
         trueXRendering = false
-
     }
 
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
@@ -404,6 +410,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
+        BitmovinLogger.d(message: "Yospace AdClickedEvent")
         for listener: PlayerListener in listeners {
             listener.onAdClicked?(AdClickedEvent(clickThroughUr: linearCreative.linearClickthroughURL()))
         }
@@ -631,6 +638,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     func notify(dictionary: [String: Any], name: String) {
+        BitmovinLogger.d(message: "Yospace sending \(name)")
         DispatchQueue.main.async(execute: {() -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self.yospacePlayer, userInfo: dictionary)
         })
@@ -659,7 +667,6 @@ extension BitmovinYospacePlayer: PlayerListener {
     /**
      Unmodified eevents, passing thought to registered listeners
      */
-
     public func onSeeked(_ event: SeekedEvent) {
         for listener: PlayerListener in listeners {
             listener.onSeeked?(event)
@@ -679,6 +686,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
+        BitmovinLogger.d(message: "onAdClicked: ")
         for listener: PlayerListener in listeners {
             listener.onAdClicked?(event)
         }
@@ -691,6 +699,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdStarted(_ event: AdStartedEvent) {
+        BitmovinLogger.d(message: "onAdStarted: ")
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(event)
         }
@@ -703,6 +712,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
+        BitmovinLogger.d(message: "onAdFinished: ")
         for listener: PlayerListener in listeners {
             listener.onAdFinished?(event)
         }
@@ -715,6 +725,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdScheduled(_ event: AdScheduledEvent) {
+        BitmovinLogger.d(message: "onAdScheduled: ")
         for listener: PlayerListener in listeners {
             listener.onAdScheduled?(event)
         }
@@ -799,18 +810,21 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
+        BitmovinLogger.d(message: "onAdBreakStarted: ")
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(event)
         }
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
+        BitmovinLogger.d(message: "onAdBreakFinished: ")
         for listener: PlayerListener in listeners {
             listener.onAdBreakFinished?(event)
         }
     }
 
     public func onAdManifestLoaded(_ event: AdManifestLoadedEvent) {
+        BitmovinLogger.d(message: "onAdManifestLoaded: ")
         for listener: PlayerListener in listeners {
             listener.onAdManifestLoaded?(event)
         }
