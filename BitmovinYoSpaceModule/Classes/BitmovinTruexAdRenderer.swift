@@ -46,17 +46,17 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     public func onAdCompleted(_ timeSpent: Int) {
-        NSLog("Truex onAdCompleted")
+        BitmovinLogger.d(message: "Truex onAdCompleted")
         exitTrueXAd()
     }
 
     public func onAdError(_ errorMessage: String!) {
-        NSLog("Truex onAdError \(String(describing: errorMessage))")
+        BitmovinLogger.e(message: "Truex onAdError \(String(describing: errorMessage))")
         exitTrueXAd()
     }
 
     public func onNoAdsAvailable() {
-        NSLog("Truex onNoAdsAvailable")
+        BitmovinLogger.d(message: "Truex onNoAdsAvailable")
         exitTrueXAd()
     }
 
@@ -80,7 +80,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     public func onAdFreePod() {
-        NSLog("Truex onAdFreePod")
+        BitmovinLogger.d(message: "Truex onAdFreePod")
         adFree = true
         guard let advertisement: Ad = self.bitmovinPlayer?.getActiveAd() else {
             return
@@ -89,11 +89,11 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     public func onPopupWebsite(_ url: String!) {
-        NSLog("Truex onPopupWebsite \(String(describing: url))")
+        BitmovinLogger.d(message: "Truex onPopupWebsite \(String(describing: url))")
     }
 
     public func onAdStarted(_ campaignName: String!) {
-        NSLog("Truex onAdStarted \(String(describing: campaignName))")
+        BitmovinLogger.d(message: "Truex onAdStarted \(String(describing: campaignName))")
         self.bitmovinPlayer?.pause()
         let adBreakStartEvent = AdBreakStartedEvent()
         let advertisement = self.bitmovinPlayer?.getActiveAd()
