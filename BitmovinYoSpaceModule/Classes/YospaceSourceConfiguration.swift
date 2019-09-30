@@ -2,8 +2,8 @@ import UIKit
 import BitmovinPlayer
 
 public class YospaceSourceConfiguration {
-    let yospaceAssetType: YospaceAssetType
-    let retryExcludingYospace: Bool
+    public private(set) var yospaceAssetType: YospaceAssetType
+    public private(set) var retryExcludingYospace: Bool
 
     // MARK: - initializer
     /**
