@@ -37,30 +37,30 @@ class BitmovinLogger {
     }
     
     class func e(message: String) {
-        printLog(event: LogEvent.error, message: message)
+        log(event: LogEvent.error, message: message)
     }
     
     class func i(message: String) {
-        printLog(event: LogEvent.info, message: message)
+        log(event: LogEvent.info, message: message)
     }
     
     class func d(message: String) {
-        printLog(event: LogEvent.debug, message: message)
+        log(event: LogEvent.debug, message: message)
     }
     
     class func v(message: String) {
-        printLog(event: LogEvent.verbose, message: message)
+        log(event: LogEvent.verbose, message: message)
     }
     
     class func w(message: String) {
-        printLog(event: LogEvent.warning, message: message)
+        log(event: LogEvent.warning, message: message)
     }
     
     class func s(message: String) {
-        printLog(event: LogEvent.severe, message: message)
+        log(event: LogEvent.severe, message: message)
     }
     
-    private class func printLog(event: LogEvent, message: String) {
+    private class func log(event: LogEvent, message: String) {
         if isDebug {
             print("\(event.rawValue): \(message)")
         }
