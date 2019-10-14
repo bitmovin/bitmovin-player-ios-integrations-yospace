@@ -135,7 +135,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             logMessage.append(", TruexUserId=\(truexConfiguration.userId)")
             logMessage.append(", TruexVastConfigUrl=\(truexConfiguration.vastConfigUrl)")
         }
-        BitmovinLogger.d(message: logMessage)
+        BitLog.d(logMessage)
 
         resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
@@ -181,7 +181,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     }
 
     open override func unload() {
-        BitmovinLogger.d(message: "Unload: ")
+        BitLog.d("Unload: ")
         super.unload()
     }
     
@@ -199,16 +199,16 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         if let manager = self.sessionManager {
             let seekTime = manager.willSeek(to: time)
             let absoluteSeekTime = timeline?.relativeToAbsolute(time: seekTime) ?? seekTime
-            BitmovinLogger.d(message: "Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
+            BitLog.d("Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
             super.seek(time: absoluteSeekTime)
         } else {
-            BitmovinLogger.d(message: "Seeking to: \(time)")
+            BitLog.d("Seeking to: \(time)")
             super.seek(time: time)
         }
     }
 
     func forceSeek(time: TimeInterval) {
-        BitmovinLogger.d(message: "Seeking to: \(time)")
+        BitLog.d("Seeking to: \(time)")
         super.seek(time: time)
     }
 
@@ -325,9 +325,9 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     
     private func updateLoggingVisibility(isLoggingEnabled: Bool) {
         if isLoggingEnabled {
-            BitmovinLogger.enableLogging()
+            BitLog.enable()
         } else {
-            BitmovinLogger.disableLogging()
+            BitLog.disable()
         }
     }
 }
@@ -341,12 +341,12 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             return
         }
         if truexAdRenderer.adFree {
-            BitmovinLogger.d(message: "Skipping Ad Break due to TrueX ad free experience")
+            BitLog.d("Skipping Ad Break due to TrueX ad free experience")
             super.seek(time: adBreak.adBreakEnd())
         } else {
-            BitmovinLogger.d(message: "Rendering TrueX Ad")
+            BitLog.d("Rendering TrueX Ad")
             trueXRendering = truexAdRenderer.renderTruex(adverts: adBreak.adverts())
-            BitmovinLogger.d(message: "TrueX Ad Rendered - \(trueXRendering)")
+            BitLog.d("TrueX Ad Rendered - \(trueXRendering)")
         }
         #endif
 
@@ -361,7 +361,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 liveAdBreak = bitmovinAdBreak
             }
 
-            BitmovinLogger.d(message: "Yospace AdBreakStartedEvent")
+            BitLog.d("Yospace AdBreakStartedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdBreakStarted?(adBreakStartEvent)
             }
@@ -372,7 +372,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
         liveAdBreak = nil
         if !trueXRendering {
-            BitmovinLogger.d(message: "Yospace AdBreakFinishedEvent")
+            BitLog.d("Yospace AdBreakFinishedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdBreakFinished?(AdBreakFinishedEvent())
             }
@@ -404,7 +404,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                                                                 skipOffset: 1,
                                                                 position: "0")
 
-            BitmovinLogger.d(message: "Yospace AdStartedEvent")
+            BitLog.d("Yospace AdStartedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdStarted?(adStartedEvent)
             }
@@ -416,7 +416,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         adPlaying = false
         liveAd = nil
         if !trueXRendering {
-            BitmovinLogger.d(message: "Yospace AdFinishedEvent")
+            BitLog.d("Yospace AdFinishedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdFinished?(AdFinishedEvent())
             }
@@ -425,11 +425,11 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
-        BitmovinLogger.d(message: "Tracking Event Did Occur %@ \(YospaceUtil.trackingEventString(event: event))")
+        BitLog.d("Tracking Event Did Occur %@ \(YospaceUtil.trackingEventString(event: event))")
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
-        BitmovinLogger.d(message: "Yospace AdClickedEvent")
+        BitLog.d("Yospace AdClickedEvent")
         for listener: PlayerListener in listeners {
             listener.onAdClicked?(AdClickedEvent(clickThroughUr: linearCreative.linearClickthroughURL()))
         }
@@ -437,7 +437,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func timelineUpdateReceived(_ vmap: String) {
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
-            BitmovinLogger.d(message: "TimelineUpdateReceived: \(timeline.count)")
+            BitLog.d("TimelineUpdateReceived: \(timeline.count)")
             self.adBreaks = timeline
         }
     }
@@ -450,7 +450,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         self.sessionManager = sessionManager
         self.yospaceStream = stream
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
-            BitmovinLogger.d(message: "Initial Ad Breaks Received: \(timeline.count)")
+            BitLog.d("Initial Ad Breaks Received: \(timeline.count)")
             self.adBreaks = timeline
         }
 
@@ -468,18 +468,18 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
         switch sessionManager.initialisationState {
         case .notInitialised:
-            BitmovinLogger.e(message: "Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            BitLog.e("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
             if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-                BitmovinLogger.w(message: "Attempting to playback the stream url without Yospace")
+                BitLog.w("Attempting to playback the stream url without Yospace")
                 self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
                 load(sourceConfiguration: sourceConfiguration)
             } else {
                 handleError(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized")
             }
         case .initialisedNoAnalytics:
-            BitmovinLogger.d(message: "No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            BitLog.d("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
             if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-                BitmovinLogger.w(message: "Attempting to playback the stream url without Yospace")
+                BitLog.w("Attempting to playback the stream url without Yospace")
                 self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
                 load(sourceConfiguration: sourceConfiguration)
             } else {
@@ -487,7 +487,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
             }
 
         case .initialisedWithAnalytics:
-            BitmovinLogger.d(message: "With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
+            BitLog.d("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
 
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
@@ -504,7 +504,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
     public func operationDidFailWithError(_ error: Error) {
         if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-            BitmovinLogger.w(message: "Attempting to playback the stream url without Yospace")
+            BitLog.w("Attempting to playback the stream url without Yospace")
             self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
             load(sourceConfiguration: sourceConfiguration)
         } else {
@@ -657,7 +657,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     func notify(dictionary: [String: Any], name: String) {
-        BitmovinLogger.d(message: "Yospace sending \(name)")
+        BitLog.d("Yospace sending \(name)")
         DispatchQueue.main.async(execute: {() -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self.yospacePlayer, userInfo: dictionary)
         })
@@ -705,7 +705,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
-        BitmovinLogger.d(message: "onAdClicked: ")
+        BitLog.d("onAdClicked: ")
         for listener: PlayerListener in listeners {
             listener.onAdClicked?(event)
         }
@@ -718,7 +718,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdStarted(_ event: AdStartedEvent) {
-        BitmovinLogger.d(message: "onAdStarted: ")
+        BitLog.d("onAdStarted: ")
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(event)
         }
@@ -731,7 +731,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
-        BitmovinLogger.d(message: "onAdFinished: ")
+        BitLog.d("onAdFinished: ")
         for listener: PlayerListener in listeners {
             listener.onAdFinished?(event)
         }
@@ -744,7 +744,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdScheduled(_ event: AdScheduledEvent) {
-        BitmovinLogger.d(message: "onAdScheduled: ")
+        BitLog.d("onAdScheduled: ")
         for listener: PlayerListener in listeners {
             listener.onAdScheduled?(event)
         }
@@ -829,21 +829,21 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        BitmovinLogger.d(message: "onAdBreakStarted: ")
+        BitLog.d("onAdBreakStarted: ")
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(event)
         }
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        BitmovinLogger.d(message: "onAdBreakFinished: ")
+        BitLog.d("onAdBreakFinished: ")
         for listener: PlayerListener in listeners {
             listener.onAdBreakFinished?(event)
         }
     }
 
     public func onAdManifestLoaded(_ event: AdManifestLoadedEvent) {
-        BitmovinLogger.d(message: "onAdManifestLoaded: ")
+        BitLog.d("onAdManifestLoaded: ")
         for listener: PlayerListener in listeners {
             listener.onAdManifestLoaded?(event)
         }
