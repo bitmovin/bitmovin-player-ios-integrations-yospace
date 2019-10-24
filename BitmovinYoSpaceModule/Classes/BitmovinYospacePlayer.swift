@@ -337,16 +337,15 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         var adBreakStartEvent: AdBreakStartedEvent = AdBreakStartedEvent()
         #if os(iOS)
-        guard let truexAdRenderer = truexAdRenderer else {
-            return
-        }
-        if truexAdRenderer.adFree {
-            BitLog.d("Skipping Ad Break due to TrueX ad free experience")
-            super.seek(time: adBreak.adBreakEnd())
-        } else {
-            BitLog.d("Rendering TrueX Ad")
-            trueXRendering = truexAdRenderer.renderTruex(adverts: adBreak.adverts())
-            BitLog.d("TrueX Ad Rendered - \(trueXRendering)")
+        if truexAdRenderer != nil {
+            if truexAdRenderer!.adFree {
+                BitLog.d("Skipping Ad Break due to TrueX ad free experience")
+                super.seek(time: adBreak.adBreakEnd())
+            } else {
+                BitLog.d("Rendering TrueX Ad")
+                trueXRendering = truexAdRenderer!.renderTruex(adverts: adBreak.adverts())
+                BitLog.d("TrueX Ad Rendered - \(trueXRendering)")
+            }
         }
         #endif
 
