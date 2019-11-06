@@ -122,7 +122,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             self.truexAdRenderer = nil
         }
         #endif
-        
+
         var logMessage = "Load: "
         if let url = sourceConfiguration.firstSourceItem?.hlsSource?.url {
             logMessage.append("Source=\(url.absoluteString)")
@@ -184,7 +184,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         BitLog.d("Unload: ")
         super.unload()
     }
-    
+
     // MARK: - playback methods
     open override func pause() {
         if let manager = self.sessionManager {
@@ -322,7 +322,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             return self.timeline?.currentAd(time: self.currentTimeWithAds())
         }
     }
-    
+
     private func updateLoggingVisibility(isLoggingEnabled: Bool) {
         if isLoggingEnabled {
             BitLog.enable()
@@ -494,7 +494,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
             if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
                 sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
             }
-            
+
 //            // Define needed resources
 //            guard let streamUrl = URL(string: "https://cmaf-live.warnermediacdn.com/csmp/cmaf/live/2000073/tbse-clear-novpaid/master.m3u8;jsessionid=6690CAC326B1261722B01945449FE5B6.csm-e-cetpusexaws102j8-2ahv1pq23z0o.bln1.yospace.com") else {
 //                return
@@ -502,9 +502,9 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 //            sourceConfig = SourceConfiguration()
 //            sourceConfig?.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
 //            BitLog.d("playing source: \(streamUrl)")
-            
+
             load(sourceConfiguration: sourceConfig)
-            
+
         default:
             break
         }
