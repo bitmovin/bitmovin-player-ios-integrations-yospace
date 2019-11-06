@@ -27,6 +27,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
 
     func resetAdRenderer() {
         adFree = false
+        self.truexAdRenderer?.stop()
     }
 
     func renderTruex(adverts: [Any]) -> Bool {
@@ -38,8 +39,23 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
             return false
         }
 
-        let params: [String: String] = generateParams(placementHash: "07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092")
-        self.truexAdRenderer = TruexAdRenderer(url: trueXUrl.absoluteString, adParameters: params, slotType: "midroll")
+        guard let unitAdParameters: String = truex.linearCreativeElement().interactiveUnit()?.unitAdParameters() else {
+            return false
+        }
+
+        guard var adParameters: Dictionary = YospaceUtil.convertToDictionary(text: unitAdParameters) else {
+            return false
+        }
+
+        if !self.vastConfigUrl.isEmpty {
+            adParameters["vast_config_url"] = self.vastConfigUrl
+        }
+
+        if !self.userId.isEmpty {
+            adParameters["user_id"] = self.vastConfigUrl
+        }
+
+        self.truexAdRenderer = TruexAdRenderer(url: trueXUrl.absoluteString, adParameters: adParameters, slotType: "midroll")
         self.truexAdRenderer?.delegate = self
         self.truexAdRenderer?.start(view)
         return true

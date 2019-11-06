@@ -122,7 +122,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             self.truexAdRenderer = nil
         }
         #endif
-        
+
         var logMessage = "Load: "
         if let url = sourceConfiguration.firstSourceItem?.hlsSource?.url {
             logMessage.append("Source=\(url.absoluteString)")
@@ -184,7 +184,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         BitLog.d("Unload: ")
         super.unload()
     }
-    
+
     // MARK: - playback methods
     open override func pause() {
         if let manager = self.sessionManager {
@@ -322,7 +322,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             return self.timeline?.currentAd(time: self.currentTimeWithAds())
         }
     }
-    
+
     private func updateLoggingVisibility(isLoggingEnabled: Bool) {
         if isLoggingEnabled {
             BitLog.enable()
@@ -487,14 +487,11 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
         case .initialisedWithAnalytics:
             BitLog.d("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
-
             if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
                 sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
             }
-
             load(sourceConfiguration: sourceConfig)
         default:
             break
