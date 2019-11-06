@@ -148,15 +148,15 @@ class ViewController: UIViewController {
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
-    
+
     @IBAction func nonYospaceButtonClicked(sender: UIButton) {
         guard let streamUrl = URL(string: "https://bitmovin-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8") else {
             return
         }
-        
+
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        
+
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: nil, truexConfiguration: nil)
     }
 
@@ -199,18 +199,18 @@ class ViewController: UIViewController {
     }
 
     @IBAction func trueXButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://turnercmaf.cdn.turner.com/csm/qa/cmaf_advanced_fmp4_from_inter/prog_seg/bones_RADS1008071800025944_v12/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl_ifp.m3u8?context=525955009") else {
+        guard let streamUrl = URL(string: "https://turnercmaf.warnermediacdn.com/csm/qa/cmaf_advanced_fmp4_from_inter/prog_seg/bones_RADS1008071800025944_v12/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl_ifp.m3u8?context=525955009") else {
             return
         }
 
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        
+
         let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
 
         // Create a TruexConfiguration
-        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
-
+//        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
+        let truexConfiguration = TruexConfiguration(view: playerView)
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config, truexConfiguration: truexConfiguration)
 
     }
