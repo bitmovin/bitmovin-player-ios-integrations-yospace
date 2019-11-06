@@ -487,24 +487,12 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
 
         case .initialisedWithAnalytics:
             BitLog.d("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-//
             let sourceConfig = SourceConfiguration()
             sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
-
             if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
                 sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
             }
-
-//            // Define needed resources
-//            guard let streamUrl = URL(string: "https://cmaf-live.warnermediacdn.com/csmp/cmaf/live/2000073/tbse-clear-novpaid/master.m3u8;jsessionid=6690CAC326B1261722B01945449FE5B6.csm-e-cetpusexaws102j8-2ahv1pq23z0o.bln1.yospace.com") else {
-//                return
-//            }
-//            sourceConfig = SourceConfiguration()
-//            sourceConfig?.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-//            BitLog.d("playing source: \(streamUrl)")
-
             load(sourceConfiguration: sourceConfig)
-
         default:
             break
         }
