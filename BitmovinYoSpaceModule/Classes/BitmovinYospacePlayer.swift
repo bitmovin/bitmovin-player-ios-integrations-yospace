@@ -211,7 +211,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         BitLog.d("Seeking to: \(time)")
         super.seek(time: time)
     }
-    
+
     func handleTrueXAdFree() {
         for listener: YospaceListener in yospaceListeners {
             listener.onTrueXAdFree()
