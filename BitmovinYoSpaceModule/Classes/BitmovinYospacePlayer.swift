@@ -211,6 +211,12 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         BitLog.d("Seeking to: \(time)")
         super.seek(time: time)
     }
+    
+    func handleTrueXAdFree() {
+        for listener: YospaceListener in yospaceListeners {
+            listener.onTrueXAdFree()
+        }
+    }
 
     // MARK: - event handling
     open override func add(listener: PlayerListener) {
