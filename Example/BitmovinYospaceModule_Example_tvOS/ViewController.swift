@@ -173,4 +173,8 @@ extension ViewController: YospaceListener {
     public func onTimelineChanged(event: AdTimelineChangedEvent) {
 
     }
+    
+    public func onTrueXAdFree() {
+        
+    }
 }
