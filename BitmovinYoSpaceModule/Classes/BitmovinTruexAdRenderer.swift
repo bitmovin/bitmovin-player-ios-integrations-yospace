@@ -98,10 +98,10 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     public func onAdFreePod() {
         BitLog.d("Truex onAdFreePod")
         adFree = true
-        guard let advertisement: Ad = self.bitmovinPlayer?.getActiveAd() else {
+        guard let adBreak: AdBreak = self.bitmovinPlayer?.getActiveAdBreak() else {
             return
         }
-        self.bitmovinPlayer?.forceSeek(time: advertisement.absoluteEnd+1)
+        self.bitmovinPlayer?.forceSeek(time: adBreak.absoluteEnd+1)
     }
 
     public func onPopupWebsite(_ url: String!) {
