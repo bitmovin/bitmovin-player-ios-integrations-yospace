@@ -102,6 +102,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
             return
         }
         self.bitmovinPlayer?.forceSeek(time: adBreak.absoluteEnd+1)
+        self.bitmovinPlayer?.handleTrueXAdFree()
     }
 
     public func onPopupWebsite(_ url: String!) {
