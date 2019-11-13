@@ -102,6 +102,8 @@ class YospaceUtil {
             return "progressEvent"
         case .nonLinearClickTrackingEvent:
             return "nonLinearClickTrackingEvent"
+        @unknown default:
+            return "default"
         }
     }
     // swiftlint:enable cyclomatic_complexity
