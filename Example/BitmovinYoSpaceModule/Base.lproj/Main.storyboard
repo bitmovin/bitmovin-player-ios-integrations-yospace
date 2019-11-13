@@ -124,6 +124,14 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sib-iO-jDX">
+                                <rect key="frame" x="239" y="81" width="85" height="30"/>
+                                <state key="normal" title="NonYospace"/>
+                                <connections>
+                                    <action selector="nonYospaceButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="Ub1-HH-iD8"/>
+                                    <action selector="nonYospaceButtonClickedWithSender:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="aga-AV-9Lc"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -132,6 +140,7 @@
                             <constraint firstItem="w2v-Wd-fxy" firstAttribute="top" secondItem="MXV-bu-abD" secondAttribute="top" id="3ow-x0-gKH"/>
                             <constraint firstItem="fRY-ie-hiw" firstAttribute="leading" secondItem="n0d-8r-aL9" secondAttribute="trailing" constant="15" id="5Vy-Ty-93S"/>
                             <constraint firstItem="Lyc-l3-Nsg" firstAttribute="leading" secondItem="fRY-ie-hiw" secondAttribute="trailing" constant="15" id="AZV-dl-APD"/>
+                            <constraint firstItem="sib-iO-jDX" firstAttribute="leading" secondItem="w2v-Wd-fxy" secondAttribute="trailing" constant="13" id="All-7o-mBC"/>
                             <constraint firstItem="x1n-n0-LwS" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="CwP-Br-Ggz"/>
                             <constraint firstItem="MXV-bu-abD" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="37" id="EIV-Nv-9x5"/>
                             <constraint firstItem="KEF-Cw-sKa" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="FjC-O3-EF5"/>
@@ -155,6 +164,8 @@
                             <constraint firstItem="w2v-Wd-fxy" firstAttribute="leading" secondItem="MXV-bu-abD" secondAttribute="trailing" constant="18" id="fvg-ft-Rf8"/>
                             <constraint firstItem="8kz-qv-eyg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="KEF-Cw-sKa" secondAttribute="trailing" constant="8" symbolic="YES" id="gsL-0d-GZf"/>
                             <constraint firstAttribute="trailing" secondItem="8kz-qv-eyg" secondAttribute="trailing" constant="43" id="hPZ-fI-bU3"/>
+                            <constraint firstItem="sib-iO-jDX" firstAttribute="centerY" secondItem="w2v-Wd-fxy" secondAttribute="centerY" id="jn6-6d-M7U"/>
+                            <constraint firstAttribute="trailing" secondItem="sib-iO-jDX" secondAttribute="trailing" constant="51" id="mru-yL-AZs"/>
                             <constraint firstItem="n8m-R9-md4" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="35" id="ocZ-H7-kyd"/>
                             <constraint firstItem="hb3-bn-Sn4" firstAttribute="leading" secondItem="Dad-P4-6Jk" secondAttribute="trailing" constant="-88" id="qPk-rp-Zxu"/>
                             <constraint firstItem="C6l-6C-z7A" firstAttribute="trailing" secondItem="QdG-no-vkN" secondAttribute="trailing" id="rAb-1H-bgQ"/>

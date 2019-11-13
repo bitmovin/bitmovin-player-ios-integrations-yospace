@@ -16,7 +16,7 @@ extension YSTimedMetadata {
 
                 switch key.description {
                 case "YPRG":
-                    NSLog("Programme metadata - ignoring")
+                    BitLog.d("Programme metadata - ignoring")
                 case "YTYP":
                     if let type  = String(data: data, encoding: String.Encoding.utf8) {
                         meta.type = String(type[type.index(type.startIndex, offsetBy: 1)...])
@@ -106,4 +106,14 @@ class YospaceUtil {
     }
     // swiftlint:enable cyclomatic_complexity
 
+    static func convertToDictionary(text: String) -> [String: Any]? {
+        if let data = text.data(using: .utf8) {
+            do {
+                return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        return nil
+    }
 }

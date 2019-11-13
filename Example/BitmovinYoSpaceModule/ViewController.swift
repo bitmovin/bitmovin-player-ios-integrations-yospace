@@ -9,7 +9,6 @@
 import UIKit
 import BitmovinYospaceModule
 import BitmovinPlayer
-import Toast_Swift
 
 class ViewController: UIViewController {
     var bitmovinYospacePlayer: BitmovinYospacePlayer?
@@ -37,10 +36,10 @@ class ViewController: UIViewController {
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
         configuration.playbackConfiguration.isMuted = true
-        
+
         // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: true, timeout: 5000)
-        
+
         //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
 
@@ -54,7 +53,7 @@ class ViewController: UIViewController {
         guard let player = bitmovinYospacePlayer else {
             return
         }
-        
+
         self.playerView.backgroundColor = .black
 
         if bitmovinPlayerView == nil {
@@ -97,44 +96,44 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://ssai.cdn.turner.com/csmp/cmaf/live/2000073/tbse-clear-novpaid/master.m3u8?yo.aas=true&yo.av=2&yo.ch=true&yo.ac=true&yo.po=-4&yo.dr=true") else {
+        guard let streamUrl = URL(string: "https://cmaf-live.warnermediacdn.com/csmp/cmaf/live/2000073/tbse-clear-novpaid/master.m3u8?yo.dr=true") else {
             return
         }
-        
+
 //        guard let streamUrl = URL(string: "http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=false&yo.ac=true") else {
 //            return
 //        }
-        
+
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
-    
+
     @IBAction func customButtonClicked(sender: UIButton) {
         let yospaceSourceConfiguration: YospaceSourceConfiguration?
         guard let url = textField.text else {
             return
         }
-        
+
         guard let streamUrl = URL(string: url) else {
             return
         }
-        
+
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        
+
         if (assetType.selectedSegmentIndex == 0) {
             yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
-        }else {
+        } else {
             yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .vod)
         }
-        
+
         guard let conf = yospaceSourceConfiguration else {
             return
         }
-        
+
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: conf)
     }
 
@@ -150,6 +149,17 @@ class ViewController: UIViewController {
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
 
+    @IBAction func nonYospaceButtonClicked(sender: UIButton) {
+        guard let streamUrl = URL(string: "https://bitmovin-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8") else {
+            return
+        }
+
+        let sourceConfig = SourceConfiguration()
+        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: nil, truexConfiguration: nil)
+    }
+
     @IBAction func startOverButtonClicked(sender: UIButton) {
         guard let streamUrl = URL(string: "https://csm-e-turnerstg-5p30c9t6lfad.tls1.yospace.com/csm/access/525947592/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvZnVsbF9sZW4vbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NiY3MvM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MwMDAwMDJiMC9tYXN0ZXJfZnAubTN1OAo=?yo.av=2&yo.ad=true") else {
             return
@@ -158,7 +168,7 @@ class ViewController: UIViewController {
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let drmConfiguration = FairplayConfiguration(license: URL(string: "https://fairplay.license.istreamplanet.com/api/license/a229afbf-e1d3-499e-8127-c33cd7231e58"), certificateURL: URL(string: "https://fairplay.license.istreamplanet.com/api/AppCert/a229afbf-e1d3-499e-8127-c33cd7231e58")!)
-        
+
         drmConfiguration.prepareCertificate = { (data: Data) -> Data in
             guard let certString = String(data: data, encoding: .utf8),
                 let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: "")) else {
@@ -168,7 +178,7 @@ class ViewController: UIViewController {
         }
         drmConfiguration.prepareContentId = { (contentId: String) -> String in
             let prepared = contentId.replacingOccurrences(of: "skd://", with: "")
-            let components : [String] = prepared.components(separatedBy: "/")
+            let components: [String] = prepared.components(separatedBy: "/")
             return components[2]
         }
         drmConfiguration.prepareMessage = { (spcData: Data, assetID: String) -> Data in
@@ -181,25 +191,26 @@ class ViewController: UIViewController {
             }
             return ckcResult
         }
-        
+
         sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
         let config = YospaceSourceConfiguration(yospaceAssetType: .nonLinearStartOver)
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
-    
-    @IBAction func trueXButtonClicked(sender: UIButton){
-        guard let streamUrl = URL(string: "https://csm-e-stg.tls1.yospace.com/csm/access/525943851/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvcHJvZ19zZWcvbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NsZWFyLzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjL21hc3Rlcl9jbF9ub19pZnJhbWUubTN1OA==?yo.av=2") else {
+
+    @IBAction func trueXButtonClicked(sender: UIButton) {
+        guard let streamUrl = URL(string: "https://turnercmaf.warnermediacdn.com/csm/qa/cmaf_advanced_fmp4_from_inter/prog_seg/bones_RADS1008071800025944_v12/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl_ifp.m3u8?context=525955009") else {
             return
         }
-        
+
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+
         let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
-        
+
         // Create a TruexConfiguration
-        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
-        
+//        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
+        let truexConfiguration = TruexConfiguration(view: playerView)
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config, truexConfiguration: truexConfiguration)
 
     }
@@ -212,7 +223,7 @@ class ViewController: UIViewController {
         UIApplication.shared.openURL(url)
 
     }
-    
+
     @IBAction func skipAd(sender: UIButton) {
         bitmovinYospacePlayer?.skipAd()
     }
@@ -221,14 +232,17 @@ class ViewController: UIViewController {
 
 extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
-        NSLog("Ad Started \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
+        guard let adStartedEvent = event as? YospaceAdStartedEvent else {
+            return
+        }
+        NSLog("[ViewController] Ad Started - truex: \(adStartedEvent.truexAd) - \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
         self.adLabel.text = "Ad: true"
         clickButton.isEnabled = true
-        clickUrl = event.clickThroughUrl
+        clickUrl = adStartedEvent.clickThroughUrl
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
-        NSLog("Ad Finished")
+        NSLog("[ViewController] Ad Finished")
         self.adLabel.text = "Ad: false"
         clickButton.isEnabled = false
         clickUrl = nil
@@ -236,33 +250,31 @@ extension ViewController: PlayerListener {
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
         if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
-            NSLog("Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
-        }else {
-            NSLog("Ad Break Started")
+            NSLog("[ViewController] Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
+        } else {
+            NSLog("[ViewController] Ad Break Started")
         }
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        NSLog("Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
-        
+        NSLog("[ViewController] Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
-        NSLog("Ad Clicked")
-        self.view.makeToast("Ad Clicked")
+        NSLog("[ViewController] Ad Clicked")
     }
-    
+
     public func onDurationChanged(_ event: DurationChangedEvent) {
         NSLog("On Duration Changed: \(event.duration)")
     }
-    
+
     public func onError(_ event: ErrorEvent) {
-        NSLog("On Error: \(event.code)")
+        NSLog("[ViewController] On Error: \(event.code)")
     }
-    
+
     public func onTimeChanged(_ event: TimeChangedEvent) {
 //        NSLog("On Time Changed - EventTime: \(event.currentTime) Duration: \(bitmovinYospacePlayer!.duration) TimeShift: \(bitmovinYospacePlayer!.timeShift) MaxTimeShift: \(bitmovinYospacePlayer!.maxTimeShift) isLive: \(bitmovinYospacePlayer!.isLive)")
-        self.currentTime.text = String(format: "time: %.1f",event.currentTime)
+        self.currentTime.text = String(format: "time: %.1f", event.currentTime)
     }
 }
 
@@ -273,7 +285,7 @@ extension ViewController: YospaceListener {
         alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
-    
+
     public func onTimelineChanged(event: AdTimelineChangedEvent) {
         NSLog("Timeline Changed: \(event.timeline.debugDescription)")
     }
