@@ -231,7 +231,7 @@ extension ViewController: PlayerListener {
         guard let adStartedEvent = event as? YospaceAdStartedEvent else {
             return
         }
-        NSLog("[ViewController] Ad Started - truex: \(adStartedEvent.truexAd) - \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
+        NSLog("[ViewController] Ad Started - truex: \(adStartedEvent.truexAd) - \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription ?? "")")
         self.adLabel.text = "Ad: true"
         clickButton.isEnabled = true
         clickUrl = adStartedEvent.clickThroughUrl
@@ -246,14 +246,14 @@ extension ViewController: PlayerListener {
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
         if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
-            NSLog("[ViewController] Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
+            NSLog("[ViewController] Ad Break Started \(adStartedEvent.adBreak.debugDescription )")
         } else {
             NSLog("[ViewController] Ad Break Started")
         }
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        NSLog("[ViewController] Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
+        NSLog("[ViewController] Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription ?? "")")
     }
 
     public func onAdClicked(_ event: AdClickedEvent) {
@@ -284,5 +284,9 @@ extension ViewController: YospaceListener {
 
     public func onTimelineChanged(event: AdTimelineChangedEvent) {
         NSLog("Timeline Changed: \(event.timeline.debugDescription)")
+    }
+    
+    public func onTrueXAdFree() {
+        
     }
 }
