@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 public class TruexConfiguration {
-    let view: UIView
-    let userId: String
-    let vastConfigUrl: String
+    public private(set) var view: UIView
+    public private(set) var userId: String
+    public private(set) var vastConfigUrl: String
     // MARK: - initializer
     /**
      Initialize a new TruexConfiguration object.
