@@ -116,12 +116,12 @@ class ViewController: UIViewController {
 
 extension ViewController: PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
-        NSLog("Ad Started \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
+        NSLog("Ad Started -  \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription ?? "")")
         clickUrl = event.clickThroughUrl
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
-        NSLog("Ad Finished \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription)")
+        NSLog("Ad Finished \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription ?? "")")
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
