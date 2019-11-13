@@ -133,7 +133,7 @@ extension ViewController: PlayerListener {
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        NSLog("Ad Break Finished \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription)")
+        NSLog("Ad Break Finished -  \(bitmovinYospacePlayer?.getActiveAdBreak()?.debugDescription ?? "")")
 
     }
 
