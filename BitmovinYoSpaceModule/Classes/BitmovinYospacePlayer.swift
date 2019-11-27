@@ -341,7 +341,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
-    
+
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         var adBreakStartEvent: AdBreakStartedEvent = AdBreakStartedEvent()
         #if os(iOS)
@@ -365,15 +365,15 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 if let adverts = adBreak.adverts() as? [YSAdvert] {
                     adBreakDuration = adverts.reduce(0.0, {$0 + $1.advertDuration()})
                 }
-                
+
                 let absoluteTime = currentTimeWithAds()
-                
+
                 liveAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
                                               absoluteStart: absoluteTime,
                                               absoluteEnd: absoluteTime + adBreakDuration,
                                               duration: adBreakDuration,
                                               relativeStart: adBreak.adBreakStart())
-                
+
                 adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: liveAdBreak!)
             }
 
@@ -398,7 +398,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         if !truexRendering {
             adPlaying = true
-            var clickThroughUrl: URL? = nil
+            var clickThroughUrl: URL?
             if advert.linearCreativeElement().linearClickthroughURL() != nil {
                 clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
             }
@@ -459,7 +459,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
-    
+
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
         self.sessionManager = sessionManager
         self.yospaceStream = stream

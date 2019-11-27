@@ -134,7 +134,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     func parseTruexAd(_ adverts: [Any]) -> YSAdvert? {
-        var trueXAd: YSAdvert? = nil
+        var trueXAd: YSAdvert?
         for advert in adverts {
             guard let ysAdvert: YSAdvert = advert as? YSAdvert else {
                 continue
