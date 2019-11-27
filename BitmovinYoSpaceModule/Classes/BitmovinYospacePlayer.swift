@@ -13,7 +13,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var sessionManager: YSSessionManager?
     var yospaceStream: YSStream?
     var sessionStatus: SessionStatus = .notInitialised
-    var adPlaying = false
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var yospaceConfiguration: YospaceConfiguration?
     var sourceConfiguration: SourceConfiguration?
@@ -27,8 +26,11 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var truexConfiguration: TruexConfiguration?
     var trueXRendering = false
     var dateRangeEmitter: DateRangeEmitter?
+    var adPlaying = false
     var liveAdBreak: AdBreak?
     var liveAd: Ad?
+    var liveAdPaused = false
+    var pausedTime = 0.0
 
     #if os(iOS)
     var truexAdRenderer: BitmovinTruexAdRenderer?
@@ -340,6 +342,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
+    
     public func advertBreakDidStart(_ adBreak: YSAdBreak) {
         var adBreakStartEvent: AdBreakStartedEvent = AdBreakStartedEvent()
         #if os(iOS)
@@ -357,13 +360,22 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
         if !trueXRendering {
             if isLive {
-                let bitmovinAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
-                                              absoluteStart: adBreak.adBreakStart() + timebase,
-                                              absoluteEnd: adBreak.adBreakEnd() + timebase,
-                                              duration: adBreak.adBreakDuration(),
+                var adBreakDuration = adBreak.adBreakDuration()
+                // Note: adBreak.adBreakDuration() currently returns 0
+                // So instead we calculate the duration as a sum advert durations
+                if let adverts = adBreak.adverts() as? [YSAdvert] {
+                    adBreakDuration = adverts.reduce(0.0, {$0 + $1.advertDuration()})
+                }
+                
+                let absoluteTime = currentTimeWithAds()
+                
+                liveAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
+                                              absoluteStart: absoluteTime,
+                                              absoluteEnd: absoluteTime + adBreakDuration,
+                                              duration: adBreakDuration,
                                               relativeStart: adBreak.adBreakStart())
-                adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
-                liveAdBreak = bitmovinAdBreak
+                
+                adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: liveAdBreak!)
             }
 
             BitLog.d("Yospace AdBreakStartedEvent")
@@ -371,7 +383,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 listener.onAdBreakStarted?(adBreakStartEvent)
             }
         }
-
     }
 
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
@@ -383,7 +394,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             }
         }
         trueXRendering = false
-
     }
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
@@ -446,11 +456,11 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             self.adBreaks = timeline
         }
     }
-
 }
 
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSSessionManagerObserver {
+    
     public func sessionDidInitialise(_ sessionManager: YSSessionManager, with stream: YSStream) {
         self.sessionManager = sessionManager
         self.yospaceStream = stream
@@ -513,7 +523,6 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
             handleError(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error")
         }
     }
-
 }
 
 // MARK: - PlayerListener
@@ -540,6 +549,8 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onPaused(_ event: PausedEvent) {
+        liveAdPaused = isLive && isAd
+        pausedTime = currentTimeWithAds()
         let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
         self.notify(dictionary: dictionary, name: YoPlaybackPausedNotification)
         for listener: PlayerListener in listeners {
@@ -556,22 +567,6 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onSourceUnloaded?(event)
         }
     }
-
-    //    public func onStallStarted(_ event: StallStartedEvent) {
-    //        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
-    //        self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
-    //        for listener: PlayerListener in listeners {
-    //            listener.onStallStarted?(event)
-    //        }
-    //    }
-    //
-    //    public func onStallEnded(_ event: StallEndedEvent) {
-    //        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
-    //        self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
-    //        for listener: PlayerListener in listeners {
-    //            listener.onStallEnded?(event)
-    //        }
-    //    }
 
     public func onError(_ event: ErrorEvent) {
         for listener: PlayerListener in listeners {
@@ -672,6 +667,14 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onTimeChanged(_ event: TimeChangedEvent) {
+        if liveAdPaused && liveAdBreak != nil {
+            // User paused during ad break
+            if event.currentTime > liveAdBreak!.absoluteEnd {
+                // Live window has moved beyond ad break
+                onAdSkipped(AdSkippedEvent())
+            }
+        }
+        liveAdPaused = false
         for listener: PlayerListener in listeners {
             listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime))
         }
@@ -714,6 +717,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onAdSkipped(_ event: AdSkippedEvent) {
+        BitLog.d("onAdSkipped: ")
         for listener: PlayerListener in listeners {
             listener.onAdSkipped?(event)
         }
