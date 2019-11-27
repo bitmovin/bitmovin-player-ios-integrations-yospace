@@ -30,7 +30,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var liveAdBreak: AdBreak?
     var liveAd: Ad?
     var liveAdPaused = false
-    var pausedTime = 0.0
 
     #if os(iOS)
     var truexAdRenderer: BitmovinTruexAdRenderer?
@@ -550,7 +549,6 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onPaused(_ event: PausedEvent) {
         liveAdPaused = isLive && isAd
-        pausedTime = currentTimeWithAds()
         let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
         self.notify(dictionary: dictionary, name: YoPlaybackPausedNotification)
         for listener: PlayerListener in listeners {
@@ -637,7 +635,6 @@ extension BitmovinYospacePlayer: PlayerListener {
             let dictionary = [kYoMetadataKey: meta]
             self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
         }
-
     }
 
     func trackDateRange(_ event: MetadataEvent) {
