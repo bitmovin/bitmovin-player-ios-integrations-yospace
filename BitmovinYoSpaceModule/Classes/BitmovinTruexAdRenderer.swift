@@ -78,7 +78,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
 
     func exitTrueXAd() {
         fireAdFinished()
-        self.bitmovinPlayer?.trueXRendering = false
+        self.bitmovinPlayer?.truexRendering = false
         self.bitmovinPlayer?.play()
 
         if !adFree {
