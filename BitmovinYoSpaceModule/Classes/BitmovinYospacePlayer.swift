@@ -557,21 +557,21 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    //    public func onStallStarted(_ event: StallStartedEvent) {
-    //        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
-    //        self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
-    //        for listener: PlayerListener in listeners {
-    //            listener.onStallStarted?(event)
-    //        }
-    //    }
-    //
-    //    public func onStallEnded(_ event: StallEndedEvent) {
-    //        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
-    //        self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
-    //        for listener: PlayerListener in listeners {
-    //            listener.onStallEnded?(event)
-    //        }
-    //    }
+    public func onStallStarted(_ event: StallStartedEvent) {
+        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
+        self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
+        for listener: PlayerListener in listeners {
+            listener.onStallStarted?(event)
+        }
+    }
+
+    public func onStallEnded(_ event: StallEndedEvent) {
+        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
+        self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
+        for listener: PlayerListener in listeners {
+            listener.onStallEnded?(event)
+        }
+    }
 
     public func onError(_ event: ErrorEvent) {
         for listener: PlayerListener in listeners {
