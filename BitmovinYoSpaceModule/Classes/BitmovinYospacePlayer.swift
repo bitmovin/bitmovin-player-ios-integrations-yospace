@@ -555,6 +555,22 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onPaused?(PausedEvent(time: currentTime))
         }
     }
+    
+    //    public func onStallStarted(_ event: StallStartedEvent) {
+    //        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
+    //        self.notify(dictionary: dictionary, name: YoPlaybackStalledNotification)
+    //        for listener: PlayerListener in listeners {
+    //            listener.onStallStarted?(event)
+    //        }
+    //    }
+    //
+    //    public func onStallEnded(_ event: StallEndedEvent) {
+    //        let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
+    //        self.notify(dictionary: dictionary, name: YoPlaybackResumedNotification)
+    //        for listener: PlayerListener in listeners {
+    //            listener.onStallEnded?(event)
+    //        }
+    //    }
 
     public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
         if sessionStatus != .notInitialised {
