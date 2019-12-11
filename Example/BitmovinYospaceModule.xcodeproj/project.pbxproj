@@ -380,7 +380,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS-frameworks.sh",
-				"${PODS_ROOT}/BitmovinPlayer/tvOS/BitmovinPlayer.framework",
+				"${PODS_ROOT}/BitmovinPlayer/BitmovinPlayer/tvOS/BitmovinPlayer.framework",
 				"${PODS_ROOT}/../../lib/tvOS/Yospace.framework",
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-tvOS/BitmovinYospaceModule.framework",
 			);
@@ -402,7 +402,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example-frameworks.sh",
-				"${PODS_ROOT}/BitmovinPlayer/iOS/BitmovinPlayer.framework",
+				"${PODS_ROOT}/BitmovinPlayer/BitmovinPlayer/iOS/BitmovinPlayer.framework",
 				"${PODS_ROOT}/../../lib/iOS/Yospace.framework",
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-iOS/BitmovinYospaceModule.framework",
 				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.1/TruexAdRenderer.framework",
@@ -498,7 +498,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -535,7 +535,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
@@ -670,7 +670,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -712,7 +712,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
