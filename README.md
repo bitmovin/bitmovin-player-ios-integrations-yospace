@@ -106,8 +106,12 @@ BitmovinYospacePlayer is available through [CocoaPods](http://cocoapods.org). To
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.2.2'
-  pod 'BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-player-ios-sdk-cocoapod.git', tag: '2.35.0'
+source 'https://github.com/bitmovin/cocoapod-specs.git'
+```
+
+```ruby
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.2.3'
+  pod 'BitmovinPlayer', tag: '2.36.1'
 
   use_frameworks!
 ```
