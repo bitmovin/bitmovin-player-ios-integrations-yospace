@@ -96,7 +96,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=false&yo.ac=true") else {
+        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear/master.m3u8?yo.dr=true&yo.av=2") else {
             return
         }
 
@@ -134,7 +134,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://csm-e-stg.tls1.yospace.com/csm/access/525947592/cWEvY21hZl9hZHZhbmNlZF9mbXA0X2Zyb21faW50ZXIvcHJvZ19zZWcvbXdjX0NBUkUxMDA5MjYxNzAwMDE4ODUyL2NsZWFyLzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjM2MzYzNjL21hc3Rlcl9jbF9ub19pZnJhbWUubTN1OA==?yo.av=2") else {
+        guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_iphone_test&context=181740194&nw=48804&prof=48804:tbs_ios_vod&vdur=1800&yo.vp=false&yo.ad=true") else {
             return
         }
 
@@ -195,7 +195,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func trueXButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://turnercmaf.warnermediacdn.com/csm/qa/cmaf_advanced_fmp4_from_inter/prog_seg/bones_RADS1008071800025944_v12/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl_ifp.m3u8?context=525955009") else {
+        guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_iphone&context=182883174&nw=42448&prof=48804%3Amp4_plus_vast_truex&vdur=1800&yo.vp=true&yo.ad=true") else {
             return
         }
 
@@ -205,8 +205,7 @@ class ViewController: UIViewController {
         let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
 
         // Create a TruexConfiguration
-//        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
-        let truexConfiguration = TruexConfiguration(view: playerView)
+        let truexConfiguration = TruexConfiguration(view: playerView, userId: "turner_bm_ys_tester_001", vastConfigUrl: "qa-get.truex.com/07d5fe7cc7f9b5ab86112433cf0a83b6fb41b092/vast/config?asnw=&cpx_url=&dimension_2=0&flag=%2Bamcb%2Bemcr%2Bslcb%2Bvicb%2Baeti-exvt&fw_key_values=&metr=0&network_user_id=turner_bm_ys_tester_001&prof=g_as3_truex&ptgt=a&pvrn=&resp=vmap1&slid=fw_truex&ssnw=&stream_position=midroll&vdur=&vprn=")
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config, truexConfiguration: truexConfiguration)
 
     }
@@ -232,14 +231,12 @@ extension ViewController: PlayerListener {
             return
         }
         NSLog("[ViewController] Ad Started - truex: \(adStartedEvent.truexAd) - \(bitmovinYospacePlayer?.getActiveAd()?.debugDescription ?? "")")
-        self.adLabel.text = "Ad: true"
         clickButton.isEnabled = true
         clickUrl = adStartedEvent.clickThroughUrl
     }
 
     public func onAdFinished(_ event: AdFinishedEvent) {
         NSLog("[ViewController] Ad Finished")
-        self.adLabel.text = "Ad: false"
         clickButton.isEnabled = false
         clickUrl = nil
     }
@@ -271,6 +268,26 @@ extension ViewController: PlayerListener {
     public func onTimeChanged(_ event: TimeChangedEvent) {
 //        NSLog("On Time Changed - EventTime: \(event.currentTime) Duration: \(bitmovinYospacePlayer!.duration) TimeShift: \(bitmovinYospacePlayer!.timeShift) MaxTimeShift: \(bitmovinYospacePlayer!.maxTimeShift) isLive: \(bitmovinYospacePlayer!.isLive)")
         self.currentTime.text = String(format: "time: %.1f", event.currentTime)
+        
+        guard let activeAd = self.bitmovinYospacePlayer?.getActiveAd(), let activeAdBreak = self.bitmovinYospacePlayer?.getActiveAdBreak() else {
+            self.adLabel.text = "Ad: false"
+            return
+        }
+        
+        let adCount = activeAdBreak.ads.count
+        var count = 0
+        var adTimeRemaining = 0;
+        
+        for advertisement in activeAdBreak.ads {
+            count+=1
+            if advertisement.identifier == activeAd.identifier {
+                adTimeRemaining = Int(activeAd.duration - event.currentTime)
+                break;
+            }
+        }
+        
+        self.adLabel.text = "Ad \(count) of \(adCount) \(adTimeRemaining)s remaining"
+        print(self.adLabel.text)
     }
 }
 
