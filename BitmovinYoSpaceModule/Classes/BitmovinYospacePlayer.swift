@@ -357,13 +357,19 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
         if !trueXRendering {
             if isLive {
-                let bitmovinAdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
-                                              absoluteStart: adBreak.adBreakStart() + timebase,
-                                              absoluteEnd: adBreak.adBreakEnd() + timebase,
-                                              duration: adBreak.adBreakDuration(),
-                                              relativeStart: adBreak.adBreakStart())
+                let bitmovinAdBreak = createAdBreakFromYSAdBreak(adBreak)
                 adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
+
+                for yospaceAdvert in adBreak.adverts() {
+                    guard let advert = yospaceAdvert as? YSAdvert else {
+                        continue
+                    }
+
+                    bitmovinAdBreak.appendAd(ad: createAdFromAdvert(advert))
+                }
+
                 liveAdBreak = bitmovinAdBreak
+
             }
 
             BitLog.d("Yospace AdBreakStartedEvent")
@@ -389,20 +395,10 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         if !trueXRendering {
             adPlaying = true
-            var clickThroughUrl: URL? = nil
-            if advert.linearCreativeElement().linearClickthroughURL() != nil {
-                clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
-            }
 
-            liveAd = Ad(identifier: advert.advertIdentifier(),
-                        absoluteStart: advert.advertStart() + timebase,
-                        absoluteEnd: advert.advertEnd() + timebase,
-                        duration: advert.advertDuration(),
-                        relativeStart: currentTimeWithAds(),
-                        hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
-                        clickThroughUrl: clickThroughUrl)
+            liveAd = createAdFromAdvert(advert)
 
-            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: clickThroughUrl,
+            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: liveAd?.clickThroughUrl,
                                                                 clientType: .IMA, indexInQueue: 0,
                                                                 duration: advert.advertDuration(),
                                                                 timeOffset: advert.advertStart() + timebase,
@@ -445,6 +441,29 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             BitLog.d("TimelineUpdateReceived: \(timeline.count)")
             self.adBreaks = timeline
         }
+    }
+
+    private func createAdFromAdvert(_ advert: YSAdvert) -> Ad {
+        var clickThroughUrl: URL? = nil
+        if advert.linearCreativeElement().linearClickthroughURL() != nil {
+            clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
+        }
+
+        return Ad(identifier: advert.advertIdentifier(),
+        absoluteStart: advert.advertStart() + timebase,
+        absoluteEnd: advert.advertEnd() + timebase,
+        duration: advert.advertDuration(),
+        relativeStart: currentTimeWithAds(),
+        hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
+        clickThroughUrl: clickThroughUrl)
+    }
+    
+    private func createAdBreakFromYSAdBreak(_ ysAdBreak: YSAdBreak) -> AdBreak {
+        return AdBreak(identifier: ysAdBreak.adBreakIdentifier(),
+                                      absoluteStart: ysAdBreak.adBreakStart() + timebase,
+                                      absoluteEnd: ysAdBreak.adBreakEnd() + timebase,
+                                      duration: ysAdBreak.adBreakDuration(),
+                                      relativeStart: ysAdBreak.adBreakStart())
     }
 
 }
