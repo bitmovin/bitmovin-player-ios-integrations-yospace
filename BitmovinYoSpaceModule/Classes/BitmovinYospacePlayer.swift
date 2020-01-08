@@ -457,7 +457,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
         clickThroughUrl: clickThroughUrl)
     }
-    
+
     private func createAdBreakFromYSAdBreak(_ ysAdBreak: YSAdBreak) -> AdBreak {
         return AdBreak(identifier: ysAdBreak.adBreakIdentifier(),
                                       absoluteStart: ysAdBreak.adBreakStart() + timebase,
