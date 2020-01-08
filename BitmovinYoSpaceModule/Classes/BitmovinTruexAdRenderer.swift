@@ -103,7 +103,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
         }
         self.bitmovinPlayer?.forceSeek(time: adBreak.absoluteEnd+1)
 
-        if (adBreak.absoluteStart == 0) {
+        if adBreak.absoluteStart == 0 {
             BitLog.d("TrueX adFree granted on preroll, firing adFree listener")
             self.bitmovinPlayer?.handleTrueXAdFree()
         }
