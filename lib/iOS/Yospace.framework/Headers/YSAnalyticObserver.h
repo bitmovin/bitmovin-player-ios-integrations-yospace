@@ -80,13 +80,11 @@
 - (void) trackingEventDidOccur:(YSETrackingEvent)event forNonLinearCreative:(id<YSNonLinearCreative> _Nonnull)nonlinearCreative;
 
 /** Indicates that the start of an advert break was reached.
- Note that for live playback, you MUST NOT assume that the YSAdBreak payload describes the adverts will be played back in the ad break. Since the stream is linear you can only know that information once the ad break is finished.
- Instead the payload can be used to pre-load assets (if not already loaded by the SDK) and to inspect other parts of the VAST document, for example the <code><Extensions<></code> block.
  
- @param adBreak The Ad Break.
+ @param adBreak The Ad Break, which may be `nil` in live playback if the data for the ad break is not yet available, for example when a stream starts with pre-roll.
  @since from 1.0
  */
-- (void) advertBreakDidStart:(id<YSAdBreak> _Nonnull)adBreak;
+- (void) advertBreakDidStart:(id<YSAdBreak> _Nullable)adBreak;
 
 /** Indicates that the end of an advert break was reached.
  

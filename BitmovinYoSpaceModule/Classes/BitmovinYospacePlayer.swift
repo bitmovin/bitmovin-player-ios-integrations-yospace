@@ -244,6 +244,8 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         self.sessionManager = nil
         self.yospaceStream = nil
         self.adBreaks = []
+        self.liveAd = nil
+        self.liveAdBreak = nil
         sessionStatus = .notInitialised
         adPlaying = false
         trueXRendering = false
@@ -340,7 +342,19 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
-    public func advertBreakDidStart(_ adBreak: YSAdBreak) {
+    public func advertBreakDidStart(_ adBreak: YSAdBreak?) {
+        guard let adBreak: YSAdBreak = adBreak else {
+            return
+        }
+
+        if isLive, liveAdBreak == nil {
+            handleAdBreakEvent(adBreak)
+        }else {
+            handleAdBreakEvent(adBreak)
+        }
+    }
+
+    private func handleAdBreakEvent(_ adBreak: YSAdBreak) {
         var adBreakStartEvent: AdBreakStartedEvent = AdBreakStartedEvent()
         #if os(iOS)
         if truexAdRenderer != nil {
@@ -377,7 +391,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 listener.onAdBreakStarted?(adBreakStartEvent)
             }
         }
-
     }
 
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
@@ -389,14 +402,19 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             }
         }
         trueXRendering = false
-
     }
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
+        if isLive, liveAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
+            handleAdBreakEvent(currentAdBreak)
+        }
+        
         if !trueXRendering {
             adPlaying = true
 
-            liveAd = createAdFromAdvert(advert)
+            if isLive {
+                liveAd = createAdFromAdvert(advert)
+            }
 
             let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: liveAd?.clickThroughUrl,
                                                                 clientType: .IMA, indexInQueue: 0,
