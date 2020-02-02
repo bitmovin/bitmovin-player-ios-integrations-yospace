@@ -349,7 +349,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
         if isLive, liveAdBreak == nil {
             handleAdBreakEvent(adBreak)
-        }else {
+        } else {
             handleAdBreakEvent(adBreak)
         }
     }
@@ -408,7 +408,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         if isLive, liveAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
-        
+
         if !trueXRendering {
             adPlaying = true
 
