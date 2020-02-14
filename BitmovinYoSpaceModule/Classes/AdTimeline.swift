@@ -9,69 +9,14 @@ import Foundation
 import Yospace
 import BitmovinPlayer
 
-public class AdBreak: CustomDebugStringConvertible {
-    public private(set) var relativeStart: TimeInterval = 0.0
-    public private(set) var duration: TimeInterval = 0.0
-    public private(set) var absoluteStart: TimeInterval = 0.0
-    public private(set) var absoluteEnd: TimeInterval = 0.0
-    public private(set) var identifier: String = "unknown"
-    public private(set) var ads: [Ad] = []
-
-    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval) {
-        self.identifier = identifier
-        self.absoluteStart = absoluteStart
-        self.absoluteEnd = absoluteEnd
-        self.duration = duration
-        self.relativeStart = relativeStart
-    }
-
-    //swiftlint:disable identifier_name
-    func appendAd(ad: Ad) {
-        self.ads.append(ad)
-    }
-    //swiftlint:enable identifier_name
-
-    public var debugDescription: String {
-        return "id=\(self.identifier) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd) ads=\(ads.map {$0.identifier})"
-    }
-
-}
-
-//swiftlint:disable type_name
-public class Ad: CustomDebugStringConvertible {
-    public private(set) var relativeStart: TimeInterval = 0.0
-    public private(set) var identifier: String = "unknown"
-    public private(set) var duration: TimeInterval = 0.0
-    public private(set) var hasInteractiveUnit = false
-    public private(set) var absoluteStart: TimeInterval = 0.0
-    public private(set) var absoluteEnd: TimeInterval = 0.0
-    public private(set) var clickThroughUrl: URL?
-
-    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool, clickThroughUrl: URL?) {
-        self.identifier = identifier
-        self.absoluteStart = absoluteStart
-        self.absoluteEnd = absoluteEnd
-        self.duration = duration
-        self.relativeStart = relativeStart
-        self.hasInteractiveUnit = hasInteractiveUnit
-        self.clickThroughUrl = clickThroughUrl
-    }
-
-    public var debugDescription: String {
-        return "id=\(self.identifier) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd)"
-    }
-
-}
-//swiftlint:enable type_name
-
 public class AdTimeline: CustomDebugStringConvertible {
-    public private(set) var adBreaks: [AdBreak] = []
+    public private(set) var adBreaks: [YospaceAdBreak] = []
 
     public init (breaks: [YSAdBreak]) {
         let sorted: [YSAdBreak] = breaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
         var count: Double = 0
         for adBreak in sorted {
-            let adBreakEntry: AdBreak = AdBreak(identifier: adBreak.adBreakIdentifier(),
+            let adBreakEntry: YospaceAdBreak = YospaceAdBreak(identifier: adBreak.adBreakIdentifier(),
                                                 absoluteStart: adBreak.adBreakStart(),
                                                 absoluteEnd: adBreak.adBreakEnd(),
                                                 duration: adBreak.adBreakDuration(),
@@ -79,7 +24,7 @@ public class AdTimeline: CustomDebugStringConvertible {
 
             for advertisement in adBreak.adverts() {
                 if let advert: YSAdvert = advertisement as? YSAdvert {
-                    let newAd: Ad = Ad(identifier: advert.advertIdentifier(),
+                    let newAd: YospaceAd = YospaceAd(identifier: advert.advertIdentifier(),
                                        absoluteStart: advert.advertStart(),
                                        absoluteEnd: advert.advertEnd(),
                                        duration: advert.advertDuration(),
@@ -128,11 +73,11 @@ public class AdTimeline: CustomDebugStringConvertible {
 
     }
 
-    func currentAdBreak(time: TimeInterval) -> AdBreak? {
+    func currentAdBreak(time: TimeInterval) -> YospaceAdBreak? {
         return adBreaks.filter {$0.absoluteStart < time}.filter {$0.absoluteEnd > time}.first
     }
 
-    func currentAd(time: TimeInterval) -> Ad? {
+    func currentAd(time: TimeInterval) -> YospaceAd? {
         guard let currentAdBreak = currentAdBreak(time: time) else {
             return nil
         }
