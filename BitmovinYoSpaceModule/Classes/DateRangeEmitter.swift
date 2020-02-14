@@ -52,7 +52,7 @@ class DateRangeEmitter: NSObject {
         let mediaId = parseMediaId(daterangeMetadata: dateRangeMetadata)
 
         let previousMetadataDate: Date? = processedDaterangeMetadata[mediaId]
-        
+
         /**
         * Compare start date of current and previous metadata with the same id. If difference is less than 10 seconds it is a duplicate
         */
@@ -60,7 +60,7 @@ class DateRangeEmitter: NSObject {
                 BitLog.d("[DateRangeEmitter] - duplicate metadata received - \(mediaId) \(dateRangeMetadata.startDate)")
                 return
         }
-        
+
         processedDaterangeMetadata[mediaId] = dateRangeMetadata.startDate
 
         guard let endDate = dateRangeMetadata.endDate, let player = self.player else {
