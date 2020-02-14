@@ -335,6 +335,8 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak?) {
+        BitLog.d("Yospace advertBreakDidStart")
+
         guard let adBreak: YSAdBreak = adBreak else {
             return
         }
@@ -371,7 +373,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         activeAdBreak = bitmovinAdBreak
 
         if !trueXRendering {
-            BitLog.d("Yospace AdBreakStartedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdBreakStarted?(adBreakStartEvent)
             }
@@ -379,8 +380,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
+        BitLog.d("Yospace advertBreakDidEnd")
         if !trueXRendering {
-            BitLog.d("Yospace AdBreakFinishedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdBreakFinished?(AdBreakFinishedEvent())
             }
@@ -390,6 +391,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
+        BitLog.d("Yosapce advertDidStart")
         if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
