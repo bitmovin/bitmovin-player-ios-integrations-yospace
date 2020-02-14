@@ -346,50 +346,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
     }
 
-    private func handleAdBreakEvent(_ adBreak: YSAdBreak) {
-        #if os(iOS)
-        if truexAdRenderer != nil {
-            if truexAdRenderer!.adFree {
-                BitLog.d("Skipping Ad Break due to TrueX ad free experience")
-                super.seek(time: adBreak.adBreakEnd())
-            } else {
-                BitLog.d("Rendering TrueX Ad")
-                trueXRendering = truexAdRenderer!.renderTruex(adverts: adBreak.adverts())
-                BitLog.d("TrueX Ad Rendered - \(trueXRendering)")
-            }
-        }
-        #endif
-        
-        let bitmovinAdBreak = createAdBreakFromYSAdBreak(adBreak)
-        let adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
-
-        for yospaceAdvert in adBreak.adverts() {
-            guard let advert = yospaceAdvert as? YSAdvert else {
-                continue
-            }
-            bitmovinAdBreak.appendAd(ad: createAdFromAdvert(advert))
-        }
-
-        activeAdBreak = bitmovinAdBreak
-
-        if !trueXRendering {
-            for listener: PlayerListener in listeners {
-                listener.onAdBreakStarted?(adBreakStartEvent)
-            }
-        }
-    }
-
-    public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
-        BitLog.d("Yospace advertBreakDidEnd")
-        if !trueXRendering {
-            for listener: PlayerListener in listeners {
-                listener.onAdBreakFinished?(AdBreakFinishedEvent())
-            }
-        }
-        activeAdBreak = nil
-        trueXRendering = false
-    }
-
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         BitLog.d("Yosapce advertDidStart")
         if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
@@ -415,9 +371,9 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func advertDidEnd(_ advert: YSAdvert) {
+        BitLog.d("Yospace advertDidEnd")
         adPlaying = false
         if !trueXRendering {
-            BitLog.d("Yospace AdFinishedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdFinished?(AdFinishedEvent())
             }
@@ -426,12 +382,23 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         trueXRendering = false
     }
 
+    public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
+        BitLog.d("Yospace advertBreakDidEnd")
+        if !trueXRendering {
+            for listener: PlayerListener in listeners {
+                listener.onAdBreakFinished?(AdBreakFinishedEvent())
+            }
+        }
+        activeAdBreak = nil
+        trueXRendering = false
+    }
+
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
         BitLog.d("Tracking Event Did Occur %@ \(YospaceUtil.trackingEventString(event: event))")
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
-        BitLog.d("Yospace AdClickedEvent")
+        BitLog.d("Yospace linearClickThroughDidOccur")
         for listener: PlayerListener in listeners {
             listener.onAdClicked?(AdClickedEvent(clickThroughUr: linearCreative.linearClickthroughURL()))
         }
@@ -439,8 +406,41 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func timelineUpdateReceived(_ vmap: String) {
         if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
-            BitLog.d("TimelineUpdateReceived: \(timeline.count)")
+            BitLog.d("timelineUpdateReceived: \(timeline.count)")
             self.adBreaks = timeline
+        }
+    }
+
+    private func handleAdBreakEvent(_ adBreak: YSAdBreak) {
+        #if os(iOS)
+        if truexAdRenderer != nil {
+            if truexAdRenderer!.adFree {
+                BitLog.d("Skipping Ad Break due to TrueX ad free experience")
+                super.seek(time: adBreak.adBreakEnd())
+            } else {
+                BitLog.d("Rendering TrueX Ad")
+                trueXRendering = truexAdRenderer!.renderTruex(adverts: adBreak.adverts())
+                BitLog.d("TrueX Ad Rendered - \(trueXRendering)")
+            }
+        }
+        #endif
+
+        let bitmovinAdBreak = createAdBreakFromYSAdBreak(adBreak)
+        let adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
+
+        for yospaceAdvert in adBreak.adverts() {
+            guard let advert = yospaceAdvert as? YSAdvert else {
+                continue
+            }
+            bitmovinAdBreak.appendAd(ad: createAdFromAdvert(advert))
+        }
+
+        activeAdBreak = bitmovinAdBreak
+
+        if !trueXRendering {
+            for listener: PlayerListener in listeners {
+                listener.onAdBreakStarted?(adBreakStartEvent)
+            }
         }
     }
 
