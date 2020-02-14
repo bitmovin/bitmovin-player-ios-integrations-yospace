@@ -345,7 +345,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             }
         }
         #endif
-        
+
         let bitmovinAdBreak = createAdBreakFromYSAdBreak(adBreak)
         let adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
 
@@ -381,7 +381,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         activeAd = createAdFromAdvert(advert)
-        
+
         if !trueXRendering {
             adPlaying = true
 
@@ -444,7 +444,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
         clickThroughUrl: clickThroughUrl)
     }
-    
+
     private func createAdBreakFromYSAdBreak(_ ysAdBreak: YSAdBreak) -> AdBreak {
         return AdBreak(identifier: ysAdBreak.adBreakIdentifier(),
                                       absoluteStart: ysAdBreak.adBreakStart() + timebase,
