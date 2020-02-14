@@ -96,7 +96,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear/master.m3u8?yo.dr=true&yo.av=2") else {
+        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear/master.m3u8?yo.dr=true&yo.av=2&yo.pdt=true") else {
             return
         }
 
