@@ -6,31 +6,45 @@
 //
 
 import Foundation
+import BitmovinPlayer
 
-public class YospaceAdBreak: CustomDebugStringConvertible {
+public class YospaceAdBreak: NSObject, AdBreak {
     public private(set) var relativeStart: TimeInterval = 0.0
     public private(set) var duration: TimeInterval = 0.0
     public private(set) var absoluteStart: TimeInterval = 0.0
     public private(set) var absoluteEnd: TimeInterval = 0.0
     public private(set) var identifier: String = "unknown"
-    public private(set) var ads: [YospaceAd] = []
+    public private(set) var ads: [Ad] = []
+    public var scheduleTime: TimeInterval
+    public var replaceContentDuration: TimeInterval
 
-    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval) {
+    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, scheduleTime: TimeInterval, replaceContentDuration: TimeInterval) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
         self.duration = duration
         self.relativeStart = relativeStart
+        self.scheduleTime = scheduleTime
+        self.replaceContentDuration = replaceContentDuration
     }
 
-    //swiftlint:disable identifier_name
-    func appendAd(ad: YospaceAd) {
-        self.ads.append(ad)
+    public func register(_ adItem: Ad) {
+        self.ads.append(adItem)
     }
-    //swiftlint:enable identifier_name
-
-    public var debugDescription: String {
+    
+    public func toJsonString() throws -> String {
+        return ""
+    }
+    
+    public func toJsonData() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    public static func fromJsonData(_ jsonData: [AnyHashable : Any]) throws -> Any {
+        return jsonData
+    }
+    
+    override public var debugDescription: String {
         return "id=\(self.identifier) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd) ads=\(ads.map {$0.identifier})"
     }
-
 }
