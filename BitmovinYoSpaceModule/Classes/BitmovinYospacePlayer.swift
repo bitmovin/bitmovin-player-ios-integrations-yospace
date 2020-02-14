@@ -28,7 +28,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var trueXRendering = false
     var dateRangeEmitter: DateRangeEmitter?
     var activeAdBreak: AdBreak?
-    var activeAd: Ad?
+    var activeAd: YospaceAd?
 
     #if os(iOS)
     var truexAdRenderer: BitmovinTruexAdRenderer?
@@ -290,7 +290,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
                 return
             }
 
-            let adBreak: AdBreak? = getActiveAdBreak()
+            let adBreak: YospaceAdBreak? = getActiveAdBreak()
             if let currentBreak = adBreak {
                 super.seek(time: currentBreak.absoluteEnd)
             }
@@ -319,7 +319,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         return activeAdBreak
     }
 
-    public func getActiveAd() -> Ad? {
+    public func getActiveAd() -> YospaceAd? {
         return activeAd
     }
 
@@ -444,13 +444,13 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
     }
 
-    private func createAdFromAdvert(_ advert: YSAdvert) -> Ad {
+    private func createAdFromAdvert(_ advert: YSAdvert) -> YospaceAd {
         var clickThroughUrl: URL? = nil
         if advert.linearCreativeElement().linearClickthroughURL() != nil {
             clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
         }
 
-        return Ad(identifier: advert.advertIdentifier(),
+        return YospaceAd(identifier: advert.advertIdentifier(),
         absoluteStart: advert.advertStart() + timebase,
         absoluteEnd: advert.advertEnd() + timebase,
         duration: advert.advertDuration(),
@@ -459,7 +459,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         clickThroughUrl: clickThroughUrl)
     }
 
-    private func createAdBreakFromYSAdBreak(_ ysAdBreak: YSAdBreak) -> AdBreak {
+    private func createAdBreakFromYSAdBreak(_ ysAdBreak: YSAdBreak) -> YospaceAdBreak {
         return AdBreak(identifier: ysAdBreak.adBreakIdentifier(),
                                       absoluteStart: ysAdBreak.adBreakStart() + timebase,
                                       absoluteEnd: ysAdBreak.adBreakEnd() + timebase,

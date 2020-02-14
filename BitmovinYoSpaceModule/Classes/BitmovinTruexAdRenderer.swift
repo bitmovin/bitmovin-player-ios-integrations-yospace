@@ -98,7 +98,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     public func onAdFreePod() {
         BitLog.d("Truex onAdFreePod")
         adFree = true
-        guard let adBreak: AdBreak = self.bitmovinPlayer?.getActiveAdBreak() else {
+        guard let adBreak: YospaceAdBreak = self.bitmovinPlayer?.getActiveAdBreak() else {
             return
         }
         self.bitmovinPlayer?.forceSeek(time: adBreak.absoluteEnd+1)
