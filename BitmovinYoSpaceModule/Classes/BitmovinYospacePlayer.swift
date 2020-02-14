@@ -347,9 +347,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             return
         }
 
-        if isLive, liveAdBreak == nil {
-            handleAdBreakEvent(adBreak)
-        } else {
+        if !isLive {
             handleAdBreakEvent(adBreak)
         }
     }
