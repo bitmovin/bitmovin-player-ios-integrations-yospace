@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YSAdManagement.h"
+#import "YSAdBreak.h"
 
 /** The YSStream protocol provides an interface to a live, Non-Linear Start Over or VOD stream, whose details are passed as a payload during analytic callbacks.
  
@@ -73,6 +74,11 @@
  @see YSAdBreak
  */
 - (NSArray* _Nullable) timeline;
+
+/**
+ Returns the current ad break or nil
+ */
+- (id<YSAdBreak> _Nullable) currentAdvertBreak;
 
 /** Returns whether this stream is the failover Url.
  
