@@ -85,12 +85,15 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
             guard let advertisement = self.bitmovinPlayer?.getActiveAd() else {
                 return
             }
-            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: advertisement.clickThroughUrl,
-                                                                              clientType: .unknown, indexInQueue: 0,
-                                                                              duration: advertisement.duration,
-                                                                              timeOffset: advertisement.relativeStart,
-                                                                              skipOffset: 1,
-                                                                              position: "0")
+            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
+                clickThroughUrl: advertisement.clickThroughUrl,
+                clientType: .unknown, indexInQueue: 0,
+                duration: advertisement.duration,
+                timeOffset: advertisement.relativeStart,
+                skipOffset: 1,
+                position: "0",
+                ad: self.bitmovinPlayer?.activeAd
+            )
             fireAdStarted(adStartedEvent)
         }
     }
@@ -117,14 +120,17 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     public func onAdStarted(_ campaignName: String!) {
         BitLog.d("Truex onAdStarted \(String(describing: campaignName))")
         self.bitmovinPlayer?.pause()
-        let adBreakStartEvent = AdBreakStartedEvent()
+        let adBreakStartEvent = AdBreakStartedEvent(adBreak: self.bitmovinPlayer?.activeAdBreak ?? YospaceAdBreak())
         let advertisement = self.bitmovinPlayer?.getActiveAd()
-        let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: nil,
-                                                            clientType: .unknown, indexInQueue: 0,
-                                                            duration: advertisement?.duration ?? 0,
-                                                            timeOffset: advertisement?.relativeStart ?? 0,
-                                                            skipOffset: 1,
-                                                            position: "0")
+        let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
+            clickThroughUrl: nil,
+            clientType: .unknown, indexInQueue: 0,
+            duration: advertisement?.duration ?? 0,
+            timeOffset: advertisement?.relativeStart ?? 0,
+            skipOffset: 1,
+            position: "0",
+            ad: self.bitmovinPlayer?.activeAd
+        )
         adStartedEvent.truexAd = true
         fireAdBreakStarted(adBreakStartEvent)
         fireAdStarted(adStartedEvent)
@@ -181,7 +187,7 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
         }
 
         for listener: PlayerListener in listeners {
-            listener.onAdFinished?(AdFinishedEvent())
+            listener.onAdFinished?(AdFinishedEvent(ad: self.bitmovinPlayer?.activeAd ?? YospaceAd()))
         }
     }
 

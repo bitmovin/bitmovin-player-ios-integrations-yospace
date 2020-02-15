@@ -16,22 +16,29 @@ public class AdTimeline: CustomDebugStringConvertible {
         let sorted: [YSAdBreak] = breaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
         var count: Double = 0
         for adBreak in sorted {
-            let adBreakEntry: YospaceAdBreak = YospaceAdBreak(identifier: adBreak.adBreakIdentifier(),
-                                                absoluteStart: adBreak.adBreakStart(),
-                                                absoluteEnd: adBreak.adBreakEnd(),
-                                                duration: adBreak.adBreakDuration(),
-                                                relativeStart: adBreak.adBreakStart() - count)
+            let adBreakEntry: YospaceAdBreak = YospaceAdBreak(
+                identifier: adBreak.adBreakIdentifier(),
+                absoluteStart: adBreak.adBreakStart(),
+                absoluteEnd: adBreak.adBreakEnd(),
+                duration: adBreak.adBreakDuration(),
+                relativeStart: adBreak.adBreakStart() - count,
+                scheduleTime: 0,
+                replaceContentDuration: 0
+            )
 
             for advertisement in adBreak.adverts() {
                 if let advert: YSAdvert = advertisement as? YSAdvert {
-                    let newAd: YospaceAd = YospaceAd(identifier: advert.advertIdentifier(),
-                                       absoluteStart: advert.advertStart(),
-                                       absoluteEnd: advert.advertEnd(),
-                                       duration: advert.advertDuration(),
-                                       relativeStart: adBreakEntry.relativeStart,
-                                       hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
-                                       clickThroughUrl: advert.linearCreativeElement().linearClickthroughURL())
-                    adBreakEntry.appendAd(ad: newAd)
+                    let newAd: YospaceAd = YospaceAd(
+                        identifier: advert.advertIdentifier(),
+                        absoluteStart: advert.advertStart(),
+                        absoluteEnd: advert.advertEnd(),
+                        duration: advert.advertDuration(),
+                        relativeStart: adBreakEntry.relativeStart,
+                        hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
+                        isLinear: !advert.hasLinearInteractiveUnit(),
+                        clickThroughUrl: advert.linearCreativeElement().linearClickthroughURL()
+                    )
+                    adBreakEntry.register(newAd)
                 }
             }
             count += adBreak.adBreakDuration()
@@ -82,7 +89,11 @@ public class AdTimeline: CustomDebugStringConvertible {
             return nil
         }
 
-        return currentAdBreak.ads.filter {$0.absoluteStart < time}.filter {$0.absoluteEnd > time}.first
+        return currentAdBreak.ads
+            .compactMap {$0 as? YospaceAd}
+            .filter {$0.absoluteStart < time}
+            .filter {$0.absoluteEnd > time}
+            .first
     }
 
 }

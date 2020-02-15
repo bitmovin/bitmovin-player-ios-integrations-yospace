@@ -9,16 +9,16 @@ import Foundation
 import BitmovinPlayer
 
 public class YospaceAdBreak: NSObject, AdBreak {
-    public private(set) var relativeStart: TimeInterval = 0.0
-    public private(set) var duration: TimeInterval = 0.0
-    public private(set) var absoluteStart: TimeInterval = 0.0
-    public private(set) var absoluteEnd: TimeInterval = 0.0
-    public private(set) var identifier: String = "unknown"
+    public private(set) var relativeStart: TimeInterval
+    public private(set) var duration: TimeInterval
+    public private(set) var absoluteStart: TimeInterval
+    public private(set) var absoluteEnd: TimeInterval
+    public private(set) var identifier: String
     public private(set) var ads: [Ad] = []
     public var scheduleTime: TimeInterval
     public var replaceContentDuration: TimeInterval
 
-    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, scheduleTime: TimeInterval, replaceContentDuration: TimeInterval) {
+    init(identifier: String = "unknown", absoluteStart: TimeInterval = 0.0, absoluteEnd: TimeInterval = 0.0, duration: TimeInterval = 0.0, relativeStart: TimeInterval = 0.0, scheduleTime: TimeInterval = 0.0, replaceContentDuration: TimeInterval = 0.0) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
