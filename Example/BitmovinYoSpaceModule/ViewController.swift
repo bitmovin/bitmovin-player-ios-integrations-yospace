@@ -244,11 +244,7 @@ extension ViewController: PlayerListener {
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
-            NSLog("[ViewController] Ad Break Started \(adStartedEvent.adBreak.debugDescription )")
-        } else {
-            NSLog("[ViewController] Ad Break Started")
-        }
+        NSLog("[ViewController] Ad Break Started \(String(describing: event.adBreak.debugDescription))")
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
