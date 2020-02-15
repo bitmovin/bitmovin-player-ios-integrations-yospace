@@ -415,7 +415,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     private func handleAdBreakEvent(_ adBreak: YSAdBreak) {
         let bitmovinAdBreak = createAdBreakFromYSAdBreak(adBreak)
-        let adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
+        let adBreakStartEvent = AdBreakStartedEvent(adBreak: bitmovinAdBreak)
 
         for yospaceAdvert in adBreak.adverts() {
             guard let advert = yospaceAdvert as? YSAdvert else {
