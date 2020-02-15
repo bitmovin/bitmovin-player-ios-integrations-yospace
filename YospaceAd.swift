@@ -10,20 +10,22 @@ import BitmovinPlayer
 
 //swiftlint:disable type_name
 public class YospaceAd: NSObject, Ad {
-    public private(set) var relativeStart: TimeInterval = 0.0
-    public var identifier: String? = "unknown"
-    public private(set) var duration: TimeInterval = 0.0
-    public private(set) var hasInteractiveUnit = false
-    public private(set) var absoluteStart: TimeInterval = 0.0
-    public private(set) var absoluteEnd: TimeInterval = 0.0
+    public private(set) var relativeStart: TimeInterval
+    public var identifier: String?
+    public private(set) var duration: TimeInterval
+    public private(set) var hasInteractiveUnit: Bool
+    public private(set) var absoluteStart: TimeInterval
+    public private(set) var absoluteEnd: TimeInterval
     public var clickThroughUrl: URL?
     public var isLinear: Bool
-    public var width: Int
-    public var height: Int
-    public var mediaFileUrl: URL?
-    public var data: AdData?
+    
+    // Not supported
+    public var width: Int = -1
+    public var height: Int = -1
+    public var mediaFileUrl: URL? = nil
+    public var data: AdData? = nil
 
-    init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool, isLinear: Bool, clickThroughUrl: URL?, data: AdData?) {
+    init(identifier: String? = "unknown", absoluteStart: TimeInterval = 0.0, absoluteEnd: TimeInterval = 0.0, duration: TimeInterval = 0.0, relativeStart: TimeInterval = 0.0, hasInteractiveUnit: Bool = false, isLinear: Bool = false, clickThroughUrl: URL? = nil) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
@@ -32,12 +34,6 @@ public class YospaceAd: NSObject, Ad {
         self.isLinear = isLinear
         self.hasInteractiveUnit = hasInteractiveUnit
         self.clickThroughUrl = clickThroughUrl
-        self.data = data
-        
-        // Not supported
-        self.width = -1
-        self.height = -1
-        self.mediaFileUrl = nil
     }
     
     public func toJsonString() throws -> String {
@@ -53,7 +49,7 @@ public class YospaceAd: NSObject, Ad {
     }
     
     override public var debugDescription: String {
-        return "id=\(self.identifier ?? "") absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd)"
+        return "id=\(self.identifier ?? "unknown") absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd)"
     }
 }
 //swiftlint:enable type_name
