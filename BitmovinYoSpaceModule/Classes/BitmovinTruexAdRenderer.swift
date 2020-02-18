@@ -119,14 +119,17 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
 
     public func onAdStarted(_ campaignName: String!) {
         BitLog.d("Truex onAdStarted \(String(describing: campaignName))")
+        guard let activeAdBreak = self.bitmovinPlayer?.getActiveAdBreak() else {
+            return
+        }
         self.bitmovinPlayer?.pause()
-        let adBreakStartEvent = AdBreakStartedEvent(adBreak: self.bitmovinPlayer?.activeAdBreak ?? YospaceAdBreak())
-        let advertisement = self.bitmovinPlayer?.getActiveAd()
+        let adBreakStartEvent = AdBreakStartedEvent(adBreak: activeAdBreak)
+        let activeAd = self.bitmovinPlayer?.getActiveAd()
         let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
             clickThroughUrl: nil,
             clientType: .unknown, indexInQueue: 0,
-            duration: advertisement?.duration ?? 0,
-            timeOffset: advertisement?.relativeStart ?? 0,
+            duration: activeAd?.duration ?? 0,
+            timeOffset: activeAd?.relativeStart ?? 0,
             skipOffset: 1,
             position: "0",
             ad: self.bitmovinPlayer?.activeAd
@@ -134,7 +137,6 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
         adStartedEvent.truexAd = true
         fireAdBreakStarted(adBreakStartEvent)
         fireAdStarted(adStartedEvent)
-
     }
 
     func generateParams(placementHash: String) -> [String: String] {
@@ -182,12 +184,12 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     func fireAdFinished() {
-        guard let listeners = self.bitmovinPlayer?.listeners else {
+        guard let player = self.bitmovinPlayer, let activeAd = player.activeAd else {
             return
         }
 
-        for listener: PlayerListener in listeners {
-            listener.onAdFinished?(AdFinishedEvent(ad: self.bitmovinPlayer?.activeAd ?? YospaceAd()))
+        for listener: PlayerListener in player.listeners {
+            listener.onAdFinished?(AdFinishedEvent(ad: activeAd))
         }
     }
 

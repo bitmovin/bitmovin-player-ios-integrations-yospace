@@ -25,7 +25,7 @@ public class YospaceAd: NSObject, Ad {
     public var mediaFileUrl: URL? = nil
     public var data: AdData? = nil
 
-    init(identifier: String? = "unknown", absoluteStart: TimeInterval = 0.0, absoluteEnd: TimeInterval = 0.0, duration: TimeInterval = 0.0, relativeStart: TimeInterval = 0.0, hasInteractiveUnit: Bool = false, isLinear: Bool = false, clickThroughUrl: URL? = nil) {
+    init(identifier: String?, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool, isLinear: Bool, clickThroughUrl: URL?) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
