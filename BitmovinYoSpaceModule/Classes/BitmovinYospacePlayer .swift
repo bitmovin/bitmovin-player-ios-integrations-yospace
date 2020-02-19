@@ -27,8 +27,8 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var truexConfiguration: TruexConfiguration?
     var trueXRendering = false
     var dateRangeEmitter: DateRangeEmitter?
-    var liveAdBreak: AdBreak?
-    var liveAd: Ad?
+    var activeAdBreak: YospaceAdBreak?
+    var activeAd: YospaceAd?
 
     #if os(iOS)
     var truexAdRenderer: BitmovinTruexAdRenderer?
@@ -62,7 +62,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     open override var currentTime: TimeInterval {
         if isAd {
             if isLive {
-                return super.currentTime - (liveAd?.relativeStart ?? 0)
+                return super.currentTime - (activeAd?.relativeStart ?? 0)
             } else {
                 return timeline?.adTime(time: super.currentTime) ?? super.currentTime
             }
@@ -244,6 +244,8 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         self.sessionManager = nil
         self.yospaceStream = nil
         self.adBreaks = []
+        self.activeAd = nil
+        self.activeAdBreak = nil
         sessionStatus = .notInitialised
         adPlaying = false
         trueXRendering = false
@@ -288,7 +290,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
                 return
             }
 
-            let adBreak: AdBreak? = getActiveAdBreak()
+            let adBreak: YospaceAdBreak? = getActiveAdBreak()
             if let currentBreak = adBreak {
                 super.seek(time: currentBreak.absoluteEnd)
             }
@@ -313,20 +315,12 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         return super.duration
     }
 
-    public func getActiveAdBreak() -> AdBreak? {
-        if isLive {
-            return liveAdBreak
-        } else {
-            return self.timeline?.currentAdBreak(time: self.currentTimeWithAds())
-        }
+    public func getActiveAdBreak() -> YospaceAdBreak? {
+        return activeAdBreak
     }
 
-    public func getActiveAd() -> Ad? {
-        if isLive {
-            return liveAd
-        } else {
-            return self.timeline?.currentAd(time: self.currentTimeWithAds())
-        }
+    public func getActiveAd() -> YospaceAd? {
+        return activeAd
     }
 
     private func updateLoggingVisibility(isLoggingEnabled: Bool) {
@@ -340,8 +334,98 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
-    public func advertBreakDidStart(_ adBreak: YSAdBreak) {
-        var adBreakStartEvent: AdBreakStartedEvent = AdBreakStartedEvent()
+    public func advertBreakDidStart(_ adBreak: YSAdBreak?) {
+        BitLog.d("Yospace advertBreakDidStart")
+
+        guard let adBreak: YSAdBreak = adBreak else {
+            return
+        }
+
+        if !isLive {
+            handleAdBreakEvent(adBreak)
+        }
+    }
+
+    public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
+        BitLog.d("Yosapce advertDidStart")
+        if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
+            handleAdBreakEvent(currentAdBreak)
+        }
+
+        if !trueXRendering {
+            adPlaying = true
+            activeAd = createAdFromYSAdvert(advert)
+            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
+                clickThroughUrl: activeAd?.clickThroughUrl,
+                clientType: .IMA, indexInQueue: 0,
+                duration: advert.advertDuration(),
+                timeOffset: advert.advertStart() + timebase,
+                skipOffset: 1,
+                position: "0",
+                ad: activeAd
+            )
+            BitLog.d("Yospace AdStartedEvent")
+            for listener: PlayerListener in listeners {
+                listener.onAdStarted?(adStartedEvent)
+            }
+        }
+        return []
+    }
+
+    public func advertDidEnd(_ advert: YSAdvert) {
+        BitLog.d("Yospace advertDidEnd")
+        adPlaying = false
+        if !trueXRendering {
+            for listener: PlayerListener in listeners {
+                listener.onAdFinished?(AdFinishedEvent(ad: activeAd ?? createAdFromYSAdvert(advert)))
+            }
+        }
+        activeAd = nil
+        trueXRendering = false
+    }
+
+    public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
+        BitLog.d("Yospace advertBreakDidEnd")
+        if !trueXRendering {
+            for listener: PlayerListener in listeners {
+                listener.onAdBreakFinished?(AdBreakFinishedEvent(adBreak: activeAdBreak ?? createAdBreakFromYSAdBreak(adBreak)))
+            }
+        }
+        activeAdBreak = nil
+        trueXRendering = false
+    }
+
+    public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
+        BitLog.d("Tracking Event Did Occur %@ \(YospaceUtil.trackingEventString(event: event))")
+    }
+
+    public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
+        BitLog.d("Yospace linearClickThroughDidOccur")
+        for listener: PlayerListener in listeners {
+            listener.onAdClicked?(AdClickedEvent(clickThroughUrl: linearCreative.linearClickthroughURL()))
+        }
+    }
+
+    public func timelineUpdateReceived(_ vmap: String) {
+        if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
+            BitLog.d("timelineUpdateReceived: \(timeline.count)")
+            self.adBreaks = timeline
+        }
+    }
+
+    private func handleAdBreakEvent(_ adBreak: YSAdBreak) {
+        let bitmovinAdBreak = createAdBreakFromYSAdBreak(adBreak)
+        let adBreakStartEvent = AdBreakStartedEvent(adBreak: bitmovinAdBreak)
+
+        for yospaceAdvert in adBreak.adverts() {
+            guard let advert = yospaceAdvert as? YSAdvert else {
+                continue
+            }
+            bitmovinAdBreak.register(createAdFromYSAdvert(advert))
+        }
+
+        activeAdBreak = bitmovinAdBreak
+        
         #if os(iOS)
         if truexAdRenderer != nil {
             if truexAdRenderer!.adFree {
@@ -356,114 +440,39 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         #endif
 
         if !trueXRendering {
-            if isLive {
-                let bitmovinAdBreak = createAdBreakFromYSAdBreak(adBreak)
-                adBreakStartEvent = YospaceAdBreakStartedEvent(adBreak: bitmovinAdBreak)
-
-                for yospaceAdvert in adBreak.adverts() {
-                    guard let advert = yospaceAdvert as? YSAdvert else {
-                        continue
-                    }
-
-                    bitmovinAdBreak.appendAd(ad: createAdFromAdvert(advert))
-                }
-
-                liveAdBreak = bitmovinAdBreak
-
-            }
-
-            BitLog.d("Yospace AdBreakStartedEvent")
             for listener: PlayerListener in listeners {
                 listener.onAdBreakStarted?(adBreakStartEvent)
             }
         }
-
     }
 
-    public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
-        liveAdBreak = nil
-        if !trueXRendering {
-            BitLog.d("Yospace AdBreakFinishedEvent")
-            for listener: PlayerListener in listeners {
-                listener.onAdBreakFinished?(AdBreakFinishedEvent())
-            }
-        }
-        trueXRendering = false
-
-    }
-
-    public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
-        if !trueXRendering {
-            adPlaying = true
-
-            liveAd = createAdFromAdvert(advert)
-
-            let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(clickThroughUrl: liveAd?.clickThroughUrl,
-                                                                clientType: .IMA, indexInQueue: 0,
-                                                                duration: advert.advertDuration(),
-                                                                timeOffset: advert.advertStart() + timebase,
-                                                                skipOffset: 1,
-                                                                position: "0")
-
-            BitLog.d("Yospace AdStartedEvent")
-            for listener: PlayerListener in listeners {
-                listener.onAdStarted?(adStartedEvent)
-            }
-        }
-        return []
-    }
-
-    public func advertDidEnd(_ advert: YSAdvert) {
-        adPlaying = false
-        liveAd = nil
-        if !trueXRendering {
-            BitLog.d("Yospace AdFinishedEvent")
-            for listener: PlayerListener in listeners {
-                listener.onAdFinished?(AdFinishedEvent())
-            }
-        }
-        trueXRendering = false
-    }
-
-    public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
-        BitLog.d("Tracking Event Did Occur %@ \(YospaceUtil.trackingEventString(event: event))")
-    }
-
-    public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
-        BitLog.d("Yospace AdClickedEvent")
-        for listener: PlayerListener in listeners {
-            listener.onAdClicked?(AdClickedEvent(clickThroughUr: linearCreative.linearClickthroughURL()))
-        }
-    }
-
-    public func timelineUpdateReceived(_ vmap: String) {
-        if let timeline = self.yospaceStream?.timeline() as? [YSAdBreak] {
-            BitLog.d("TimelineUpdateReceived: \(timeline.count)")
-            self.adBreaks = timeline
-        }
-    }
-
-    private func createAdFromAdvert(_ advert: YSAdvert) -> Ad {
+    private func createAdFromYSAdvert(_ advert: YSAdvert) -> YospaceAd {
         var clickThroughUrl: URL? = nil
         if advert.linearCreativeElement().linearClickthroughURL() != nil {
             clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
         }
-
-        return Ad(identifier: advert.advertIdentifier(),
-        absoluteStart: advert.advertStart() + timebase,
-        absoluteEnd: advert.advertEnd() + timebase,
-        duration: advert.advertDuration(),
-        relativeStart: currentTimeWithAds(),
-        hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
-        clickThroughUrl: clickThroughUrl)
+        return YospaceAd(
+            identifier: advert.advertIdentifier(),
+            absoluteStart: advert.advertStart() + timebase,
+            absoluteEnd: advert.advertEnd() + timebase,
+            duration: advert.advertDuration(),
+            relativeStart: currentTimeWithAds(),
+            hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
+            isLinear: !advert.hasLinearInteractiveUnit(),
+            clickThroughUrl: clickThroughUrl
+        )
     }
-    
-    private func createAdBreakFromYSAdBreak(_ ysAdBreak: YSAdBreak) -> AdBreak {
-        return AdBreak(identifier: ysAdBreak.adBreakIdentifier(),
-                                      absoluteStart: ysAdBreak.adBreakStart() + timebase,
-                                      absoluteEnd: ysAdBreak.adBreakEnd() + timebase,
-                                      duration: ysAdBreak.adBreakDuration(),
-                                      relativeStart: ysAdBreak.adBreakStart())
+
+    private func createAdBreakFromYSAdBreak(_ ysAdBreak: YSAdBreak) -> YospaceAdBreak {
+        return YospaceAdBreak(
+            identifier: ysAdBreak.adBreakIdentifier(),
+            absoluteStart: ysAdBreak.adBreakStart() + timebase,
+            absoluteEnd: ysAdBreak.adBreakEnd() + timebase,
+            duration: ysAdBreak.adBreakDuration(),
+            relativeStart: ysAdBreak.adBreakStart(),
+            scheduleTime: 0,
+            replaceContentDuration: 0
+        )
     }
 
 }
