@@ -1,5 +1,6 @@
 import Foundation
 
+@frozen
 public enum YospaceErrorCode: UInt {
     case unknownError = 1000,
     invalidSource = 1001,

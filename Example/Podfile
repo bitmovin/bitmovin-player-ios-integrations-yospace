@@ -3,7 +3,7 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
-    pod 'BitmovinPlayer', '2.36.1'
+    pod 'BitmovinPlayer', '2.40.0'
 end
 
 target 'BitmovinYospaceModule_Example' do
@@ -17,4 +17,13 @@ target 'BitmovinYospaceModule_Example_tvOS' do
     use_frameworks!
     platform :tvos, '9.2'
     shared_pods    
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    puts "Updating #{target.name} BUILD_LIBRARY_FOR_DISTRIBUTION"
+    target.build_configurations.each do |config|
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+    end
+  end
 end
