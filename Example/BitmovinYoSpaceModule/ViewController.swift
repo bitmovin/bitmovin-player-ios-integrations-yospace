@@ -150,7 +150,7 @@ class ViewController: UIViewController {
     }
     
     private func loadLiveCNN() {
-        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear/master.m3u8?yo.dr=true&yo.av=2&yo.pdt=true&yo.pst=true") else {
+        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear-novpaid/master.m3u8?yo.dr=true&yo.av=2&yo.pdt=true&yo.pst=true") else {
             return
         }
 
@@ -162,7 +162,7 @@ class ViewController: UIViewController {
     }
     
     private func loadLiveTBSE() {
-        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2011915/tbseast-cbcs-stage/master_fp.m3u8?yo.pdt=true&_fw_ae=53da17a30bd0d3c946a41c86cb5873f1&_fw_ar=1&afid=180483280&conf_csid=tbs.com_desktop_live_east&nw=42448&prof=48804:tbs_ios_live&yo.vp=false&yo.ad=true&yo.pst=true") else {
+        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2011915/tbseast-cbcs-stage/master_fp.m3u8?yo.pdt=true&_fw_ae=53da17a30bd0d3c946a41c86cb5873f1&_fw_ar=1&afid=180483280&conf_csid=tbs.com_desktop_live_east&nw=42448&prof=48804:tbs_ios_live&yo.vp=false&yo.ad=true&yo.dr=true&yo.av=2&yo.pdt=true") else {
             return
         }
         
@@ -190,7 +190,7 @@ class ViewController: UIViewController {
     }
     
     private func loadTruex() {
-        guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?_fw_nielsen_app_id=P923E8EA9-9B1B-4F15-A180-F5A4FD01FE38&afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_androidphone&context=182883174&nw=42448&prof=48804%3Amp4_plus_vast_truex&vdur=1800&yo.vp=true") else {
+        guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_iphone&context=182883174&nw=42448&prof=48804%3Amp4_plus_vast_truex&vdur=1800&yo.vp=true&yo.ad=true") else {
             return
         }
         

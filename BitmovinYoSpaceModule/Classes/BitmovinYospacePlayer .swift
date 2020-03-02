@@ -352,12 +352,13 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             handleAdBreakEvent(currentAdBreak)
         }
 
+        activeAd = createAdFromYSAdvert(advert)
         if !trueXRendering {
             adPlaying = true
-            activeAd = createAdFromYSAdvert(advert)
             let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
                 clickThroughUrl: activeAd?.clickThroughUrl,
-                clientType: .IMA, indexInQueue: 0,
+                clientType: .IMA,
+                indexInQueue: 0,
                 duration: advert.advertDuration(),
                 timeOffset: advert.advertStart() + timebase,
                 skipOffset: 1,
