@@ -127,7 +127,8 @@ class BitmovinTruexAdRenderer: NSObject, TruexAdRendererDelegate {
         let activeAd = self.bitmovinPlayer?.getActiveAd()
         let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
             clickThroughUrl: nil,
-            clientType: .unknown, indexInQueue: 0,
+            clientType: .unknown,
+            indexInQueue: 0,
             duration: activeAd?.duration ?? 0,
             timeOffset: activeAd?.relativeStart ?? 0,
             skipOffset: 1,
