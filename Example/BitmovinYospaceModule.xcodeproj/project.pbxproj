@@ -15,11 +15,18 @@
 		0168DCC521A37ECB00E1DBDB /* BitmovinExamplePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0168DCC421A37ECB00E1DBDB /* BitmovinExamplePolicy.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
-		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		AD572CE4B1F0FC930B18DA89 /* Pods_BitmovinYospaceModule_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */; };
 		D8EC1B00377AC2E7952C5EB5 /* Pods_BitmovinYospaceModule_Example_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CD4AA7D4FFFC3733F28A7FD /* Pods_BitmovinYospaceModule_Example_tvOS.framework */; };
+		E94796FD23FDD21500BE05E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E94796FC23FDD21500BE05E2 /* Main.storyboard */; };
+		E94796FE23FDD21500BE05E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E94796FC23FDD21500BE05E2 /* Main.storyboard */; };
+		E947970023FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94796FF23FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift */; };
+		E947970123FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94796FF23FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift */; };
+		E947970423FDD67000BE05E2 /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E947970223FDD67000BE05E2 /* ListCell.swift */; };
+		E947970523FDD67000BE05E2 /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E947970223FDD67000BE05E2 /* ListCell.swift */; };
+		E947970623FDD67000BE05E2 /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E947970323FDD67000BE05E2 /* ListItem.swift */; };
+		E947970723FDD67000BE05E2 /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E947970323FDD67000BE05E2 /* ListItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +47,6 @@
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -52,6 +58,10 @@
 		C90D327416965D4681E951CB /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		D18674A6BFCDF0055801630A /* Pods-BitmovinYoSpaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		DE83C64B7C17AFEC4D46150E /* Pods-BitmovinYospaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		E94796FC23FDD21500BE05E2 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		E94796FF23FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FairplayConfiguration+Prepare.swift"; sourceTree = "<group>"; };
+		E947970223FDD67000BE05E2 /* ListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCell.swift; sourceTree = "<group>"; };
+		E947970323FDD67000BE05E2 /* ListItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		F219C37BDC456B34012838FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.release.xcconfig"; sourceTree = "<group>"; };
 		FA11A061B474A56F05D8759A /* Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -129,7 +139,10 @@
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				0168DCC221A3789C00E1DBDB /* BitmovinExamplePolicy.swift */,
-				607FACD91AFB9204008FA782 /* Main.storyboard */,
+				E94796FF23FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift */,
+				E947970223FDD67000BE05E2 /* ListCell.swift */,
+				E947970323FDD67000BE05E2 /* ListItem.swift */,
+				E94796FC23FDD21500BE05E2 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
@@ -279,6 +292,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E94796FE23FDD21500BE05E2 /* Main.storyboard in Resources */,
 				0103E86821963C1C006EA024 /* Assets.xcassets in Resources */,
 				0103E86621963C19006EA024 /* Main.storyboard in Resources */,
 			);
@@ -288,7 +302,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
+				E94796FD23FDD21500BE05E2 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
@@ -428,8 +442,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E947970723FDD67000BE05E2 /* ListItem.swift in Sources */,
+				E947970123FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift in Sources */,
 				0168DCC521A37ECB00E1DBDB /* BitmovinExamplePolicy.swift in Sources */,
 				0103E86321963C19006EA024 /* ViewController.swift in Sources */,
+				E947970523FDD67000BE05E2 /* ListCell.swift in Sources */,
 				0103E86121963C19006EA024 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -438,8 +455,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E947970623FDD67000BE05E2 /* ListItem.swift in Sources */,
+				E947970023FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift in Sources */,
 				0168DCC321A3789C00E1DBDB /* BitmovinExamplePolicy.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				E947970423FDD67000BE05E2 /* ListCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -451,14 +471,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				0103E86521963C19006EA024 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		607FACD91AFB9204008FA782 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				607FACDA1AFB9204008FA782 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -498,7 +510,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.2.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -535,7 +547,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.2.7;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
@@ -670,7 +682,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.2.7;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -712,7 +724,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.2.7;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
