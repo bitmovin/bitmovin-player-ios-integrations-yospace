@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YSInteractiveUnit.h"
+#import "YSXmlNode.h"
 
 /** The YSLinearCreative protocol provides an interface to an advert's linear creative object - if VAST is associated with the advert, and whose details are passed as a payload during analytic callbacks.
  
@@ -66,5 +67,13 @@
  @since from 1.7
  */
 - (NSTimeInterval) linearSkipOffset;
+
+/** Returns any linear creative extension data or nil if there is none.
+
+@return A YSXmlNode representing the <Extensions> element. Children of this object represent the extension data
+@see YSXmlNode
+@since from 1.9
+*/
+- (id<YSXmlNode> _Nullable) linearExtensions;
 
 @end
