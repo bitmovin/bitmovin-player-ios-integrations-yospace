@@ -6,6 +6,7 @@
 #import "YSLinearCreative.h"
 #import "YSUIProperties.h"
 #import "YSPricing.h"
+#import "YSXmlNode.h"
 #import "YSAdvertWrapper.h"
 
 /** The YSAdvert protocol provides an interface to an advert object, whose details are passed as a payload during analytic callbacks.
@@ -29,6 +30,14 @@
  @since from 1.0
  */
 - (NSString* _Nullable) advertProperty:(NSString* _Nonnull)property;
+
+/** Returns any advert extension data or nil if there is none.
+
+@return A YSXmlNode representing the <Extensions> element. Children of this object represent the extension data
+@see YSXmlNode
+@since from 1.9
+*/
+- (id<YSXmlNode> _Nullable) advertExtensions;
 
 /** Returns the advert start position.
  

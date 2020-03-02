@@ -162,7 +162,7 @@ class ViewController: UIViewController {
     }
     
     private func loadLiveTBSE() {
-        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2011915/tbseast-cbcs-stage/master_fp.m3u8?yo.pdt=true&_fw_ae=53da17a30bd0d3c946a41c86cb5873f1&_fw_ar=1&afid=180483280&conf_csid=tbs.com_desktop_live_east&nw=42448&prof=48804:tbs_ios_live&yo.vp=false&yo.ad=true&yo.pst=true") else {
+        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2011915/tbseast-cbcs-stage/master_fp.m3u8?yo.pdt=true&_fw_ae=53da17a30bd0d3c946a41c86cb5873f1&_fw_ar=1&afid=180483280&conf_csid=tbs.com_desktop_live_east&nw=42448&prof=48804:tbs_ios_live&yo.vp=false&yo.ad=true&yo.dr=true&yo.av=2&yo.pdt=true") else {
             return
         }
         
