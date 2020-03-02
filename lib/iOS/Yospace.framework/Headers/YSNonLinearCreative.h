@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 #import "YSAdManagement.h"
 #import "YSUIProperties.h"
+#import "YSXmlNode.h"
 
 /** The YSNonLinearCreative protocol provides an interface to an advert's non-linear creative object - if VAST is associated with the advert, and whose details are passed as a payload during analytic callbacks. There may be zero or more non-linear creatives associated with an advert.
  
@@ -96,5 +97,13 @@
  @since from 1.3
  */
 - (NSArray* _Nullable) trackingEvents;
+
+/** Returns any nonlinear creative extension data or nil if there is none.
+
+@return A YSXmlNode representing the <Extensions> element. Children of this object represent the extension data
+@see YSXmlNode
+@since from 1.9
+*/
+- (id<YSXmlNode> _Nullable) nonlinearExtensions;
 
 @end
