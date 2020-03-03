@@ -14,7 +14,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var yospaceStream: YSStream?
     var sessionStatus: SessionStatus = .notInitialised
     var adPlaying = false
-    var sessionAdFree = false
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var yospaceConfiguration: YospaceConfiguration?
     var sourceConfiguration: SourceConfiguration?
@@ -470,8 +469,6 @@ extension BitmovinYospacePlayer: BitmovinTruexRendererDelegate {
     }
     
     func truexAdFree() {
-        sessionAdFree = true
-        
         for listener: YospaceListener in yospaceListeners {
             listener.onTrueXAdFree()
         }
