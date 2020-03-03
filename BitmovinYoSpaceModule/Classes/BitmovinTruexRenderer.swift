@@ -58,12 +58,12 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     }
     
     public func onAdStarted(_ campaignName: String!) {
-        BitLog.d("TrueX - ad started: campaign_name=\(campaignName ?? "N/A")")
+        BitLog.d("TrueX - ad started: \(campaignName ?? "")")
         interactiveUnit?.notifyAdStarted()
     }
 
     public func onAdCompleted(_ timeSpent: Int) {
-        BitLog.d("TrueX - ad completed: time_spent=\(timeSpent)")
+        BitLog.d("TrueX - ad completed: \(timeSpent) seconds spent on engagement")
         interactiveUnit?.notifyAdVideoComplete()
         interactiveUnit?.notifyAdStopped()
         rendererDelegate?.truexAdComplete()
