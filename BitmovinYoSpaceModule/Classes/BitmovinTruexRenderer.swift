@@ -29,11 +29,11 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     func renderAd(advert: YSAdvert) {
         BitLog.d("TrueX - rendering ad: \(advert)")
         interactiveUnit = advert.linearCreativeElement().interactiveUnit()
-        
+
         guard let truexUrl: String = interactiveUnit?.unitSource().absoluteString else {
             return
         }
-        
+
         guard let unitAdParameters: String = interactiveUnit?.unitAdParameters() else {
             return
         }
@@ -53,10 +53,10 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         renderer = TruexAdRenderer(url: truexUrl, adParameters: adParameters, slotType: "midroll")
         renderer?.delegate = self
         renderer?.start(configuration.view)
-        
+
         BitLog.d("TrueX - ad rendering completed")
     }
-    
+
     public func onAdStarted(_ campaignName: String!) {
         BitLog.d("TrueX - ad started: \(campaignName ?? "")")
         interactiveUnit?.notifyAdStarted()
@@ -72,7 +72,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         rendererDelegate?.truexAdComplete()
         stop()
     }
-    
+
     public func onAdFreePod() {
         BitLog.d("TrueX - ad free")
         rendererDelegate?.truexAdFree()
@@ -90,7 +90,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         rendererDelegate?.truexNoAds()
         stop()
     }
-    
+
     public func onPopupWebsite(_ url: String!) {
         BitLog.d("TrueX - popup website: url=\(url ?? "N/A")")
     }

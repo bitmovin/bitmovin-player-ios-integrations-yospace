@@ -24,7 +24,7 @@ extension YSInteractiveUnit {
     func notifyAdImpression() {
         trackingEventDidOccur(.impressionEvent)
     }
-    
+
     func notifyAdVideoStarted() {
         trackingEventDidOccur(.startEvent)
     }
@@ -48,7 +48,7 @@ extension YSInteractiveUnit {
     func notifyAdUserAcceptInvitation() {
         trackingEventDidOccur(.acceptInvitationLinearEvent)
     }
-    
+
     func notifyAdUserMinimize() {
         trackingEventDidOccur(.collapseEvent)
     }
