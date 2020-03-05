@@ -204,7 +204,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
     }
 
-    func forceSeek(time: TimeInterval) {
+    open func forceSeek(time: TimeInterval) {
         BitLog.d("Seeking to: \(time)")
         super.seek(time: time)
     }
@@ -240,6 +240,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         sessionStatus = .notInitialised
         adPlaying = false
         #if os(iOS)
+        adFreeCalled = false
         self.bitmovinTruexRenderer?.stop()
         #endif
     }
@@ -343,20 +344,12 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             handleAdBreakEvent(currentAdBreak)
         }
         
-        // Render TrueX ad
         #if os(iOS)
-        if let renderer = bitmovinTruexRenderer {
-            if advert.hasLinearInteractiveUnit() {
-                BitLog.d("TrueX - ad found: \(advert)")
-                
-                //*******************************
-                // STEP 1
-                //*******************************
-                
-                sessionManager?.suppressAnalytics(true)
-                pause()
-                renderer.renderAd(advert: advert)
-            }
+        if let renderer = bitmovinTruexRenderer, advert.hasLinearInteractiveUnit() {
+            BitLog.d("TrueX - ad found: \(advert)")
+            sessionManager?.suppressAnalytics(true)
+            pause()
+            renderer.renderAd(advert: advert)
         }
         #endif
         
@@ -466,45 +459,33 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
 }
 
-// ABS -> AS -> AFR -> ACP -> AF -> ABF
-
 extension BitmovinYospacePlayer: BitmovinTruexRendererDelegate {
     func truexAdComplete() {
-        
-        //*******************************
-        // STEP 3
-        //*******************************
-        
-        // Re-enable analytics
         sessionManager?.suppressAnalytics(false)
-
-        if adFreeCalled, let adBreak = activeAdBreak {
-            adFreeCalled = false
-            
-            // Notify listeners of ad free event
+        if adFreeCalled {
+            BitLog.d("Emitting AdFreeEvent")
             for listener: YospaceListener in yospaceListeners {
                 listener.onTrueXAdFree()
             }
-            
-            // REMOVE THIS - DELEGATE TO TUB
-            seek(time: adBreak.relativeStart + 1)
+            adFreeCalled = false
+        } else {
+            if let advert = activeAd {
+                forceSeek(time: advert.absoluteEnd)
+            }
+            play()
         }
-        
-        if let advert = activeAd {
-            seek(time: advert.relativeStart + 1)
-        }
-        
-        // REMOVE THIS - DELEGATE TO TUB
-        play()
     }
     
     func truexAdFree() {
-
-        //*******************************
-        // STEP 2
-        //*******************************
-        
         adFreeCalled = true
+    }
+    
+    func truexAdError() {
+        play()
+    }
+    
+    func truexNoAds() {
+        play()
     }
 }
 
