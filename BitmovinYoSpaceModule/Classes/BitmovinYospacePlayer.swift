@@ -326,9 +326,9 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak?) {
-        
+
         BitLog.d("Yospace advertBreakDidStart")
-    
+
         guard let adBreak: YSAdBreak = adBreak else {
             return
         }
@@ -343,7 +343,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
-        
+
         #if os(iOS)
         if let renderer = bitmovinTruexRenderer, advert.hasLinearInteractiveUnit() {
             BitLog.d("TrueX - ad found: \(advert)")
@@ -352,7 +352,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             renderer.renderAd(advert: advert)
         }
         #endif
-        
+
         activeAd = createAdFromYSAdvert(advert)
         adPlaying = true
         let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
@@ -421,7 +421,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
 
         activeAdBreak = bitmovinAdBreak
-        
+
         BitLog.d("Emitting AdBreakStartedEvent")
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(adBreakStartEvent)
@@ -429,7 +429,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     private func createAdFromYSAdvert(_ advert: YSAdvert) -> YospaceAd {
-        var clickThroughUrl: URL? = nil
+        var clickThroughUrl: URL?
         if advert.linearCreativeElement().linearClickthroughURL() != nil {
             clickThroughUrl = advert.linearCreativeElement().linearClickthroughURL()!
         }
@@ -475,15 +475,15 @@ extension BitmovinYospacePlayer: BitmovinTruexRendererDelegate {
             play()
         }
     }
-    
+
     func truexAdFree() {
         adFreeCalled = true
     }
-    
+
     func truexAdError() {
         play()
     }
-    
+
     func truexNoAds() {
         play()
     }

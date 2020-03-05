@@ -13,7 +13,7 @@ class ListItem {
     var entryTwo: String
     var entryThree: String
     var entryFour: String
-    
+
     init(entryOne: String, entryTwo: String, entryThree: String, entryFour: String) {
         self.entryOne = entryOne
         self.entryTwo = entryTwo
