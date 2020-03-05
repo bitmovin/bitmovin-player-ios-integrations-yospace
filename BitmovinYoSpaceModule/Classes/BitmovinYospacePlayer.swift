@@ -326,7 +326,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak?) {
-
         BitLog.d("Yospace advertBreakDidStart")
 
         guard let adBreak: YSAdBreak = adBreak else {
@@ -470,6 +469,7 @@ extension BitmovinYospacePlayer: BitmovinTruexRendererDelegate {
             adFreeCalled = false
         } else {
             if let advert = activeAd {
+                // Seek to end of TrueX filler
                 forceSeek(time: advert.absoluteEnd)
             }
             play()
