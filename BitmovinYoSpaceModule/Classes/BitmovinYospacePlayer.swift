@@ -28,6 +28,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var dateRangeEmitter: DateRangeEmitter?
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
+    private var adFreeCalled = false
 
     #if os(iOS)
     var bitmovinTruexRenderer: BitmovinTruexRenderer?
@@ -324,8 +325,9 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak?) {
+        
         BitLog.d("Yospace advertBreakDidStart")
-
+    
         guard let adBreak: YSAdBreak = adBreak else {
             return
         }
@@ -340,9 +342,24 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
-        if advert.hasLinearInteractiveUnit() {
-            sessionManager?.suppressAnalytics(true)
+        
+        // Render TrueX ad
+        #if os(iOS)
+        if let renderer = bitmovinTruexRenderer {
+            if advert.hasLinearInteractiveUnit() {
+                BitLog.d("TrueX - ad found: \(advert)")
+                
+                //*******************************
+                // STEP 1
+                //*******************************
+                
+                sessionManager?.suppressAnalytics(true)
+                pause()
+                renderer.renderAd(advert: advert)
+            }
         }
+        #endif
+        
         activeAd = createAdFromYSAdvert(advert)
         adPlaying = true
         let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
@@ -364,9 +381,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func advertDidEnd(_ advert: YSAdvert) {
         BitLog.d("Yospace advertDidEnd")
-        if advert.hasLinearInteractiveUnit() {
-            sessionManager?.suppressAnalytics(false)
-        }
         BitLog.d("Emitting AdFinishedEvent")
         for listener: PlayerListener in listeners {
             listener.onAdFinished?(AdFinishedEvent(ad: activeAd ?? createAdFromYSAdvert(advert)))
@@ -415,17 +429,6 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
         activeAdBreak = bitmovinAdBreak
         
-        #if os(iOS)
-        if let renderer = bitmovinTruexRenderer {
-            for case let advert as YSAdvert in adBreak.adverts() where advert.hasLinearInteractiveUnit() {
-                BitLog.d("TrueX - ad found: \(advert)")
-                renderer.renderAd(advert: advert)
-                pause()
-                break
-            }
-        }
-        #endif
-        
         BitLog.d("Emitting AdBreakStartedEvent")
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(adBreakStartEvent)
@@ -463,15 +466,45 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
 }
 
+// ABS -> AS -> AFR -> ACP -> AF -> ABF
+
 extension BitmovinYospacePlayer: BitmovinTruexRendererDelegate {
     func truexAdComplete() {
+        
+        //*******************************
+        // STEP 3
+        //*******************************
+        
+        // Re-enable analytics
+        sessionManager?.suppressAnalytics(false)
+
+        if adFreeCalled, let adBreak = activeAdBreak {
+            adFreeCalled = false
+            
+            // Notify listeners of ad free event
+            for listener: YospaceListener in yospaceListeners {
+                listener.onTrueXAdFree()
+            }
+            
+            // REMOVE THIS - DELEGATE TO TUB
+            seek(time: adBreak.relativeStart + 1)
+        }
+        
+        if let advert = activeAd {
+            seek(time: advert.relativeStart + 1)
+        }
+        
+        // REMOVE THIS - DELEGATE TO TUB
         play()
     }
     
     func truexAdFree() {
-        for listener: YospaceListener in yospaceListeners {
-            listener.onTrueXAdFree()
-        }
+
+        //*******************************
+        // STEP 2
+        //*******************************
+        
+        adFreeCalled = true
     }
 }
 
