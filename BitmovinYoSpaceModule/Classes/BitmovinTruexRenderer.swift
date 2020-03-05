@@ -81,11 +81,13 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     public func onAdError(_ errorMessage: String!) {
         BitLog.e("TrueX - ad error: error_message=\(errorMessage ?? "N/A")")
         interactiveUnit?.notifyAdStopped()
+        rendererDelegate?.truexAdError()
         stop()
     }
 
     public func onNoAdsAvailable() {
         BitLog.d("TrueX - no ads available")
+        rendererDelegate?.truexNoAds()
         stop()
     }
     

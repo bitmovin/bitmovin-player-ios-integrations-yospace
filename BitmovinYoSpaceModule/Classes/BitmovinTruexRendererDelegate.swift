@@ -10,4 +10,6 @@ import Foundation
 protocol BitmovinTruexRendererDelegate: AnyObject {
     func truexAdComplete()
     func truexAdFree()
+    func truexAdError()
+    func truexNoAds()
 }
