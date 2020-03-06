@@ -31,19 +31,19 @@ public class YospaceAdBreak: NSObject, AdBreak {
     public func register(_ adItem: Ad) {
         self.ads.append(adItem)
     }
-    
+
     public func toJsonString() throws -> String {
         return ""
     }
-    
-    public func toJsonData() -> [AnyHashable : Any] {
+
+    public func toJsonData() -> [AnyHashable: Any] {
         return [:]
     }
-    
-    public static func fromJsonData(_ jsonData: [AnyHashable : Any]) throws -> Any {
+
+    public static func fromJsonData(_ jsonData: [AnyHashable: Any]) throws -> Any {
         return jsonData
     }
-    
+
     override public var debugDescription: String {
         return "id=\(self.identifier) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd) ads=\(ads.map {$0.identifier})"
     }
