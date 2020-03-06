@@ -22,10 +22,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var streamsTextField: UITextField!
     @IBOutlet weak var seekTextField: UITextField!
     @IBOutlet weak var tableView: UITableView!
-    
+
     var bitmovinYospacePlayer: BitmovinYospacePlayer?
     var bitmovinPlayerView: PlayerView?
-    
+
     private var listItems: [ListItem] = []
     private let streamNames: [String] = ["Live CNN", "TBSE-WV", "VoD", "TrueX", "Non-Yospace"]
     private var selectedStreamIndex = 0
@@ -54,7 +54,7 @@ class ViewController: UIViewController {
         createPlayer()
         createStreamPicker()
     }
-    
+
     func createPlayer() {
         // Create a Player Configuration
         let configuration = PlayerConfiguration()
@@ -99,7 +99,7 @@ class ViewController: UIViewController {
         }
 
     }
-    
+
     private func createStreamPicker() {
         let streamPicker = UIPickerView()
         streamPicker.delegate = self
@@ -112,7 +112,7 @@ class ViewController: UIViewController {
         streamsTextField.inputAccessoryView = toolBar
         streamsTextField.text = streamNames.first
     }
-    
+
     @objc private func closePicker() {
         view.endEditing(true)
     }
@@ -122,7 +122,7 @@ class ViewController: UIViewController {
         bitmovinYospacePlayer?.destroy()
         bitmovinYospacePlayer = nil
     }
-    
+
     @IBAction func loadUnloadPressed(_ sender: UIButton) {
         if loadUnloadButton.title(for: .normal) == "Load" {
             switch selectedStreamIndex {
@@ -142,13 +142,13 @@ class ViewController: UIViewController {
         }
         resetUI()
     }
-       
+
     @IBAction func seekPressed(_ sender: UIButton) {
        if let seekInput: String = seekTextField.text, let seekTime = TimeInterval(seekInput) {
            bitmovinYospacePlayer?.seek(time: seekTime)
        }
     }
-    
+
     private func loadLiveCNN() {
         guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear-novpaid/master.m3u8?yo.dr=true&yo.av=2&yo.pdt=true&yo.pst=true") else {
             return
@@ -160,12 +160,12 @@ class ViewController: UIViewController {
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
-    
+
     private func loadLiveTBSE() {
         guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2011915/tbseast-cbcs-stage/master_fp.m3u8?yo.pdt=true&_fw_ae=53da17a30bd0d3c946a41c86cb5873f1&_fw_ar=1&afid=180483280&conf_csid=tbs.com_desktop_live_east&nw=42448&prof=48804:tbs_ios_live&yo.vp=false&yo.ad=true&yo.dr=true&yo.av=2&yo.pdt=true") else {
             return
         }
-        
+
         let sourceConfiguration = SourceConfiguration()
         let sourceItem = SourceItem(hlsSource: HLSSource(url: streamUrl))
         let drmConfiguration = FairplayConfiguration(license: URL(string: "https://fairplay-stage.license.istreamplanet.com/api/license/de4c1d30-ac22-4669-8824-19ba9a1dc128"), certificateURL: URL(string: "https://fairplay-stage.license.istreamplanet.com/api/AppCert/de4c1d30-ac22-4669-8824-19ba9a1dc128")!)
@@ -173,46 +173,46 @@ class ViewController: UIViewController {
         sourceItem.add(drmConfiguration: drmConfiguration)
         sourceConfiguration.addSourceItem(item: sourceItem)
         let yospaceConfiguration: YospaceSourceConfiguration? = YospaceSourceConfiguration(yospaceAssetType: .linear, retryExcludingYospace: true)
-    
+
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration, yospaceSourceConfiguration: yospaceConfiguration)
     }
-    
+
     private func loadVod() {
         guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_videopage&context=182883174&nw=42448&prof=48804%3Atbs_web_vod&vdur=1800&yo.vp=false") else {
             return
         }
-        
+
         let sourceConfiguration = SourceConfiguration()
         sourceConfiguration.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let yospaceConfiguration: YospaceSourceConfiguration? = YospaceSourceConfiguration(yospaceAssetType: .vod, retryExcludingYospace: true)
-        
+
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration, yospaceSourceConfiguration: yospaceConfiguration)
     }
-    
+
     private func loadTruex() {
         guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_iphone&context=182883174&nw=42448&prof=48804%3Amp4_plus_vast_truex&vdur=1800&yo.vp=true&yo.ad=true") else {
             return
         }
-        
+
         let sourceConfiguration = SourceConfiguration()
         sourceConfiguration.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
         let yospaceConfiguration: YospaceSourceConfiguration? = YospaceSourceConfiguration(yospaceAssetType: .vod, retryExcludingYospace: true)
         let truexConfiguration = TruexConfiguration(view: bitmovinPlayerView!)
-        
+
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration, yospaceSourceConfiguration: yospaceConfiguration, truexConfiguration: truexConfiguration)
     }
-    
+
     private func loadNonYospace() {
         guard let streamUrl = URL(string: "https://hls.pro34.lv3.cdn.hbo.com/av/videos/series/watchmen/videos/trailer/trailer-47867523_PRO34/base_index.m3u8") else {
             return
         }
-        
+
         let sourceConfiguration = SourceConfiguration()
         sourceConfiguration.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        
+
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration)
     }
-    
+
     private func updateBufferUI() {
         if #available(iOS 10.0, *) {
             bufferLabel.text = String(format: "Buffer: [%.2f %.2f]", bitmovinYospacePlayer!.buffer.getLevel(BufferType.backwardDuration).level, bitmovinYospacePlayer!.buffer.getLevel(BufferType.forwardDuration).level)
@@ -245,7 +245,7 @@ class ViewController: UIViewController {
             adBreakCounterLabel.text = "Ad: false"
         }
     }
-    
+
     private func resetUI() {
         listItems.removeAll()
         tableView.reloadData()
@@ -255,12 +255,12 @@ class ViewController: UIViewController {
         adBreakFinishCount = 0
         loadUnloadButton.setTitle("Load", for: .normal)
     }
-    
+
     private func clearList() {
         listItems.removeAll()
         tableView.reloadData()
     }
-    
+
     private func showListAds() {
         if let activeAdBreak = bitmovinYospacePlayer?.getActiveAdBreak() {
             let header = ListItem(entryOne: "Seq", entryTwo: "Id", entryThree: "Duration", entryFour: "TrueX")
@@ -278,12 +278,12 @@ class ViewController: UIViewController {
             tableView.reloadData()
         }
     }
-    
+
     private func showListAdBreaks() {
         if let timeline = bitmovinYospacePlayer?.timeline, !timeline.adBreaks.isEmpty {
             let header = ListItem(entryOne: "Seq", entryTwo: "Start", entryThree: "Duration", entryFour: "Ads")
             listItems.append(header)
-            
+
             for (index, adBreak) in timeline.adBreaks.enumerated() {
                 let item = ListItem(
                     entryOne: String(index + 1),
@@ -293,7 +293,7 @@ class ViewController: UIViewController {
                 )
                 listItems.append(item)
             }
-            
+
             tableView.reloadData()
         }
     }
@@ -303,15 +303,15 @@ extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return streamNames.count
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return streamNames[row]
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedStreamIndex = row
         streamsTextField.text = streamNames[row]
@@ -322,7 +322,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         listItems.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let item = listItems[indexPath.row]
         if let cell = tableView.dequeueReusableCell(withIdentifier: "list_cell", for: indexPath) as? ListCell {
@@ -391,15 +391,15 @@ extension ViewController: PlayerListener {
     public func onCueEnter(_ event: CueEnterEvent) {
         NSLog("Cue Enter: \(event.startTime) - \(event.endTime)")
     }
-    
+
     public func onCueExit(_ event: CueExitEvent) {
         NSLog("Cue Exit: \(event.startTime) - \(event.endTime)")
     }
-    
+
     func onSourceLoaded(_ event: SourceLoadedEvent) {
         loadUnloadButton.setTitle("Unload", for: .normal)
     }
-    
+
     func onSourceUnloaded(_ event: SourceUnloadedEvent) {
         loadUnloadButton.setTitle("Load", for: .normal)
     }
@@ -429,7 +429,7 @@ extension ViewController: YospaceListener {
     public func onTimelineChanged(event: AdTimelineChangedEvent) {
         NSLog("[VIewController] Timeline Changed: \(event.timeline.debugDescription)")
     }
-    
+
     public func onTrueXAdFree() {
         NSLog("[ViewController] On TrueXAdFree")
     }

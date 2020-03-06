@@ -13,7 +13,7 @@ class ListCell: UITableViewCell {
     @IBOutlet weak var entryTwoLabel: UILabel!
     @IBOutlet weak var entryThreeLabel: UILabel!
     @IBOutlet weak var entryFourLabel: UILabel!
-    
+
     func setItem(item: ListItem) {
         entryOneLabel.text = item.entryOne
         entryTwoLabel.text = item.entryTwo
