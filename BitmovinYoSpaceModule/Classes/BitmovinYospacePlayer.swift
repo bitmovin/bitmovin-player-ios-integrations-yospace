@@ -468,7 +468,11 @@ extension BitmovinYospacePlayer: BitmovinTruexRendererDelegate {
             }
             adFreeCalled = false
         } else {
-            exitTruexFiller()
+            if let advert = activeAd {
+                // Seek to end of filler
+                forceSeek(time: advert.absoluteEnd)
+            }
+            play()
         }
     }
 
@@ -477,18 +481,10 @@ extension BitmovinYospacePlayer: BitmovinTruexRendererDelegate {
     }
 
     func truexAdError() {
-        exitTruexFiller()
+        play()
     }
 
     func truexNoAds() {
-        exitTruexFiller()
-    }
-
-    private func exitTruexFiller() {
-        if let advert = activeAd {
-            // Seek to end of filler
-            forceSeek(time: advert.absoluteEnd)
-        }
         play()
     }
 }
