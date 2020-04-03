@@ -49,7 +49,7 @@ public class YospaceAd: NSObject, Ad {
     }
 
     override public var debugDescription: String {
-        return "id=\(self.identifier ?? "unknown") absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd)"
+        return "id=\(self.identifier ?? "unknown") relativeStart=\(self.relativeStart) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd) duration=\(self.duration)"
     }
 }
 //swiftlint:enable type_name
