@@ -445,7 +445,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
-        BitLog.d("Yospace linearClickThroughDidOccur")
+        BitLog.d("YoSpace linearClickThroughDidOccur")
         for listener: PlayerListener in listeners {
             listener.onAdClicked?(AdClickedEvent(clickThroughUrl: linearCreative.linearClickthroughURL()))
         }
@@ -684,7 +684,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     func notify(dictionary: [String: Any], name: String) {
-        BitLog.d("Yospace sending \(name)")
+        BitLog.d("YoSpace sending \(name)")
         DispatchQueue.main.async(execute: {() -> Void in
             NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self.yospacePlayer, userInfo: dictionary)
         })
