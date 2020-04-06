@@ -1,5 +1,5 @@
 //
-//  YSAdBreak+Conversion.swift
+//  YSAdBreak+YospaceAdBreak.swift
 //  Pods
 //
 //  Created by aneurinc on 4/2/20.
