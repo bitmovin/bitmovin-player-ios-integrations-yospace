@@ -45,6 +45,6 @@ public class YospaceAdBreak: NSObject, AdBreak {
     }
 
     override public var debugDescription: String {
-        return "id=\(self.identifier) relativeStart=\(self.relativeStart) absoluteStart=\(self.absoluteStart) absoluteEnd=\(self.absoluteEnd) duration=\(self.duration) ads=\(ads.map {$0.identifier})"
+        return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), ads=\(ads.map {$0.identifier})"
     }
 }

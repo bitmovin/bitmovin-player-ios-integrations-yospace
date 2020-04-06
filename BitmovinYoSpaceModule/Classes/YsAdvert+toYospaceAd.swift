@@ -1,8 +1,8 @@
 //
-//  AdBreak+Conversion.swift
+//  YsAdvert+toYospaceAd.swift
 //  Pods
 //
-//  Created by aneurinc on 4/2/20.
+//  Created by aneurinc on 4/6/20.
 //
 
 import Foundation
@@ -10,10 +10,10 @@ import Yospace
 
 extension YSAdvert {
     
-    func toYospaceAd(absoluteStart: Double, relativeStart: Double) -> YospaceAd {
+    func toYospaceAd(relativeStart: Double) -> YospaceAd {
         return YospaceAd(
             identifier: advertIdentifier(),
-            absoluteStart: absoluteStart,
+            absoluteStart: advertStart(),
             absoluteEnd: advertEnd(),
             duration: advertDuration(),
             relativeStart: relativeStart,
