@@ -335,6 +335,7 @@ extension BitmovinYospacePlayer: TruexAdRendererEventDelegate {
         
         // Seek to end of TrueX ad filler
         if let advert = activeAd {
+            BitLog.d("Skipping TrueX filler")
             forceSeek(time: advert.absoluteEnd)
         }
         
@@ -343,13 +344,12 @@ extension BitmovinYospacePlayer: TruexAdRendererEventDelegate {
     }
     
     func skipAdBreak() {
-        BitLog.d("Skipping ad break")
-
         BitLog.d("YoSpace analytics unsuppressed")
         sessionManager?.suppressAnalytics(false)
         
         // Seek to end of ad break
         if let adBreak = activeAdBreak {
+            BitLog.d("Skipping ad break")
             // Add increment of 0.25 to make sure we land back in main content
             forceSeek(time: adBreak.absoluteEnd + 0.25)
         }
@@ -371,22 +371,22 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     public func advertBreakDidStart(_ adBreak: YSAdBreak?) {
         BitLog.d("YoSpace advertBreakDidStart: ")
 
-        guard let adBreak: YSAdBreak = adBreak else {
-            return
-        }
-
-        if !isLive {
+        if let adBreak = adBreak, !isLive {
             handleAdBreakEvent(adBreak)
         }
     }
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         BitLog.d("YoSpace advertDidStart")
+        
         if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
 
-        activeAd = advert.toYospaceAd(relativeStart: currentTimeWithAds())
+        let absoluteTime = currentTimeWithAds()
+        let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
+        activeAd = advert.toYospaceAd(absoluteStart: absoluteTime, relativeStart: relativeTime)
+        
         adPlaying = true
         
         #if os(iOS)
@@ -414,29 +414,47 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             position: "0",
             ad: activeAd
         )
+        
         BitLog.d("Emitting AdStartedEvent")
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(adStartedEvent)
         }
+        
         return []
     }
 
     public func advertDidEnd(_ advert: YSAdvert) {
         BitLog.d("YoSpace advertDidEnd")
+        
+        if activeAd == nil {
+            let absoluteTime = currentTimeWithAds() - advert.advertDuration()
+            let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
+            activeAd = advert.toYospaceAd(absoluteStart: absoluteTime, relativeStart: relativeTime)
+        }
+        
         BitLog.d("Emitting AdFinishedEvent")
         for listener: PlayerListener in listeners {
-            listener.onAdFinished?(AdFinishedEvent(ad: activeAd ?? advert.toYospaceAd(relativeStart: currentTimeWithAds())))
+            listener.onAdFinished?(AdFinishedEvent(ad: activeAd!))
         }
+        
         adPlaying = false
         activeAd = nil
     }
 
     public func advertBreakDidEnd(_ adBreak: YSAdBreak) {
         BitLog.d("YoSpace advertBreakDidEnd")
+        
+        if activeAdBreak == nil {
+            let absoluteTime = currentTimeWithAds() - adBreak.adBreakDuration()
+            let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
+            activeAdBreak = adBreak.toYospaceAdBreak(absoluteStart: absoluteTime, relativeStart: relativeTime)
+        }
+        
         BitLog.d("Emitting AdBreakFinishedEvent")
         for listener: PlayerListener in listeners {
-            listener.onAdBreakFinished?(AdBreakFinishedEvent(adBreak: activeAdBreak ?? adBreak.toYospaceAdBreak()))
+            listener.onAdBreakFinished?(AdBreakFinishedEvent(adBreak: activeAdBreak!))
         }
+        
         activeAdBreak = nil
     }
 
@@ -459,17 +477,12 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     private func handleAdBreakEvent(_ ysAdBreak: YSAdBreak) {
-        let adBreak = ysAdBreak.toYospaceAdBreak()
         let absoluteTime = currentTimeWithAds()
-        
-        for case let advert as YSAdvert in ysAdBreak.adverts() {
-            adBreak.register(advert.toYospaceAd(relativeStart: absoluteTime))
-        }
-
-        activeAdBreak = adBreak
-        let adBreakStartEvent = AdBreakStartedEvent(adBreak: adBreak)
+        let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
+        activeAdBreak = ysAdBreak.toYospaceAdBreak(absoluteStart: absoluteTime, relativeStart: relativeTime)
 
         BitLog.d("Emitting AdBreakStartedEvent")
+        let adBreakStartEvent = AdBreakStartedEvent(adBreak: activeAdBreak!)
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(adBreakStartEvent)
         }
