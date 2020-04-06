@@ -1,5 +1,5 @@
 //
-//  YsAdvert+toYospaceAd.swift
+//  YsAdvert+YospaceAd.swift
 //  Pods
 //
 //  Created by aneurinc on 4/6/20.
