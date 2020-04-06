@@ -12,38 +12,14 @@ import BitmovinPlayer
 public class AdTimeline: CustomDebugStringConvertible {
     public private(set) var adBreaks: [YospaceAdBreak] = []
 
-    public init (breaks: [YSAdBreak]) {
-        let sorted: [YSAdBreak] = breaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
-        var count: Double = 0
-        for adBreak in sorted {
-            let adBreakEntry: YospaceAdBreak = YospaceAdBreak(
-                identifier: adBreak.adBreakIdentifier(),
-                absoluteStart: adBreak.adBreakStart(),
-                absoluteEnd: adBreak.adBreakEnd(),
-                duration: adBreak.adBreakDuration(),
-                relativeStart: adBreak.adBreakStart() - count,
-                scheduleTime: 0,
-                replaceContentDuration: 0
-            )
-
-            for advertisement in adBreak.adverts() {
-                if let advert: YSAdvert = advertisement as? YSAdvert {
-                    let newAd: YospaceAd = YospaceAd(
-                        identifier: advert.advertIdentifier(),
-                        absoluteStart: advert.advertStart(),
-                        absoluteEnd: advert.advertEnd(),
-                        duration: advert.advertDuration(),
-                        relativeStart: adBreakEntry.relativeStart,
-                        hasInteractiveUnit: advert.hasLinearInteractiveUnit(),
-                        isLinear: !advert.hasLinearInteractiveUnit(),
-                        clickThroughUrl: advert.linearCreativeElement().linearClickthroughURL()
-                    )
-                    adBreakEntry.register(newAd)
-                }
+    public init(adBreaks: [YSAdBreak]) {
+        var relativeOffset = 0.0
+        adBreaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
+            .forEach {
+                let adBreak = $0.toYospaceAdBreak(relativeStart: $0.adBreakStart() - relativeOffset)
+                self.adBreaks.append(adBreak)
+                relativeOffset += adBreak.duration
             }
-            count += adBreak.adBreakDuration()
-            adBreaks.append(adBreakEntry)
-        }
     }
 
     public var debugDescription: String {

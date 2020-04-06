@@ -10,10 +10,10 @@ import Yospace
 
 extension YSAdBreak {
     
-    func toYospaceAdBreak(absoluteStart: Double, relativeStart: Double) -> YospaceAdBreak {
+    func toYospaceAdBreak(relativeStart: Double) -> YospaceAdBreak {
         let yospaceAdBreak = YospaceAdBreak(
             identifier: adBreakIdentifier(),
-            absoluteStart: absoluteStart,
+            absoluteStart: adBreakStart(),
             absoluteEnd: adBreakEnd(),
             duration: adBreakDuration(),
             relativeStart: relativeStart,
@@ -22,10 +22,8 @@ extension YSAdBreak {
         )
         
         // Add adverts to ad break
-        var advertAbsoluteStart = absoluteStart
         for case let advert as YSAdvert in adverts() {
-            yospaceAdBreak.register(advert.toYospaceAd(absoluteStart: advertAbsoluteStart, relativeStart: relativeStart))
-            advertAbsoluteStart += advert.advertDuration()
+            yospaceAdBreak.register(advert.toYospaceAd(relativeStart: relativeStart))
         }
         
         return yospaceAdBreak

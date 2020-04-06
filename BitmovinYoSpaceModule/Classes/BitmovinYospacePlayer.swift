@@ -40,7 +40,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
         set (adBreaks) {
             realAdBreaks = adBreaks
-            self.timeline = AdTimeline(breaks: adBreaks)
+            self.timeline = AdTimeline(adBreaks: adBreaks)
             self.handTimelineUpdated()
         }
     }
@@ -383,9 +383,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             handleAdBreakEvent(currentAdBreak)
         }
 
-        let absoluteTime = currentTimeWithAds()
-        let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
-        activeAd = advert.toYospaceAd(absoluteStart: absoluteTime, relativeStart: relativeTime)
+        let adRelativeStart = timeline?.absoluteToRelative(time: advert.advertStart()) ?? advert.advertStart()
+        activeAd = advert.toYospaceAd(relativeStart: adRelativeStart)
         
         adPlaying = true
         
@@ -427,9 +426,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         BitLog.d("YoSpace advertDidEnd")
         
         if activeAd == nil {
-            let absoluteTime = currentTimeWithAds() - advert.advertDuration()
-            let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
-            activeAd = advert.toYospaceAd(absoluteStart: absoluteTime, relativeStart: relativeTime)
+            let adRelativeStart = timeline?.absoluteToRelative(time: advert.advertStart()) ?? advert.advertStart()
+            activeAd = advert.toYospaceAd(relativeStart: adRelativeStart)
         }
         
         BitLog.d("Emitting AdFinishedEvent")
@@ -445,9 +443,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         BitLog.d("YoSpace advertBreakDidEnd")
         
         if activeAdBreak == nil {
-            let absoluteTime = currentTimeWithAds() - adBreak.adBreakDuration()
-            let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
-            activeAdBreak = adBreak.toYospaceAdBreak(absoluteStart: absoluteTime, relativeStart: relativeTime)
+            let adBreakRelativeStart = timeline?.absoluteToRelative(time: adBreak.adBreakStart()) ?? adBreak.adBreakStart()
+            activeAdBreak = adBreak.toYospaceAdBreak(relativeStart: adBreakRelativeStart)
         }
         
         BitLog.d("Emitting AdBreakFinishedEvent")
@@ -477,9 +474,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     private func handleAdBreakEvent(_ ysAdBreak: YSAdBreak) {
-        let absoluteTime = currentTimeWithAds()
-        let relativeTime = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
-        activeAdBreak = ysAdBreak.toYospaceAdBreak(absoluteStart: absoluteTime, relativeStart: relativeTime)
+        let adBreakRelativeStart = timeline?.absoluteToRelative(time: ysAdBreak.adBreakStart()) ?? ysAdBreak.adBreakStart()
+        activeAdBreak = ysAdBreak.toYospaceAdBreak(relativeStart: adBreakRelativeStart)
 
         BitLog.d("Emitting AdBreakStartedEvent")
         let adBreakStartEvent = AdBreakStartedEvent(adBreak: activeAdBreak!)
