@@ -125,6 +125,14 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     func onOptOut(_ userInitiated: Bool) {
         BitLog.d("TrueX user opt out")
     }
+    
+    func onSkipCardShown() {
+        BitLog.d("TrueX skip card shown")
+    }
+    
+    func onUserCancel() {
+        BitLog.d("TrueX user cancelled")
+    }
 
     func onAdError(_ errorMessage: String?) {
         BitLog.e("TrueX ad error: \(errorMessage ?? "")")
