@@ -11,87 +11,161 @@ import Yospace
 import BitmovinPlayer
 
 class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
-    private var renderer: TruexAdRenderer?
-    private weak var rendererDelegate: BitmovinTruexRendererDelegate?
+
     private let configuration: TruexConfiguration
+    private weak var eventDelegate: TruexAdRendererEventDelegate?
+    private var renderer: TruexAdRenderer?
     private var interactiveUnit: YSInteractiveUnit?
+    private var slotType: TruexSlotType = .preroll
+    private var adFree = false
+    private var sessionAdFree = false
 
-    init(configuration: TruexConfiguration, rendererDelegate: BitmovinTruexRendererDelegate? = nil) {
+    init(configuration: TruexConfiguration, eventDelegate: TruexAdRendererEventDelegate? = nil) {
         self.configuration = configuration
-        self.rendererDelegate = rendererDelegate
+        self.eventDelegate = eventDelegate
     }
-
-    func stop() {
-        renderer?.stop()
-        interactiveUnit = nil
-    }
-
-    func renderAd(advert: YSAdvert) {
-        BitLog.d("TrueX - rendering ad: \(advert)")
-        interactiveUnit = advert.linearCreativeElement().interactiveUnit()
-
-        guard let truexUrl: String = interactiveUnit?.unitSource().absoluteString else {
+    
+    func renderTruexAd(ad: YSAdvert, slotType: TruexSlotType) {
+        guard let interactiveUnit = ad.linearCreativeElement().interactiveUnit() else {
+            return
+        }
+        
+        guard let unitAdParameters = interactiveUnit.unitAdParameters() else {
             return
         }
 
-        guard let unitAdParameters: String = interactiveUnit?.unitAdParameters() else {
+        guard var adParams: Dictionary = YospaceUtil.convertToDictionary(text: unitAdParameters) else {
             return
         }
-
-        guard var adParameters: Dictionary = YospaceUtil.convertToDictionary(text: unitAdParameters) else {
-            return
-        }
+        
+        BitLog.d("Rendering TrueX ad: \(interactiveUnit.unitSource())")
+        
+        self.interactiveUnit = interactiveUnit
+        self.slotType = slotType
 
         if !configuration.vastConfigUrl.isEmpty {
-            adParameters["vast_config_url"] = configuration.vastConfigUrl
+            adParams["vast_config_url"] = configuration.vastConfigUrl
         }
 
         if !configuration.userId.isEmpty {
-            adParameters["user_id"] = configuration.vastConfigUrl
+            adParams["user_id"] = configuration.userId
         }
+      
+        renderer = TruexAdRenderer(
+            url: interactiveUnit.unitSource().absoluteString,
+            adParameters: adParams,
+            slotType: slotType.rawValue
+        )
+        renderer!.delegate = self
+        renderer!.start(configuration.view)
 
-        renderer = TruexAdRenderer(url: truexUrl, adParameters: adParameters, slotType: "midroll")
-        renderer?.delegate = self
-        renderer?.start(configuration.view)
-
-        BitLog.d("TrueX - ad rendering completed")
+        BitLog.d("TrueX rendering completed")
+    }
+    
+    func stopRenderer() {
+        // Reset state
+        renderer?.stop()
+        interactiveUnit = nil
+        slotType = .preroll
+        adFree = false
+        sessionAdFree = false
     }
 
-    public func onAdStarted(_ campaignName: String!) {
-        BitLog.d("TrueX - ad started: \(campaignName ?? "")")
+    func onAdStarted(_ campaignName: String?) {
+        BitLog.d("TrueX ad started: \(campaignName ?? "")")
+        
+        // Reset ad free
+        adFree = false
+        
+        // Notify YoSpace for ad tracking
         interactiveUnit?.notifyAdStarted()
         interactiveUnit?.notifyAdVideoStarted()
         interactiveUnit?.notifyAdImpression()
     }
 
-    public func onAdCompleted(_ timeSpent: Int) {
-        BitLog.d("TrueX - ad completed: \(timeSpent) seconds spent on engagement")
+    func onAdCompleted(_ timeSpent: Int) {
+        BitLog.d("TrueX ad completed with \(timeSpent) seconds spent on engagement")
+        
+        // Notify YoSpace for ad tracking
         interactiveUnit?.notifyAdVideoComplete()
         interactiveUnit?.notifyAdStopped()
         interactiveUnit?.notifyAdUserClose()
-        rendererDelegate?.truexAdComplete()
-        stop()
+        
+        // Skip current ad break if:
+        //   1. Preroll ad free has been satisfied
+        //   2. Midroll ad free has been satisfied
+        if sessionAdFree || adFree {
+            eventDelegate?.skipAdBreak()
+        } else {
+            eventDelegate?.skipTruexAd()
+        }
+        
+        // Reset state
+        finishRendering()
     }
 
-    public func onAdFreePod() {
-        BitLog.d("TrueX - ad free")
-        rendererDelegate?.truexAdFree()
+    func onAdFreePod() {
+        BitLog.d("TrueX ad free")
+        
+        adFree = true
+        
+        // We are session ad free if ad free is fired on a preroll
+        if !sessionAdFree {
+            sessionAdFree = (slotType == .preroll)
+            if sessionAdFree {
+                eventDelegate?.sessionAdFree()
+            }
+        }
+    }
+    
+    func onOpt(in campaignName: String!, adId: Int) {
+        BitLog.d("TrueX user opt in: \(campaignName ?? ""), creativeId=\(adId)")
+    }
+    
+    func onOptOut(_ userInitiated: Bool) {
+        BitLog.d("TrueX user opt out")
+    }
+    
+    func onSkipCardShown() {
+        BitLog.d("TrueX skip card shown")
+    }
+    
+    func onUserCancel() {
+        BitLog.d("TrueX user cancelled")
     }
 
-    public func onAdError(_ errorMessage: String!) {
-        BitLog.e("TrueX - ad error: error_message=\(errorMessage ?? "N/A")")
-        interactiveUnit?.notifyAdStopped()
-        rendererDelegate?.truexAdError()
-        stop()
+    func onAdError(_ errorMessage: String?) {
+        BitLog.e("TrueX ad error: \(errorMessage ?? "")")
+        handleError()
+    }
+    
+    func onPopupWebsite(_ url: String!) {
+        BitLog.d("TrueX popup website")
     }
 
-    public func onNoAdsAvailable() {
-        BitLog.d("TrueX - no ads available")
-        rendererDelegate?.truexNoAds()
-        stop()
+    func onNoAdsAvailable() {
+        BitLog.d("TrueX no ads available")
+        handleError()
     }
 
-    public func onPopupWebsite(_ url: String!) {
-        BitLog.d("TrueX - popup website: url=\(url ?? "N/A")")
+    private func handleError() {
+        BitLog.d("Handling TrueX error...")
+        
+        // Treat error state like complete state
+        if sessionAdFree {
+            // Skip ad break as preroll ad free has been satisfied
+            eventDelegate?.skipAdBreak()
+        } else {
+            // Skip truex ad filler and show linear ads
+            eventDelegate?.skipTruexAd()
+        }
+        
+        // Reset state
+        finishRendering()
+    }
+    
+    private func finishRendering() {
+        renderer?.stop()
+        interactiveUnit = nil
     }
 }
