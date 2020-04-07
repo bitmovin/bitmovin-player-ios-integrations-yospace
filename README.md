@@ -9,37 +9,37 @@ tvOS 9.2+
 The following example creates a BitmovinYospacePlayer and loads a Yospace stream 
 
 ```swift
-//Optionally create a yospace configuration
+// Optionally create a yospace configuration
 let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
 
-//Optionally create a PlayerConfiguration
+// Optionally create a PlayerConfiguration
 let configuration = PlayerConfiguration()
 
-//Create a BitmovinYospacePlayer
+// Create a BitmovinYospacePlayer
 let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
 
 
-//Add it to your player view 
+// Add it to your player view 
 let playerBoundary = BMPBitmovinPlayerView(player: bitmovinYoSpacePlayer, frame: frame)
 playerBoundary.autoresizingMask = [.flexibleHeight, .flexibleWidth]
 playerBoundary.frame = playerView.bounds
 playerView.addSubview(playerBoundary)
 playerView.bringSubviewToFront(playerBoundary)
 
-//Create a SourceConfiguration
+// Create a SourceConfiguration
 let sourceConfig = SourceConfiguration()
 sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
 
-//Create a YospaceSourceConfiguration with your yospaceAssetType 
+// Create a YospaceSourceConfiguration with your yospaceAssetType 
 let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
-//Load your sourceConfiguration and yospaceSourceConfiguration
+// Load your sourceConfiguration and yospaceSourceConfiguration
 bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
 ```
 
 #### Player Listener
 ```swift
-//Implement the Player Listener Protocol
+// Implement the Player Listener Protocol
 extension ViewController : PlayerListener {
     public func onAdStarted(_ event: AdStartedEvent) {
         print("Ad Started")
@@ -62,7 +62,7 @@ extension ViewController : PlayerListener {
     }
 }
 
-//Add your object as a listener to the BitmovinYospacePlayer
+// Add your object as a listener to the BitmovinYospacePlayer
 bitmovinYoSpacePlayer.add(listener: self)
 ```
 
@@ -110,8 +110,8 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 ```
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.2.8'
-  pod 'BitmovinPlayer', tag: '2.36.1'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.2.9'
+  pod 'BitmovinPlayer', tag: '2.41.0'
 
   use_frameworks!
 ```
