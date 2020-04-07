@@ -71,7 +71,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         sessionAdFree = false
     }
 
-    public func onAdStarted(_ campaignName: String?) {
+    func onAdStarted(_ campaignName: String?) {
         BitLog.d("TrueX ad started: \(campaignName ?? "")")
         
         // Reset ad free
@@ -83,7 +83,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         interactiveUnit?.notifyAdImpression()
     }
 
-    public func onAdCompleted(_ timeSpent: Int) {
+    func onAdCompleted(_ timeSpent: Int) {
         BitLog.d("TrueX ad completed with \(timeSpent) seconds spent on engagement")
         
         // Notify YoSpace for ad tracking
@@ -104,7 +104,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         finishRendering()
     }
 
-    public func onAdFreePod() {
+    func onAdFreePod() {
         BitLog.d("TrueX ad free")
         
         adFree = true
@@ -126,7 +126,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         BitLog.d("TrueX user opt out")
     }
 
-    public func onAdError(_ errorMessage: String?) {
+    func onAdError(_ errorMessage: String?) {
         BitLog.e("TrueX ad error: \(errorMessage ?? "")")
         handleError()
     }
@@ -135,11 +135,11 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         BitLog.d("TrueX popup website")
     }
 
-    public func onNoAdsAvailable() {
+    func onNoAdsAvailable() {
         BitLog.d("TrueX no ads available")
         handleError()
     }
-    
+
     private func handleError() {
         BitLog.d("Handling TrueX error...")
         
