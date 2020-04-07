@@ -510,7 +510,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.8;
+				MARKETING_VERSION = 1.2.9;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -547,7 +547,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.8;
+				MARKETING_VERSION = 1.2.9;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
@@ -682,7 +682,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.8;
+				MARKETING_VERSION = 1.2.9;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -724,7 +724,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.8;
+				MARKETING_VERSION = 1.2.9;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
