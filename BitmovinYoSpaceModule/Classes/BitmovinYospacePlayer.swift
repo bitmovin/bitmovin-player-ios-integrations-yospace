@@ -383,7 +383,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             handleAdBreakEvent(currentAdBreak)
         }
 
-        let adRelativeStart = timeline?.absoluteToRelative(time: advert.advertStart()) ?? advert.advertStart()
+        let absoluteTime = super.currentTime
+        let adRelativeStart = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
         activeAd = advert.toYospaceAd(relativeStart: adRelativeStart)
         
         adPlaying = true
@@ -426,7 +427,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         BitLog.d("YoSpace advertDidEnd")
         
         if activeAd == nil {
-            let adRelativeStart = timeline?.absoluteToRelative(time: advert.advertStart()) ?? advert.advertStart()
+            let absoluteTime = super.currentTime
+            let adRelativeStart = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
             activeAd = advert.toYospaceAd(relativeStart: adRelativeStart)
         }
         
@@ -443,7 +445,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         BitLog.d("YoSpace advertBreakDidEnd")
         
         if activeAdBreak == nil {
-            let adBreakRelativeStart = timeline?.absoluteToRelative(time: adBreak.adBreakStart()) ?? adBreak.adBreakStart()
+            let absoluteTime = super.currentTime
+            let adBreakRelativeStart = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
             activeAdBreak = adBreak.toYospaceAdBreak(relativeStart: adBreakRelativeStart)
         }
         
@@ -474,7 +477,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     }
 
     private func handleAdBreakEvent(_ ysAdBreak: YSAdBreak) {
-        let adBreakRelativeStart = timeline?.absoluteToRelative(time: ysAdBreak.adBreakStart()) ?? ysAdBreak.adBreakStart()
+        let absoluteTime = super.currentTime
+        let adBreakRelativeStart = timeline?.absoluteToRelative(time: absoluteTime) ?? absoluteTime
         activeAdBreak = ysAdBreak.toYospaceAdBreak(relativeStart: adBreakRelativeStart)
 
         BitLog.d("Emitting AdBreakStartedEvent")
