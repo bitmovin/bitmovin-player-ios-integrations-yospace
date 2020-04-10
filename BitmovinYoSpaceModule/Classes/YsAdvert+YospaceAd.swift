@@ -10,11 +10,11 @@ import Yospace
 
 extension YSAdvert {
     
-    func toYospaceAd(relativeStart: Double) -> YospaceAd {
+    func toYospaceAd(absoluteStart: Double, relativeStart: Double) -> YospaceAd {
         return YospaceAd(
             identifier: advertIdentifier(),
-            absoluteStart: advertStart(),
-            absoluteEnd: advertEnd(),
+            absoluteStart: absoluteStart,
+            absoluteEnd: absoluteStart + advertDuration(),
             duration: advertDuration(),
             relativeStart: relativeStart,
             hasInteractiveUnit: hasLinearInteractiveUnit(),
