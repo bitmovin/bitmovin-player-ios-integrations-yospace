@@ -16,7 +16,7 @@ public class AdTimeline: CustomDebugStringConvertible {
         var relativeOffset = 0.0
         adBreaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
             .forEach {
-                let adBreak = $0.toYospaceAdBreak(relativeStart: $0.adBreakStart() - relativeOffset)
+                let adBreak = $0.toYospaceAdBreak(absoluteStart: $0.adBreakStart(), relativeStart: $0.adBreakStart() - relativeOffset)
                 self.adBreaks.append(adBreak)
                 relativeOffset += adBreak.duration
             }
