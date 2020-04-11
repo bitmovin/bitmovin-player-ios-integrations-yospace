@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.10]
+
+### Fixed
+- Incorrect activeAdBreak abosluteStart & relativeStart
+- Incorrect activeAd abosluteStart & relativeStart
+- Variation in absoluteStart of activeAd and matching ad in activeAdBreak
+- Variation in relativeStart of activeAd and matching ad in activeAdBreak
+
 ## [1.2.9]
 
 ### Changed
