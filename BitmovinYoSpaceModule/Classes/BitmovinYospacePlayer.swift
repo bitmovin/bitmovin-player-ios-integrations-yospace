@@ -60,11 +60,14 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
     open override var currentTime: TimeInterval {
         if isAd {
+            // Return ad time
             return super.currentTime - (activeAd?.absoluteStart ?? 0.0)
-        } else if let timeline = timeline {
-            return timeline.absoluteToRelative(time: super.currentTime)
-        } else {
+        } else if isLive {
+            // Return absolute time
             return super.currentTime
+        } else /* VOD */ {
+            // Return relative time; fallback to absolute time
+            return timeline?.absoluteToRelative(time: super.currentTime) ?? super.currentTime
         }
     }
 
