@@ -377,15 +377,13 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func advertDidStart(_ advert: YSAdvert) -> [Any]? {
         BitLog.d("YoSpace advertDidStart")
-        
+    
         if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdvertBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
-
-        let adAbsoluteStart = isLive ? super.currentTime : advert.advertStart()
-        let adRelativeStart = (isLive ? activeAdBreak?.relativeStart : timeline?.absoluteToRelative(time: adAbsoluteStart)) ?? adAbsoluteStart
-        activeAd = advert.toYospaceAd(absoluteStart: adAbsoluteStart, relativeStart: adRelativeStart)
-                
+        
+        activeAd = createActiveAd(advert: advert)
+   
         #if os(iOS)
         if let renderer = truexRenderer, advert.hasLinearInteractiveUnit() {
             BitLog.d("TrueX ad found: \(advert)")
@@ -424,9 +422,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         BitLog.d("YoSpace advertDidEnd")
         
         if activeAd == nil {
-            let adAbsoluteStart = isLive ? super.currentTime : advert.advertStart()
-            let adRelativeStart = (isLive ? activeAdBreak?.relativeStart : timeline?.absoluteToRelative(time: adAbsoluteStart)) ?? adAbsoluteStart
-            activeAd = advert.toYospaceAd(absoluteStart: adAbsoluteStart, relativeStart: adRelativeStart)
+            activeAd = createActiveAd(advert: advert)
         }
         
         BitLog.d("Emitting AdFinishedEvent")
@@ -441,9 +437,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         BitLog.d("YoSpace advertBreakDidEnd")
         
         if activeAdBreak == nil {
-            let adBreakAbsoluteStart = isLive ? super.currentTime : adBreak.adBreakStart()
-            let adBreakRelativeStart = isLive ? adBreakAbsoluteStart : (timeline?.absoluteToRelative(time: adBreakAbsoluteStart) ?? adBreakAbsoluteStart)
-            activeAdBreak = adBreak.toYospaceAdBreak(absoluteStart: adBreakAbsoluteStart, relativeStart: adBreakRelativeStart)
+            activeAdBreak = createActiveAdBreak(adBreak: adBreak)
         }
         
         BitLog.d("Emitting AdBreakFinishedEvent")
@@ -471,11 +465,45 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             self.adBreaks = timeline
         }
     }
+    
+    private func createActiveAd(advert: YSAdvert) -> YospaceAd {
+        if let adBreakAd = (activeAdBreak?.ads.compactMap { $0 as? YospaceAd }.first { $0.identifier == advert.advertIdentifier() }) {
+            return adBreakAd
+        } else {
+            let absoluteTime = super.currentTime
+            var adAbsoluteStart: Double
+            var adRelativeStart: Double
+        
+            if isLive {
+                adAbsoluteStart = absoluteTime
+                adRelativeStart = activeAdBreak?.relativeStart ?? adAbsoluteStart
+            } else /* VOD */ {
+                adAbsoluteStart = advert.advertStart()
+                adRelativeStart = timeline?.absoluteToRelative(time: adAbsoluteStart) ?? adAbsoluteStart
+            }
+        
+            return advert.toYospaceAd(absoluteStart: adAbsoluteStart, relativeStart: adRelativeStart)
+        }
+    }
+    
+    private func createActiveAdBreak(adBreak: YSAdBreak) -> YospaceAdBreak {
+        let absoluteTime = super.currentTime
+        var adBreakAbsoluteStart: Double
+        var adBreakRelativeStart: Double
+        
+        if isLive {
+            adBreakAbsoluteStart = absoluteTime
+            adBreakRelativeStart = absoluteTime
+        } else /* VOD */ {
+            adBreakAbsoluteStart = adBreak.adBreakStart()
+            adBreakRelativeStart = timeline?.absoluteToRelative(time: adBreakAbsoluteStart) ?? adBreakAbsoluteStart
+        }
+        
+        return adBreak.toYospaceAdBreak(absoluteStart: adBreakAbsoluteStart, relativeStart: adBreakRelativeStart)
+    }
 
     private func handleAdBreakEvent(_ adBreak: YSAdBreak) {
-        let adBreakAbsoluteStart = isLive ? super.currentTime : adBreak.adBreakStart()
-        let adBreakRelativeStart = isLive ? adBreakAbsoluteStart : (timeline?.absoluteToRelative(time: adBreakAbsoluteStart) ?? adBreakAbsoluteStart)
-        activeAdBreak = adBreak.toYospaceAdBreak(absoluteStart: adBreakAbsoluteStart, relativeStart: adBreakRelativeStart)
+        activeAdBreak = createActiveAdBreak(adBreak: adBreak)
 
         BitLog.d("Emitting AdBreakStartedEvent")
         let adBreakStartEvent = AdBreakStartedEvent(adBreak: activeAdBreak!)
