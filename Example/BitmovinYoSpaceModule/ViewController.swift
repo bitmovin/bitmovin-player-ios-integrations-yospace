@@ -22,13 +22,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var streamsTextField: UITextField!
     @IBOutlet weak var seekTextField: UITextField!
     @IBOutlet weak var tableView: UITableView!
-
-    var bitmovinYospacePlayer: BitmovinYospacePlayer?
-    var bitmovinPlayerView: PlayerView?
-
-    private var listItems: [ListItem] = []
-    private let streamNames: [String] = ["Live CNN", "TBSE-WV", "VoD", "TrueX", "Non-Yospace"]
-    private var selectedStreamIndex = 0
+    @IBOutlet weak var vstLabel: UILabel!
+    
     private var adBreakStartCount = 0 {
         didSet {
             adBreakStartCountLabel.text = String(format: "ABS: %d", adBreakStartCount)
@@ -50,54 +45,35 @@ class ViewController: UIViewController {
         }
     }
 
+    private var bitmovinYospacePlayer: BitmovinYospacePlayer?
+    private var bitmovinPlayerView: PlayerView?
+    private var listItems: [ListItem] = []
+    private let streamNames: [String] = ["Live CNN", "TBSE-FP", "VOD", "TrueX", "Non-Yospace"]
+    private var selectedStreamIndex = 0
+    private var loadPressedTime: TimeInterval = 0
+    
     override func viewDidLoad() {
         createPlayer()
         createStreamPicker()
     }
 
     func createPlayer() {
-        // Create a Player Configuration
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
         configuration.playbackConfiguration.isMuted = true
 
-        // Create a YospaceConfiguration
         let yospaceConfiguration = YospaceConfiguration(debug: true, timeout: 5000)
-
-        //Create a BitmovinYospacePlayer
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
-
-        //Add your listeners
         bitmovinYospacePlayer?.add(listener: self)
-        bitmovinYospacePlayer?.add(yospaceListener: self)
 
         let policy: BitmovinExamplePolicy = BitmovinExamplePolicy()
         bitmovinYospacePlayer?.playerPolicy = policy
 
-        guard let player = bitmovinYospacePlayer else {
-            return
-        }
-
-        self.containerView.backgroundColor = .black
-
-        if bitmovinPlayerView == nil {
-            // Create player view and pass the player instance to it
-            bitmovinPlayerView = BMPBitmovinPlayerView(player: player, frame: .zero)
-
-            guard let view = bitmovinPlayerView else {
-                return
-            }
-
-            // Size the player view
-            view.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-            view.frame = containerView.bounds
-            containerView.addSubview(view)
-            containerView.bringSubviewToFront(view)
-
-        } else {
-            bitmovinPlayerView?.player = bitmovinYospacePlayer
-        }
-
+        bitmovinPlayerView = BMPBitmovinPlayerView(player: bitmovinYospacePlayer!, frame: .zero)
+        bitmovinPlayerView!.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        bitmovinPlayerView!.frame = containerView.bounds
+        containerView.addSubview(bitmovinPlayerView!)
+        containerView.bringSubviewToFront(bitmovinPlayerView!)
     }
 
     private func createStreamPicker() {
@@ -125,6 +101,7 @@ class ViewController: UIViewController {
 
     @IBAction func loadUnloadPressed(_ sender: UIButton) {
         if loadUnloadButton.title(for: .normal) == "Load" {
+            loadPressedTime = Date().timeIntervalSince1970
             switch selectedStreamIndex {
             case 0:
                 loadLiveCNN()
@@ -139,8 +116,8 @@ class ViewController: UIViewController {
             }
         } else {
             bitmovinYospacePlayer?.unload()
+            resetUI()
         }
-        resetUI()
     }
 
     @IBAction func seekPressed(_ sender: UIButton) {
@@ -150,67 +127,47 @@ class ViewController: UIViewController {
     }
 
     private func loadLiveCNN() {
-        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear-novpaid/master.m3u8?yo.dr=true&yo.av=2&yo.pdt=true&yo.pst=true") else {
-            return
-        }
-
+        guard let streamUrl = URL(string: cnnUrl) else { return }
         let sourceConfig = SourceConfiguration()
         sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
-
-        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        let yospaceConfig = YospaceSourceConfiguration(yospaceAssetType: .linear, retryExcludingYospace: true)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: yospaceConfig)
     }
 
     private func loadLiveTBSE() {
-        guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2011915/tbseast-cbcs-stage/master_fp.m3u8?yo.pdt=true&_fw_ae=53da17a30bd0d3c946a41c86cb5873f1&_fw_ar=1&afid=180483280&conf_csid=tbs.com_desktop_live_east&nw=42448&prof=48804:tbs_ios_live&yo.vp=false&yo.ad=true&yo.dr=true&yo.av=2&yo.pdt=true") else {
-            return
-        }
-
-        let sourceConfiguration = SourceConfiguration()
+        guard let streamUrl = URL(string: tbseUrl) else { return }
+        let sourceConfig = SourceConfiguration()
         let sourceItem = SourceItem(hlsSource: HLSSource(url: streamUrl))
-        let drmConfiguration = FairplayConfiguration(license: URL(string: "https://fairplay-stage.license.istreamplanet.com/api/license/de4c1d30-ac22-4669-8824-19ba9a1dc128"), certificateURL: URL(string: "https://fairplay-stage.license.istreamplanet.com/api/AppCert/de4c1d30-ac22-4669-8824-19ba9a1dc128")!)
-        drmConfiguration.prepare()
-        sourceItem.add(drmConfiguration: drmConfiguration)
-        sourceConfiguration.addSourceItem(item: sourceItem)
-        let yospaceConfiguration: YospaceSourceConfiguration? = YospaceSourceConfiguration(yospaceAssetType: .linear, retryExcludingYospace: true)
-
-        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration, yospaceSourceConfiguration: yospaceConfiguration)
+        let drmConfig = FairplayConfiguration(license: URL(string: fairplayLicenseUrl), certificateURL: URL(string: fairplayCertUrl)!)
+        drmConfig.prepare()
+        sourceItem.add(drmConfiguration: drmConfig)
+        sourceConfig.addSourceItem(item: sourceItem)
+        let yospaceConfig = YospaceSourceConfiguration(yospaceAssetType: .linear, retryExcludingYospace: true)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: yospaceConfig)
     }
 
     private func loadVod() {
-        guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_videopage&context=182883174&nw=42448&prof=48804%3Atbs_web_vod&vdur=1800&yo.vp=false") else {
-            return
-        }
-
-        let sourceConfiguration = SourceConfiguration()
-        sourceConfiguration.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        let yospaceConfiguration: YospaceSourceConfiguration? = YospaceSourceConfiguration(yospaceAssetType: .vod, retryExcludingYospace: true)
-
-        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration, yospaceSourceConfiguration: yospaceConfiguration)
+        guard let streamUrl = URL(string: bonesVodUrl) else { return }
+        let sourceConfig = SourceConfiguration()
+        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        let yospaceConfig = YospaceSourceConfiguration(yospaceAssetType: .vod, retryExcludingYospace: true)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: yospaceConfig)
     }
 
     private func loadTruex() {
-        guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_iphone&context=182883174&nw=42448&prof=48804:turner_ssai_truex&vdur=1800&yo.vp=true&yo.ad=true&yo.av=2") else {
-            return
-        }
-
-        let sourceConfiguration = SourceConfiguration()
-        sourceConfiguration.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-        let yospaceConfiguration: YospaceSourceConfiguration? = YospaceSourceConfiguration(yospaceAssetType: .vod, retryExcludingYospace: true)
-        let truexConfiguration = TruexConfiguration(view: bitmovinPlayerView!)
-
-        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration, yospaceSourceConfiguration: yospaceConfiguration, truexConfiguration: truexConfiguration)
+         guard let streamUrl = URL(string: bonesTruexUrl) else { return }
+        let sourceConfig = SourceConfiguration()
+        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        let yospaceConfig: YospaceSourceConfiguration? = YospaceSourceConfiguration(yospaceAssetType: .vod, retryExcludingYospace: true)
+        let truexConfig = TruexConfiguration(view: bitmovinPlayerView!)
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: yospaceConfig, truexConfiguration: truexConfig)
     }
 
     private func loadNonYospace() {
-        guard let streamUrl = URL(string: "https://hls.pro34.lv3.cdn.hbo.com/av/videos/series/watchmen/videos/trailer/trailer-47867523_PRO34/base_index.m3u8") else {
-            return
-        }
-
-        let sourceConfiguration = SourceConfiguration()
-        sourceConfiguration.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
-
-        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfiguration)
+       guard let streamUrl = URL(string: nonYospaceUrl) else { return }
+        let sourceConfig = SourceConfiguration()
+        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig)
     }
 
     private func updateBufferUI() {
@@ -220,17 +177,13 @@ class ViewController: UIViewController {
     }
 
     private func updateAdBreakCounterUI() {
-
         if let activeAdBreak = bitmovinYospacePlayer?.getActiveAdBreak(), let activeAd = bitmovinYospacePlayer?.getActiveAd() {
-
             let adCount = activeAdBreak.ads.count
             var count = 0
             var adTimeRemaining = 0
             var adBreakTimeRemaining = activeAdBreak.duration
-
-            let yospaceAds = activeAdBreak.ads.compactMap {$0 as? YospaceAd}
-            for advertisement in yospaceAds {
-                count+=1
+            for case let advertisement as YospaceAd in activeAdBreak.ads {
+                count += 1
                 if advertisement.identifier == activeAd.identifier {
                     adTimeRemaining = Int(activeAd.duration - (bitmovinYospacePlayer?.currentTime ?? 0))
                     adBreakTimeRemaining -= (bitmovinYospacePlayer?.currentTime ?? 0)
@@ -239,7 +192,6 @@ class ViewController: UIViewController {
                     adBreakTimeRemaining -= advertisement.duration
                 }
             }
-
             adBreakCounterLabel.text = String(format: "AdBreak: %ds - Ad: %d of %d %ds", Int(adBreakTimeRemaining), count, adCount, adTimeRemaining)
         } else {
             adBreakCounterLabel.text = "Ad: false"
@@ -254,6 +206,7 @@ class ViewController: UIViewController {
         adFinishCount = 0
         adBreakFinishCount = 0
         loadUnloadButton.setTitle("Load", for: .normal)
+        vstLabel.text = "VST: 0:000"
     }
 
     private func clearList() {
@@ -265,8 +218,7 @@ class ViewController: UIViewController {
         if let activeAdBreak = bitmovinYospacePlayer?.getActiveAdBreak() {
             let header = ListItem(entryOne: "Seq", entryTwo: "Id", entryThree: "Duration", entryFour: "TrueX")
             listItems.append(header)
-            let yospaceAds = activeAdBreak.ads.compactMap {$0 as? YospaceAd}
-            for (index, advert) in yospaceAds.enumerated() {
+            for case let (index, advert as YospaceAd) in activeAdBreak.ads.enumerated() {
                 let item = ListItem(
                     entryOne: String(index + 1),
                     entryTwo: advert.identifier ?? "",
@@ -278,12 +230,11 @@ class ViewController: UIViewController {
             tableView.reloadData()
         }
     }
-
+    
     private func showListAdBreaks() {
         if let timeline = bitmovinYospacePlayer?.timeline, !timeline.adBreaks.isEmpty {
             let header = ListItem(entryOne: "Seq", entryTwo: "Start", entryThree: "Duration", entryFour: "Ads")
             listItems.append(header)
-
             for (index, adBreak) in timeline.adBreaks.enumerated() {
                 let item = ListItem(
                     entryOne: String(index + 1),
@@ -293,7 +244,6 @@ class ViewController: UIViewController {
                 )
                 listItems.append(item)
             }
-
             tableView.reloadData()
         }
     }
@@ -334,103 +284,58 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension ViewController: PlayerListener {
-    public func onAdStarted(_ event: AdStartedEvent) {
-        guard let yospaceAdStartedEvent = event as? YospaceAdStartedEvent else {
-            return
-        }
-        NSLog("[Tub] Ad Started - truex: \(yospaceAdStartedEvent.truexAd)")
-        adStartCount += 1
-    }
-
-    public func onAdFinished(_ event: AdFinishedEvent) {
-        NSLog("[Tub] Ad Finished")
-        adFinishCount += 1
-    }
-
-    public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        adBreakCounterLabel.isHidden = false
-        NSLog("[Tub] Ad Break Started")
-        adBreakStartCount += 1
-        clearList()
-        showListAds()
-    }
-
-    public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        adBreakCounterLabel.isHidden = true
-        NSLog("[Tub] Ad Break Finished")
-        adBreakFinishCount += 1
-        clearList()
-        showListAdBreaks()
-    }
-
-    public func onAdClicked(_ event: AdClickedEvent) {
-        NSLog("Ad Clicked")
-    }
-
-    public func onDurationChanged(_ event: DurationChangedEvent) {
-        NSLog("On Duration Changed: \(event.duration)")
-    }
-
-    public func onError(_ event: ErrorEvent) {
-        NSLog("On Error: \(event.code)")
-        resetUI()
-    }
-
-    public func onPlaying(_ event: PlayingEvent) {
-        NSLog("On Playing: \(event.debugDescription)")
-    }
-
-    public func onReady(_ event: ReadyEvent) {
-        guard let timeline = bitmovinYospacePlayer?.timeline else {
-            return
-        }
-        showListAdBreaks()
-        NSLog("On Ready: \(timeline.debugDescription)")
-    }
-
-    public func onCueEnter(_ event: CueEnterEvent) {
-        NSLog("Cue Enter: \(event.startTime) - \(event.endTime)")
-    }
-
-    public func onCueExit(_ event: CueExitEvent) {
-        NSLog("Cue Exit: \(event.startTime) - \(event.endTime)")
-    }
-
+    
     func onSourceLoaded(_ event: SourceLoadedEvent) {
         loadUnloadButton.setTitle("Unload", for: .normal)
     }
-
-    func onSourceUnloaded(_ event: SourceUnloadedEvent) {
-        loadUnloadButton.setTitle("Load", for: .normal)
+    
+    public func onReady(_ event: ReadyEvent) {
+        guard let timeline = bitmovinYospacePlayer?.timeline else { return }
+        showListAdBreaks()
+        NSLog("Ad timeline: \(timeline.debugDescription)")
     }
-
-    public func onStallStarted(_ event: StallStartedEvent) {
-        NSLog("On Stall Started")
-    }
-
-    public func onStallEnded(_ event: StallEndedEvent) {
-        NSLog("On Stall Ended")
+    
+    public func onPlaying(_ event: PlayingEvent) {
+        if vstLabel.text == "VST: 0:000" {
+            let startupTime = Date().timeIntervalSince1970 - loadPressedTime
+            let seconds = Int(startupTime.truncatingRemainder(dividingBy: 60))
+            let millis = Int((startupTime * 1000).truncatingRemainder(dividingBy: 1000))
+            vstLabel.text = String(format: "VST: \(seconds):\(millis)")
+        }
     }
 
     public func onTimeChanged(_ event: TimeChangedEvent) {
         updateBufferUI()
         updateAdBreakCounterUI()
     }
-}
-
-extension ViewController: YospaceListener {
-    public func onYospaceError(event: ErrorEvent) {
-        let message = "Error: \(event.code) -  \(event.message)"
-        let alert = UIAlertController(title: "Alert", message: message, preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+    
+    public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
+        adBreakCounterLabel.isHidden = false
+        adBreakStartCount += 1
+        clearList()
+        showListAds()
+    }
+    
+    public func onAdStarted(_ event: AdStartedEvent) {
+        adStartCount += 1
     }
 
-    public func onTimelineChanged(event: AdTimelineChangedEvent) {
-        NSLog("[VIewController] Timeline Changed: \(event.timeline.debugDescription)")
+    public func onAdFinished(_ event: AdFinishedEvent) {
+        adFinishCount += 1
     }
 
-    public func onTrueXAdFree() {
-        NSLog("[ViewController] On TrueXAdFree")
+    public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
+        adBreakCounterLabel.isHidden = true
+        adBreakFinishCount += 1
+        clearList()
+        showListAdBreaks()
+    }
+
+    public func onError(_ event: ErrorEvent) {
+        resetUI()
+    }
+
+    func onSourceUnloaded(_ event: SourceUnloadedEvent) {
+        loadUnloadButton.setTitle("Load", for: .normal)
     }
 }
