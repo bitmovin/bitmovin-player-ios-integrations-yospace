@@ -317,6 +317,9 @@ extension ViewController: PlayerListener {
     }
     
     public func onAdStarted(_ event: AdStartedEvent) {
+        if let yospaceAdStartedEvent = event as? YospaceAdStartedEvent {
+            NSLog("onAdStarted: truex=\(yospaceAdStartedEvent.truexAd)")
+        }
         adStartCount += 1
     }
 
