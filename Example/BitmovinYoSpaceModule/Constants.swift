@@ -22,3 +22,6 @@ let bonesTruexUrl = "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/cle
 
 // Non YS
 let nonYospaceUrl = "https://hls.pro34.lv3.cdn.hbo.com/av/videos/series/watchmen/videos/trailer/trailer-47867523_PRO34/base_index.m3u8"
+
+// NLSO
+let startOverUrl = "https://nlso-e.tls1.yospace.com/access/event/latest/110611066?promo=130805986"
