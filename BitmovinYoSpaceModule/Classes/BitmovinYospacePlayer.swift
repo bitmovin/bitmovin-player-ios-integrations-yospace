@@ -1,7 +1,6 @@
 import UIKit
 import BitmovinPlayer
 import Yospace
-import TruexAdRenderer
 
 enum SessionStatus: Int {
     case notInitialised
