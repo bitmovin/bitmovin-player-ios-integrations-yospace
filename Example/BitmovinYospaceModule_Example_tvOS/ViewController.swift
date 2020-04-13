@@ -68,7 +68,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func liveButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8?yo.br=false&yo.ac=true") else {
+        guard let streamUrl = URL(string: cnnUrl) else {
             return
         }
 
@@ -80,7 +80,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/csm/access/152908799/ZmY5ZDkzOWY1ZWE0NTFmY2IzYmZkZTcxYjdjNzM0ZmQvbWFzdGVyX3VucHZfdHYubTN1OA==") else {
+        guard let streamUrl = URL(string: bonesVodUrl) else {
             return
         }
 
@@ -92,7 +92,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func startOverButtonClicked(sender: UIButton) {
-        guard let streamUrl = URL(string: "https://vodp-e-turner-eb.tls1.yospace.com/access/event/latest/110611066?promo=130805986") else {
+        guard let streamUrl = URL(string: startOverUrl) else {
             return
         }
 
@@ -102,16 +102,6 @@ class ViewController: UIViewController {
 
         bitmovinYospacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
     }
-
-    @IBAction func clickButtonClicked(sender: UIButton) {
-        guard let url = clickUrl else {
-            return
-        }
-        bitmovinYospacePlayer?.clickThroughPressed()
-        UIApplication.shared.openURL(url)
-
-    }
-
 }
 
 extension ViewController: PlayerListener {
@@ -125,11 +115,7 @@ extension ViewController: PlayerListener {
     }
 
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        if let adStartedEvent = event as? YospaceAdBreakStartedEvent {
-            NSLog("Ad Break Started \(adStartedEvent.adBreak.debugDescription)")
-        } else {
-            NSLog("Ad Break Started")
-        }
+        NSLog("Ad Break Started")
     }
 
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
