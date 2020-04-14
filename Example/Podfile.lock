@@ -22,7 +22,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BitmovinPlayer: 7360af54540df03ca83e2acd5366a4fc8990aa8d
-  BitmovinYospaceModule: 1b2ca4a1dd68e4fbfd96ea644008918e1d6f6fda
+  BitmovinYospaceModule: bd846c9c22165af518a44d09edc19457745a42da
   TruexAdRenderer-iOS: ae88dfba906c2ec8ad6f4a6ad150e42f2bbc3726
 
 PODFILE CHECKSUM: afcf49b930426fcc14e988a8ce9ff99a941b202e
