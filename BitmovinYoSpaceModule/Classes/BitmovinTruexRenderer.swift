@@ -1,5 +1,5 @@
 //
-//  BitmovinTruexAdRendererDelegate.swift
+//  BitmovinTruexRenderer.swift
 //  BitmovinYospaceModule-iOS
 //
 //  Created by Cory Zachman on 2/14/19.
