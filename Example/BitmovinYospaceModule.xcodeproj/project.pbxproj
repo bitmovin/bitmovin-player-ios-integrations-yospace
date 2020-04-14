@@ -22,7 +22,6 @@
 		E944A86A2442633400B62115 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E944A8692442633400B62115 /* Constants.swift */; };
 		E944A86B2442633400B62115 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E944A8692442633400B62115 /* Constants.swift */; };
 		E94796FD23FDD21500BE05E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E94796FC23FDD21500BE05E2 /* Main.storyboard */; };
-		E94796FE23FDD21500BE05E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E94796FC23FDD21500BE05E2 /* Main.storyboard */; };
 		E947970023FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94796FF23FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift */; };
 		E947970123FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94796FF23FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift */; };
 		E947970423FDD67000BE05E2 /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E947970223FDD67000BE05E2 /* ListCell.swift */; };
@@ -296,7 +295,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E94796FE23FDD21500BE05E2 /* Main.storyboard in Resources */,
 				0103E86821963C1C006EA024 /* Assets.xcassets in Resources */,
 				0103E86621963C19006EA024 /* Main.storyboard in Resources */,
 			);
@@ -516,7 +514,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.10;
+				MARKETING_VERSION = 1.2.11;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -553,7 +551,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.10;
+				MARKETING_VERSION = 1.2.11;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bitmovin.player.integrations.yospace.BitmovinYospaceModule-Example-tvOS";
@@ -688,7 +686,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.10;
+				MARKETING_VERSION = 1.2.11;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -730,7 +728,7 @@
 				INFOPLIST_FILE = BitmovinYoSpaceModule/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.10;
+				MARKETING_VERSION = 1.2.11;
 				MODULE_NAME = ExampleApp;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
