@@ -407,7 +407,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             timeOffset: advert.advertStart(),
             skipOffset: 1,
             position: "0",
-            ad: activeAd
+            ad: activeAd,
+            truexAd: advert.hasLinearInteractiveUnit()
         )
         
         BitLog.d("Emitting AdStartedEvent")
