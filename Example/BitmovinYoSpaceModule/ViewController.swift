@@ -238,8 +238,8 @@ class ViewController: UIViewController {
             for (index, adBreak) in timeline.adBreaks.enumerated() {
                 let item = ListItem(
                     entryOne: String(index + 1),
-                    entryTwo: String(format: "%.2f", adBreak.absoluteStart),
-                    entryThree: String(format: "%.2f", adBreak.duration),
+                    entryTwo: String(format: "%.3f", adBreak.relativeStart),
+                    entryThree: String(format: "%.3f", adBreak.duration),
                     entryFour: String(adBreak.ads.count)
                 )
                 listItems.append(item)
