@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- Fire AdSkippedEvent when previously paused in a live ad and then resuming in main content
+
 ## [1.2.11]
 
 ### Fixed
