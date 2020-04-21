@@ -26,6 +26,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
     var dateRangeEmitter: DateRangeEmitter?
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
+    var liveAdPaused = false
 
     #if os(iOS)
     private var truexRenderer: BitmovinTruexRenderer?
@@ -240,6 +241,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         self.adBreaks = []
         self.activeAd = nil
         self.activeAdBreak = nil
+        liveAdPaused = false
         sessionStatus = .notInitialised
         #if os(iOS)
         self.truexRenderer?.stopRenderer()
@@ -604,6 +606,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onPaused(_ event: PausedEvent) {
+        liveAdPaused = isLive && isAd
         let dictionary = [kYoPlayheadKey: currentTimeWithAds()]
         self.notify(dictionary: dictionary, name: YoPlaybackPausedNotification)
         for listener: PlayerListener in listeners {
@@ -734,6 +737,15 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onTimeChanged(_ event: TimeChangedEvent) {
+        if liveAdPaused {
+            if let adBreak = activeAdBreak, let ad = activeAd {
+                // Send skip event if live window has moved beyond paused ad
+                if event.currentTime > adBreak.absoluteEnd {
+                    onAdSkipped(AdSkippedEvent(ad: ad))
+                }
+            }
+            liveAdPaused = false
+        }
         for listener: PlayerListener in listeners {
             listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime))
         }
