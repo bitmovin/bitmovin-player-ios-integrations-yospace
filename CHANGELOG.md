@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.3.0]
 
 ### Changed
+- Bitmovin Player to version 2.44.0 
 - Fire AdSkippedEvent when previously paused in a live ad and then resuming in main content
 
 ## [1.2.11]
