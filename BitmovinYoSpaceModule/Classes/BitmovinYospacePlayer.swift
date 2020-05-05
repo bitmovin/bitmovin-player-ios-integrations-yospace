@@ -88,7 +88,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         super.add(listener: self)
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         self.dateRangeEmitter = DateRangeEmitter(player: self)
-        updateLoggingVisibility(isLoggingEnabled: yospaceConfiguration?.debug ?? false)
+        BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? false
     }
 
     open override func destroy() {
@@ -156,7 +156,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             yospaceProperties.redirectUserAgent = userAgent
         }
 
-        if yospaceConfiguration?.debug != nil && yospaceConfiguration?.debug == true {
+        if yospaceConfiguration?.isDebugEnabled != nil && yospaceConfiguration?.isDebugEnabled == true {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ALL.rawValue)
             YSSessionProperties.add(_:combined!)
         }
@@ -315,14 +315,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
     public func getActiveAd() -> YospaceAd? {
         return activeAd
-    }
-
-    private func updateLoggingVisibility(isLoggingEnabled: Bool) {
-        if isLoggingEnabled {
-            BitLog.enable()
-        } else {
-            BitLog.disable()
-        }
     }
 }
 
