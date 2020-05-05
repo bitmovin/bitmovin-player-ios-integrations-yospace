@@ -18,15 +18,7 @@ class BitLog {
         return formatter
     }
 
-    private static var isEnabled = false
-
-    class func enable() {
-        isEnabled = true
-    }
-
-    class func disable() {
-        isEnabled = false
-    }
+    static var isEnabled = false
 
     class func d(_ message: String, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
         log(tag: "D", message: message, filename: filename, line: line, column: column, funcName: funcName)
@@ -54,7 +46,7 @@ class BitLog {
 
     //swiftlint:disable line_length
     private class func log(tag: String, message: String, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
-        if true {
+        if isEnabled {
             print("\(Date().toString()) \(tag)/\(String(describing: self)): [\(extractFileFromPath(filePath: filename)):\(trimFunctionName(funcName: funcName)):\(line)] -> \(message)")
         }
     }
