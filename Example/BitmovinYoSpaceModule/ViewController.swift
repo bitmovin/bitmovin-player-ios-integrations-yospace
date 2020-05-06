@@ -62,7 +62,7 @@ class ViewController: UIViewController {
         configuration.playbackConfiguration.isAutoplayEnabled = true
         configuration.playbackConfiguration.isMuted = true
 
-        let yospaceConfiguration = YospaceConfiguration(isDebugEnabled: true, timeout: 5000)
+        let yospaceConfiguration = YospaceConfiguration(timeout: 5000, isDebugEnabled: true)
         bitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
         bitmovinYospacePlayer?.add(listener: self)
 

@@ -10,10 +10,10 @@ import Foundation
 
 public class YospaceConfiguration {
     // MARK: - Yospace Configuration attributes
-    let isDebugEnabled: Bool?
     let userAgent: String?
     let timeout: TimeInterval?
     let pollingInterval: Int?
+    let isDebugEnabled: Bool
 
     // MARK: - initializer
     /**
@@ -25,10 +25,10 @@ public class YospaceConfiguration {
      - timeout: HTTP timeout value in millisenconds to be used for Yospace HTTP requests
      
      */
-    public init(isDebugEnabled: Bool? = nil, userAgent: String? = nil, timeout: TimeInterval? = nil, pollingInterval: Int? = nil) {
-        self.isDebugEnabled = isDebugEnabled
+    public init(userAgent: String? = nil, timeout: TimeInterval? = nil, pollingInterval: Int? = nil, isDebugEnabled: Bool = false) {
         self.userAgent = userAgent
         self.timeout = timeout
         self.pollingInterval = pollingInterval
+        self.isDebugEnabled = isDebugEnabled
     }
 }
