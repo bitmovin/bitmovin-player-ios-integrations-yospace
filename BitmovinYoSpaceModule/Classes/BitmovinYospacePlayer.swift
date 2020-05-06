@@ -156,7 +156,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
             yospaceProperties.redirectUserAgent = userAgent
         }
 
-        if yospaceConfiguration?.isDebugEnabled != nil && yospaceConfiguration?.isDebugEnabled == true {
+        if yospaceConfiguration?.isDebugEnabled == true {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ALL.rawValue)
             YSSessionProperties.add(_:combined!)
         }
