@@ -7,6 +7,6 @@
 
 import Foundation
 
-public enum AdBreakPosition {
+public enum AdBreakPosition: String {
     case preroll, midroll, postroll, unknown
 }
