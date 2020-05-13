@@ -162,7 +162,7 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
         }
 
         guard let url: URL = self.sourceConfiguration?.firstSourceItem?.hlsSource?.url else {
-            handleError(code: YospaceErrorCode.invalidSource.rawValue, message: "Invalid source provided. Yospace URL must be HLS")
+            onError(ErrorEvent(code: YospaceErrorCode.invalidSource.rawValue, message: "Invalid source provided. Yospace URL must be HLS"))
             return
         }
 
@@ -258,12 +258,6 @@ open class BitmovinYospacePlayer: BitmovinPlayer {
 
     func loadNonLinearStartOver(url: URL, yospaceProperties: YSSessionProperties) {
         YSSessionManager.create(forNonLinearStartOver: url, properties: yospaceProperties, delegate: self)
-    }
-
-    func handleError(code: UInt, message: String) {
-        for listener: YospaceListener in yospaceListeners {
-            listener.onYospaceError(event: ErrorEvent(code: code, message: message))
-        }
     }
 
     func handTimelineUpdated() {
@@ -526,7 +520,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
             try self.sessionManager?.setVideoPlayer(yospacePlayer)
             self.yospacePlayer = yospacePlayer
         } catch {
-            handleError(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger")
+            onError(ErrorEvent(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger"))
         }
 
         switch sessionManager.initialisationState {
@@ -537,7 +531,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
                 self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
                 load(sourceConfiguration: sourceConfiguration)
             } else {
-                handleError(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized")
+                onError(ErrorEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized"))
             }
         case .initialisedNoAnalytics:
             BitLog.d("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
@@ -546,7 +540,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
                 self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
                 load(sourceConfiguration: sourceConfiguration)
             } else {
-                handleError(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics")
+                onError(ErrorEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics"))
             }
 
         case .initialisedWithAnalytics:
@@ -568,7 +562,7 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
             self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
             load(sourceConfiguration: sourceConfiguration)
         } else {
-            handleError(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error")
+            onError(ErrorEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
         }
     }
 
