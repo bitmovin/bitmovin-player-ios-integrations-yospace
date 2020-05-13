@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.4.0]
 
 ### Added
 - AdBreak position property (pre/mid/post roll or unknown)
+
+### Changed
+- Bitmovin Player to version 2.45.0 
+- Yospace errors now go through the PlayerListener
+
+### Removed
+- YospaceListener.onYospaceError()
 
 ## [1.3.1]
 
