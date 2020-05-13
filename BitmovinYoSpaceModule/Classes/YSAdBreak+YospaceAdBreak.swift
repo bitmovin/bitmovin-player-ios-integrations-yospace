@@ -18,7 +18,8 @@ extension YSAdBreak {
             duration: adBreakDuration(),
             relativeStart: relativeStart,
             scheduleTime: 0,
-            replaceContentDuration: 0
+            replaceContentDuration: 0,
+            position: adBreakPosition().toAdBreakPosition()
         )
         
         // Add adverts to ad break
