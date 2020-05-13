@@ -16,7 +16,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     private weak var eventDelegate: TruexAdRendererEventDelegate?
     private var renderer: TruexAdRenderer?
     private var interactiveUnit: YSInteractiveUnit?
-    private var slotType: TruexSlotType = .preroll
+    private var adBreakPosition: AdBreakPosition = .preroll
     private var adFree = false
     private var sessionAdFree = false
 
@@ -25,7 +25,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         self.eventDelegate = eventDelegate
     }
     
-    func renderTruexAd(ad: YSAdvert, slotType: TruexSlotType) {
+    func renderTruexAd(ad: YSAdvert, adBreakPosition: AdBreakPosition) {
         guard let interactiveUnit = ad.linearCreativeElement().interactiveUnit() else {
             return
         }
@@ -41,7 +41,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         BitLog.d("Rendering TrueX ad: \(interactiveUnit.unitSource())")
         
         self.interactiveUnit = interactiveUnit
-        self.slotType = slotType
+        self.adBreakPosition = adBreakPosition
 
         if !configuration.vastConfigUrl.isEmpty {
             adParams["vast_config_url"] = configuration.vastConfigUrl
@@ -54,7 +54,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         renderer = TruexAdRenderer(
             url: interactiveUnit.unitSource().absoluteString,
             adParameters: adParams,
-            slotType: slotType.rawValue
+            slotType: adBreakPosition.rawValue
         )
         renderer!.delegate = self
         renderer!.start(configuration.view)
@@ -66,7 +66,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         // Reset state
         renderer?.stop()
         interactiveUnit = nil
-        slotType = .preroll
+        adBreakPosition = .preroll
         adFree = false
         sessionAdFree = false
     }
@@ -111,7 +111,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         
         // We are session ad free if ad free is fired on a preroll
         if !sessionAdFree {
-            sessionAdFree = (slotType == .preroll)
+            sessionAdFree = (adBreakPosition == .preroll)
             if sessionAdFree {
                 eventDelegate?.sessionAdFree()
             }

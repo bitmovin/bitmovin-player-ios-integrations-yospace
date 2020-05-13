@@ -22,7 +22,7 @@
 - (NSString* _Nonnull) advertIdentifier;
 
 /** Returns the value of an advert property. Supports: `Description`, `sequence`, `AdSystem`, `AdTitle`,
-    `Advertiser`, `Survey` and `Extensions`. If extension data is present for this advert, a
+    `Advertiser`, `Survey` and `Extensions`. If inline extension data is present for this advert, a
     string representing the opaque block of text between the `&lt;Extensions&gt;` tag is returned.
  
  @param property A string representation of the VAST advert property
