@@ -105,7 +105,9 @@ typedef NS_ENUM(NSInteger, YSEAdBreakPosition)
     /** pre-roll position */
     YSEPrerollPosition,
     /** post-roll position */
-    YSEPostrollPosition
+    YSEPostrollPosition,
+    /** unknown position */
+    YSEUnknownPosition
 };
 
 /** YSEPricingModel defines the possible pricing models for an Advert's pricing property.
