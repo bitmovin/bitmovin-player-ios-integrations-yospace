@@ -381,8 +381,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             BitLog.d("Pausing player")
             super.pause()
             
-            let slotType: TruexSlotType = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
-            renderer.renderTruexAd(ad: advert, slotType: slotType)
+            let adBreakPosition: AdBreakPosition = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
+            renderer.renderTruexAd(ad: advert, adBreakPosition: adBreakPosition)
         }
         #endif
 
@@ -493,7 +493,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
     private func handleAdBreakEvent(_ adBreak: YSAdBreak) {
         activeAdBreak = createActiveAdBreak(adBreak: adBreak)
 
-        BitLog.d("Emitting AdBreakStartedEvent")
+        BitLog.d("Emitting AdBreakStartedEvent: position=\(adBreak.adBreakPosition().rawValue)")
         let adBreakStartEvent = AdBreakStartedEvent(adBreak: activeAdBreak!)
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(adBreakStartEvent)
