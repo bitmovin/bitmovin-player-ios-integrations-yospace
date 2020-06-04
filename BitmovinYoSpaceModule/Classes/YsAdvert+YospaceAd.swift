@@ -19,7 +19,11 @@ extension YSAdvert {
             relativeStart: relativeStart,
             hasInteractiveUnit: hasLinearInteractiveUnit(),
             isLinear: !hasLinearInteractiveUnit(),
-            clickThroughUrl: linearCreativeElement().linearClickthroughURL()
+            clickThroughUrl: linearCreativeElement().linearClickthroughURL(),
+            extensions:
+            // advertExtensions() returns the "extensions" node
+            // This function maps its child nodes to a list to match the Android API
+            advertExtensions()?.children().compactMap { $0 as? YSXmlNode } ?? [YSXmlNode]()
         )
     }
 }
