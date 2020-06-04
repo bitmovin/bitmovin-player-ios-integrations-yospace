@@ -7,17 +7,19 @@
 
 import Foundation
 import BitmovinPlayer
+import Yospace
 
 //swiftlint:disable type_name
 public class YospaceAd: NSObject, Ad {
-    public private(set) var relativeStart: TimeInterval
     public var identifier: String?
-    public private(set) var duration: TimeInterval
-    public private(set) var hasInteractiveUnit: Bool
     public private(set) var absoluteStart: TimeInterval
     public private(set) var absoluteEnd: TimeInterval
+    public private(set) var duration: TimeInterval
+    public private(set) var relativeStart: TimeInterval
+    public private(set) var hasInteractiveUnit: Bool
+    public private(set) var isLinear: Bool
     public var clickThroughUrl: URL?
-    public var isLinear: Bool
+    public private(set) var extensions: [YSXmlNode]
 
     // Not supported
     public var width: Int = -1
@@ -25,7 +27,7 @@ public class YospaceAd: NSObject, Ad {
     public var mediaFileUrl: URL?
     public var data: AdData?
 
-    init(identifier: String?, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool, isLinear: Bool, clickThroughUrl: URL?) {
+    init(identifier: String?, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool = false, isLinear: Bool = false, clickThroughUrl: URL? = nil, extensions: [YSXmlNode] = [YSXmlNode]()) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
@@ -34,6 +36,7 @@ public class YospaceAd: NSObject, Ad {
         self.isLinear = isLinear
         self.hasInteractiveUnit = hasInteractiveUnit
         self.clickThroughUrl = clickThroughUrl
+        self.extensions = extensions
     }
 
     public func toJsonString() throws -> String {
