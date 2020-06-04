@@ -323,6 +323,16 @@ extension ViewController: PlayerListener {
         adStartCount += 1
     }
 
+    func onAdQuartile(_ event: AdQuartileEvent) {
+        if event.adQuartile == .firstQuartile {
+            print("onAdQuartile: firstQuartile")
+        } else if event.adQuartile == .midpoint {
+            print("onAdQuartile: midpoint")
+        } else {
+            print("onAdQuartile: thirdQuartile")
+        }
+    }
+    
     public func onAdFinished(_ event: AdFinishedEvent) {
         adFinishCount += 1
     }
