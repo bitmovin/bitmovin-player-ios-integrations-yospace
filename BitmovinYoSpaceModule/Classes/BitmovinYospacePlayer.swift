@@ -438,6 +438,15 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
 
     public func trackingEventDidOccur(_ event: YSETrackingEvent, for advert: YSAdvert) {
         BitLog.d("YoSpace trackingEventDidOccur: \(YospaceUtil.trackingEventString(event: event))")
+        
+        // Send AdQuartile event
+        if event == .firstQuartileEvent {
+            onAdQuartile(AdQuartileEvent(quartile: .firstQuartile))
+        } else if event == .midpointEvent {
+            onAdQuartile(AdQuartileEvent(quartile: .midpoint))
+        } else if event == .thirdQuartileEvent {
+            onAdQuartile(AdQuartileEvent(quartile: .thirdQuartile))
+        }
     }
 
     public func linearClickThroughDidOccur(_ linearCreative: YSLinearCreative) {
@@ -783,6 +792,13 @@ extension BitmovinYospacePlayer: PlayerListener {
         BitLog.d("onAdStarted: ")
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(event)
+        }
+    }
+    
+    public func onAdQuartile(_ event: AdQuartileEvent) {
+        BitLog.d("onAdQuartile: ")
+        for listener: PlayerListener in listeners {
+            listener.onAdQuartile?(event)
         }
     }
 
