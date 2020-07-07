@@ -5,6 +5,6 @@
 #ifndef __YOVERSION_H__
 #define __YOVERSION_H__
 
-#define ADMANAGEMENT_VERSION @"1.10.2"
+#define ADMANAGEMENT_VERSION @"1.10.4"
 
 #endif
