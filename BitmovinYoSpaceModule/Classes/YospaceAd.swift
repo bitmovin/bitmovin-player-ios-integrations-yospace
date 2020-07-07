@@ -9,7 +9,6 @@ import Foundation
 import BitmovinPlayer
 import Yospace
 
-//swiftlint:disable type_name
 public class YospaceAd: NSObject, Ad {
     public var identifier: String?
     public private(set) var absoluteStart: TimeInterval
@@ -52,7 +51,8 @@ public class YospaceAd: NSObject, Ad {
     }
 
     override public var debugDescription: String {
+        // swiftlint:disable line_length
         return "id=\(identifier ?? "unknown"), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd)"
+        // swiftlint:enable line_length
     }
 }
-//swiftlint:enable type_name
