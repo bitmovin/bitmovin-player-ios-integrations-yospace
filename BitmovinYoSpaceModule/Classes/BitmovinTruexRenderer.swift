@@ -24,12 +24,12 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         self.configuration = configuration
         self.eventDelegate = eventDelegate
     }
-    
-    func renderTruexAd(ad: YSAdvert, adBreakPosition: AdBreakPosition) {
-        guard let interactiveUnit = ad.linearCreativeElement().interactiveUnit() else {
+
+    func renderTruexAd(advert: YSAdvert, adBreakPosition: AdBreakPosition) {
+        guard let interactiveUnit = advert.linearCreativeElement().interactiveUnit() else {
             return
         }
-        
+
         guard let unitAdParameters = interactiveUnit.unitAdParameters() else {
             return
         }
@@ -37,9 +37,9 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         guard var adParams: Dictionary = YospaceUtil.convertToDictionary(text: unitAdParameters) else {
             return
         }
-        
+
         BitLog.d("Rendering TrueX ad: \(interactiveUnit.unitSource())")
-        
+
         self.interactiveUnit = interactiveUnit
         self.adBreakPosition = adBreakPosition
 
@@ -50,7 +50,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         if !configuration.userId.isEmpty {
             adParams["user_id"] = configuration.userId
         }
-      
+
         renderer = TruexAdRenderer(
             url: interactiveUnit.unitSource().absoluteString,
             adParameters: adParams,
@@ -61,7 +61,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
 
         BitLog.d("TrueX rendering completed")
     }
-    
+
     func stopRenderer() {
         // Reset state
         renderer?.stop()
@@ -73,10 +73,10 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
 
     func onAdStarted(_ campaignName: String?) {
         BitLog.d("TrueX ad started: \(campaignName ?? "")")
-        
+
         // Reset ad free
         adFree = false
-        
+
         // Notify YoSpace for ad tracking
         interactiveUnit?.notifyAdStarted()
         interactiveUnit?.notifyAdVideoStarted()
@@ -85,12 +85,12 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
 
     func onAdCompleted(_ timeSpent: Int) {
         BitLog.d("TrueX ad completed with \(timeSpent) seconds spent on engagement")
-        
+
         // Notify YoSpace for ad tracking
         interactiveUnit?.notifyAdVideoComplete()
         interactiveUnit?.notifyAdStopped()
         interactiveUnit?.notifyAdUserClose()
-        
+
         // Skip current ad break if:
         //   1. Preroll ad free has been satisfied
         //   2. Midroll ad free has been satisfied
@@ -99,16 +99,16 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         } else {
             eventDelegate?.skipTruexAd()
         }
-        
+
         // Reset state
         finishRendering()
     }
 
     func onAdFreePod() {
         BitLog.d("TrueX ad free")
-        
+
         adFree = true
-        
+
         // We are session ad free if ad free is fired on a preroll
         if !sessionAdFree {
             sessionAdFree = (adBreakPosition == .preroll)
@@ -117,19 +117,19 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
             }
         }
     }
-    
+
     func onOpt(in campaignName: String!, adId: Int) {
         BitLog.d("TrueX user opt in: \(campaignName ?? ""), creativeId=\(adId)")
     }
-    
+
     func onOptOut(_ userInitiated: Bool) {
         BitLog.d("TrueX user opt out")
     }
-    
+
     func onSkipCardShown() {
         BitLog.d("TrueX skip card shown")
     }
-    
+
     func onUserCancel() {
         BitLog.d("TrueX user cancelled")
     }
@@ -138,7 +138,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         BitLog.e("TrueX ad error: \(errorMessage ?? "")")
         handleError()
     }
-    
+
     func onPopupWebsite(_ url: String!) {
         BitLog.d("TrueX popup website")
     }
@@ -150,7 +150,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
 
     private func handleError() {
         BitLog.d("Handling TrueX error...")
-        
+
         // Treat error state like complete state
         if sessionAdFree {
             // Skip ad break as preroll ad free has been satisfied
@@ -159,11 +159,11 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
             // Skip truex ad filler and show linear ads
             eventDelegate?.skipTruexAd()
         }
-        
+
         // Reset state
         finishRendering()
     }
-    
+
     private func finishRendering() {
         renderer?.stop()
         interactiveUnit = nil

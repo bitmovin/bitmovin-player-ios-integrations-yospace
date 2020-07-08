@@ -9,7 +9,7 @@ import Foundation
 import Yospace
 
 extension YSAdvert {
-    
+
     func toYospaceAd(absoluteStart: Double, relativeStart: Double) -> YospaceAd {
         return YospaceAd(
             identifier: advertIdentifier(),
