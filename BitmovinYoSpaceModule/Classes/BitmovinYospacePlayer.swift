@@ -693,6 +693,9 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onMetadataParsed(_ event: MetadataParsedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onMetadataParsed?(event)
+        }
     }
 
     func trackId3(_ event: MetadataEvent) {
@@ -701,7 +704,6 @@ extension BitmovinYospacePlayer: PlayerListener {
             let dictionary = [kYoMetadataKey: meta]
             self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
         }
-
     }
 
     func trackDateRange(_ event: MetadataEvent) {
