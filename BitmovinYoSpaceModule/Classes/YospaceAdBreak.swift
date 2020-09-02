@@ -43,16 +43,16 @@ public class YospaceAdBreak: NSObject, AdBreak {
 
 // Implementation of protocol is required, but we do not need to support JSON mapping, so default values are used
 extension YospaceAdBreak: BMPJsonable {
-    
+
     public func toJsonString() throws -> String {
         return ""
     }
-    
-    public func toJsonData() -> [AnyHashable : Any] {
+
+    public func toJsonData() -> [AnyHashable: Any] {
         return [:]
     }
-    
-    public static func fromJsonData(_ jsonData: [AnyHashable : Any]) throws -> Self {
+
+    public static func fromJsonData(_ jsonData: [AnyHashable: Any]) throws -> Self {
         return Self.init(
             identifier: "",
             absoluteStart: 0,

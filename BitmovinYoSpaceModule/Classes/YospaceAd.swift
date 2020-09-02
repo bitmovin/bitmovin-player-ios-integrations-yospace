@@ -37,7 +37,7 @@ public class YospaceAd: NSObject, Ad {
         self.clickThroughUrl = clickThroughUrl
         self.extensions = extensions
     }
-    
+
     override public var debugDescription: String {
         // swiftlint:disable line_length
         return "id=\(identifier ?? "unknown"), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd)"
@@ -47,16 +47,16 @@ public class YospaceAd: NSObject, Ad {
 
 // Implementation of protocol is required, but we do not need to support JSON mapping, so default values are used
 extension YospaceAd: BMPJsonable {
-    
+
     public func toJsonString() throws -> String {
         return ""
     }
-    
-    public func toJsonData() -> [AnyHashable : Any] {
+
+    public func toJsonData() -> [AnyHashable: Any] {
         return [:]
     }
-    
-    public static func fromJsonData(_ jsonData: [AnyHashable : Any]) throws -> Self {
+
+    public static func fromJsonData(_ jsonData: [AnyHashable: Any]) throws -> Self {
         return Self.init(
             identifier: "",
             absoluteStart: 0,
