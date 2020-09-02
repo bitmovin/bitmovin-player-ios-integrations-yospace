@@ -8,7 +8,7 @@ enum SessionStatus: Int {
     case playing
 }
 
-open class BitmovinYospacePlayer: BitmovinPlayer {
+open class BitmovinYospacePlayer: Player {
     // MARK: - Bitmovin Yospace Player attributes
     var sessionManager: YSSessionManager?
     var yospaceStream: YSStream?
