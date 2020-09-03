@@ -26,7 +26,7 @@ public class YospaceAd: NSObject, Ad {
     public var mediaFileUrl: URL?
     public var data: AdData?
 
-    init(identifier: String?, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool = false, isLinear: Bool = false, clickThroughUrl: URL? = nil, extensions: [YSXmlNode] = [YSXmlNode]()) {
+    required init(identifier: String?, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, hasInteractiveUnit: Bool = false, isLinear: Bool = false, clickThroughUrl: URL? = nil, extensions: [YSXmlNode] = [YSXmlNode]()) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
@@ -38,6 +38,16 @@ public class YospaceAd: NSObject, Ad {
         self.extensions = extensions
     }
 
+    override public var debugDescription: String {
+        // swiftlint:disable line_length
+        return "id=\(identifier ?? "unknown"), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd)"
+        // swiftlint:enable line_length
+    }
+}
+
+// Implementation of protocol is required, but we do not need to support JSON mapping, so default values are used
+extension YospaceAd: BMPJsonable {
+
     public func toJsonString() throws -> String {
         return ""
     }
@@ -46,13 +56,13 @@ public class YospaceAd: NSObject, Ad {
         return [:]
     }
 
-    public static func fromJsonData(_ jsonData: [AnyHashable: Any]) throws -> Any {
-        return jsonData
-    }
-
-    override public var debugDescription: String {
-        // swiftlint:disable line_length
-        return "id=\(identifier ?? "unknown"), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd)"
-        // swiftlint:enable line_length
+    public static func fromJsonData(_ jsonData: [AnyHashable: Any]) throws -> Self {
+        return Self.init(
+            identifier: "",
+            absoluteStart: 0,
+            absoluteEnd: 0,
+            duration: 0,
+            relativeStart: 0
+        )
     }
 }
