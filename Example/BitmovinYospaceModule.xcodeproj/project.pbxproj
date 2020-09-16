@@ -64,6 +64,7 @@
 		E94796FF23FDD58B00BE05E2 /* FairplayConfiguration+Prepare.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FairplayConfiguration+Prepare.swift"; sourceTree = "<group>"; };
 		E947970223FDD67000BE05E2 /* ListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCell.swift; sourceTree = "<group>"; };
 		E947970323FDD67000BE05E2 /* ListItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
+		E9B3F202251274B5005FD5F1 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		F219C37BDC456B34012838FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.release.xcconfig"; sourceTree = "<group>"; };
 		FA11A061B474A56F05D8759A /* Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -184,6 +185,7 @@
 			children = (
 				59EA5BF9534F0A19507CD7CA /* BitmovinYoSpaceModule.podspec */,
 				C90D327416965D4681E951CB /* README.md */,
+				E9B3F202251274B5005FD5F1 /* CHANGELOG.md */,
 				F219C37BDC456B34012838FF /* LICENSE */,
 			);
 			name = "Podspec Metadata";
