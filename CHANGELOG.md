@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [develop]
+## [1.12.0]
 
 ### Changed
 - Yospace SDK to 1.11.0
