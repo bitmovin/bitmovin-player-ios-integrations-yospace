@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Yospace SDK to 1.11.0
+- Bitmovin Player to version 2.52.0 
 
 ## [1.11.0]
 
