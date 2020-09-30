@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [1.13.0]
+
+### Changed
+- Bitmovin Player to version 2.53.0 
+
 ## [1.12.0]
 
 ### Changed
