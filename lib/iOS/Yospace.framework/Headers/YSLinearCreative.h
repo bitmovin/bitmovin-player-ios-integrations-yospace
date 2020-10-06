@@ -11,7 +11,7 @@
  */
 @protocol YSLinearCreative <NSObject>
 
-/** Returns the linear creative's identifier.
+/** Returns the linear creative's identifier. This is the `id` attribute of the `<Creative>`.
  
  @return The identifier.
  @since from 1.0
@@ -26,7 +26,7 @@
 
 - (NSString* _Nullable) linearSequenceIdentifier;
 
-/** Returns the nonlinear creative's Ad identifier.
+/** Returns the linear creative's Ad identifier. This is the `AdID` attribute of the `<Creative>`.
  
  @return The Ad identifier.
  @since from 1.0
