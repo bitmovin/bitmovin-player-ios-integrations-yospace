@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Yospace SDK to 1.12.0
 
+## [1.13.1]
+
+### Changed
+- Pass through `onDrmDataParsed`
+
 ## [1.13.0]
 
 ### Changed
