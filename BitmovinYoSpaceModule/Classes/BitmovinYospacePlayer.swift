@@ -993,4 +993,10 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onConfigurationUpdated?(event)
         }
     }
+    
+    public func onDrmDataParsed(_ event: DrmDataParsedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onDrmDataParsed?(event)
+        }
+    }
 }
