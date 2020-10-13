@@ -23,11 +23,28 @@ class ViewController: UIViewController {
     @IBOutlet weak var loadUnloadButton: UIButton!
     @IBOutlet weak var streamsTextField: UITextField!
     
-    private var player: BitmovinYospacePlayer?
-    private var playerView: PlayerView?
-    private var selectedStreamIndex = 0
+    lazy var player: BitmovinYospacePlayer = {
+        let configuration = PlayerConfiguration()
+        configuration.playbackConfiguration.isAutoplayEnabled = true
+        configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
+
+        let player = BitmovinYospacePlayer(
+            configuration: configuration,
+            yospaceConfiguration: YospaceConfiguration()
+        )
+        player.add(listener: self)
+
+        return player
+    }()
     
-    private lazy var streams = [
+    lazy var playerView: PlayerView = {
+        let playerView = BMPBitmovinPlayerView(player: player, frame: .zero)
+        playerView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        playerView.frame = containerView.bounds
+        return playerView
+    }()
+        
+    lazy var streams = [
         Stream(
             title: "Montage FP",
             contentUrl: "https://live-montage-aka-qa.warnermediacdn.com/int/manifest/me-drm-cbcs/master_de.m3u8",
@@ -41,28 +58,16 @@ class ViewController: UIViewController {
         )
     ]
     
+    var selectedStreamIndex = 0
+    
     override func viewDidLoad() {
-        createPlayer()
+        super.viewDidLoad()
+        
+        containerView.addSubview(playerView)
         createStreamPicker()
     }
-
-    func createPlayer() {
-        let configuration = PlayerConfiguration()
-        configuration.playbackConfiguration.isAutoplayEnabled = true
-        configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
-
-        player = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: YospaceConfiguration())
-        player!.add(listener: self)
-        player!.playerPolicy = BitmovinExamplePolicy()
-
-        playerView = BMPBitmovinPlayerView(player: player!, frame: .zero)
-        playerView!.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        playerView!.frame = containerView.bounds
-        containerView.addSubview(playerView!)
-        containerView.bringSubviewToFront(playerView!)
-    }
-
-    private func createStreamPicker() {
+    
+    func createStreamPicker() {
         let streamPicker = UIPickerView()
         streamPicker.delegate = self
         
@@ -83,25 +88,24 @@ class ViewController: UIViewController {
         streamsTextField.text = streams.first!.title
     }
 
-    @objc private func closePicker() {
+    @objc func closePicker() {
         view.endEditing(true)
     }
 
     func destroyPlayer() {
-        player?.unload()
-        player?.destroy()
-        player = nil
+        player.unload()
+        player.destroy()
     }
 
     @IBAction func loadUnloadPressed(_ sender: UIButton) {
-        if player?.isPlaying == false {
-            loadStream(stream: streams[selectedStreamIndex])
+        if player.isPlaying {
+            player.unload()
         } else {
-            player?.unload()
+            loadStream(stream: streams[selectedStreamIndex])
         }
     }
 
-    private func loadStream(stream: Stream) {
+    func loadStream(stream: Stream) {
         guard let streamUrl = URL(string: stream.contentUrl) else { return }
         
         let sourceConfig = SourceConfiguration()
@@ -109,37 +113,45 @@ class ViewController: UIViewController {
         sourceConfig.addSourceItem(item: sourceItem)
         
         if let fairplayLicense = stream.fairplayLicenseUrl, let fairplayCert = stream.fairplayCertUrl {
-            let drmConfig = FairplayConfiguration(license: URL(string: fairplayLicense), certificateURL: URL(string: fairplayCert)!)
-            drmConfig.prepareCertificate = { (data: Data) -> Data in
-                guard let certString = String(data: data, encoding: .utf8),
-                    let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: "")) else {
-                        return data
-                }
-                return certResult
-            }
-            drmConfig.prepareContentId = { (contentId: String) -> String in
-                let prepared = contentId.replacingOccurrences(of: "skd://", with: "")
-                let components: [String] = prepared.components(separatedBy: "/")
-                return components[2]
-            }
-            drmConfig.prepareMessage = { (spcData: Data, assetID: String) -> Data in
-                return spcData
-            }
-            drmConfig.prepareLicense = { (ckcData: Data) -> Data in
-                guard let ckcString = String(data: ckcData, encoding: .utf8),
-                    let ckcResult = Data(base64Encoded: ckcString.replacingOccurrences(of: "\"", with: "")) else {
-                        return ckcData
-                }
-                return ckcResult
-            }
+            let drmConfig = FairplayConfiguration(
+                license: URL(string: fairplayLicense),
+                certificateURL: URL(string: fairplayCert)!
+            )
+            prepareDRM(config: drmConfig)
             sourceItem.add(drmConfiguration: drmConfig)
         }
         
-        player?.load(
+        player.load(
             sourceConfiguration: sourceConfig,
             yospaceSourceConfiguration: stream.yospaceSourceConfig
         )
     }
+    
+    func prepareDRM(config: FairplayConfiguration) {
+        config.prepareCertificate = { (data: Data) -> Data in
+            guard let certString = String(data: data, encoding: .utf8),
+                let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: "")) else {
+                    return data
+            }
+            return certResult
+        }
+        config.prepareContentId = { (contentId: String) -> String in
+            let prepared = contentId.replacingOccurrences(of: "skd://", with: "")
+            let components: [String] = prepared.components(separatedBy: "/")
+            return components[2]
+        }
+        config.prepareMessage = { (spcData: Data, assetID: String) -> Data in
+            return spcData
+        }
+        config.prepareLicense = { (ckcData: Data) -> Data in
+            guard let ckcString = String(data: ckcData, encoding: .utf8),
+                let ckcResult = Data(base64Encoded: ckcString.replacingOccurrences(of: "\"", with: "")) else {
+                    return ckcData
+            }
+            return ckcResult
+        }
+    }
+
 }
 
 extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -162,7 +174,6 @@ extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
 }
 
 extension ViewController: PlayerListener {
-    
     func onSourceLoaded(_ event: SourceLoadedEvent) {
         loadUnloadButton.setTitle("Unload", for: .normal)
     }
