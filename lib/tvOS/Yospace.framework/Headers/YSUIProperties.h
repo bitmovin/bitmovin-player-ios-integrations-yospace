@@ -66,4 +66,18 @@
  */
 - (NSInteger) expandedHeight;
 
+/** Returns the width of the asset that this object refers to.
+ 
+ @return The object's asset width.
+ @since from 1.12
+ */
+- (NSInteger) assetWidth;
+
+/** Returns the height of the asset that this object refers to.
+ 
+ @return The object's asset height.
+ @since from 1.12
+ */
+- (NSInteger) assetHeight;
+
 @end

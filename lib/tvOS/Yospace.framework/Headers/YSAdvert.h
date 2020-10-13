@@ -95,6 +95,20 @@
  */
 - (NSArray* _Nullable) nonlinearCreativeElements;
 
+/** Returns an array of companion creatives associated with this advert.
+ 
+ @return An array of companion creatives.
+ @since from 1.12
+ */
+- (NSArray* _Nullable) companionCreativeElements;
+
+/** Returns the required attribute of CompanionAds
+ 
+ @return The required attribute.
+ @since from 1.12
+ */
+- (NSString* _Nullable) companionsRequired;
+
 /** Returns whether the advert is filler.
  
  @return `YES` if the advert is filler, `NO` otherwise.

@@ -12,12 +12,19 @@
  */
 @protocol YSNonLinearCreative <NSObject>
 
-/** Returns the nonlinear creative's identifier.
+/** Returns the nonlinear creative's identifier. This is the `id` attribute of the `<NonLinear>`.
  
  @return The identifier, or nil.
  @since from 1.0
  */
 - (NSString* _Nullable) nonlinearIdentifier;
+
+/** Returns the creative's identifier.  This is the `id` attribute of the `<Creative>`.
+ 
+ @return The identifier, or nil.
+ @since from 1.12
+ */
+- (NSString* _Nullable) creativeIdentifier;
 
 /** Returns the nonlinear creative's sequence number.
  
@@ -26,7 +33,7 @@
  */
 - (NSString* _Nullable) nonlinearSequenceIdentifier;
 
-/** Returns the nonlinear creative's Ad identifier.
+/** Returns the nonlinear creative's Ad identifier. This is the `AdID` attribute of the `<Creative>`.
  
  @return The Ad identifier, or nil.
  @since from 1.0
@@ -48,7 +55,7 @@
 - (NSURL* _Nonnull) creativeSource;
 
 /** Returns the nonlinear creative's pre-loaded resource, if pre-loading of VAST resources are enabled
- for this type. Pre-loading policy is defined by the PlayerPolicy component (YPPolicyHandling implementation)
+ for this type. Pre-loading policy is defined in YSSessionProperties.
  
  @return The pre-loaded resource as an NSData or nil.
  @since from 1.0

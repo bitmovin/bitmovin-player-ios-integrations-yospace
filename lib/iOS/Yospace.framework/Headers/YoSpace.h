@@ -22,4 +22,3 @@ FOUNDATION_EXPORT const unsigned char YoSpaceVersionString[];
 #import <YoSpace/YSTrackingEvent.h>
 #import <YoSpace/YOVersion.h>
 #import <YoSpace/YSAdvertWrapper.h>
-#import <YoSpace/YSResource.h>
