@@ -69,6 +69,12 @@ open class BitmovinYospacePlayer: Player {
             return timeline?.absoluteToRelative(time: super.currentTime) ?? super.currentTime
         }
     }
+    
+    public var suppressAnalytics: Bool = false {
+        didSet {
+            sessionManager?.suppressAnalytics(suppressAnalytics)
+        }
+    }
 
     // MARK: - initializer
     /**
@@ -140,7 +146,9 @@ open class BitmovinYospacePlayer: Player {
         resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
+        
         let yospaceProperties = YSSessionProperties()
+        yospaceProperties.suppressAllAnalytics = true
 
         if let timeout = yospaceConfiguration?.timeout {
             yospaceProperties.timeout = timeout
