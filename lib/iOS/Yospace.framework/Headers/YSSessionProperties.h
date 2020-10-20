@@ -86,6 +86,17 @@
 @property (nonatomic) BOOL prefetchIndustryIcons;
 
 /**
+ Describes whether the SDK should suppress every analytic call, including VMAP tracking.
+ This flag determines the tracking behaviour of the SDK when a client makes a call to
+ [suppressAnalytics]([YSSessionManager suppressAnalytics:]) with an argument value of `YES`.
+ If this flag is set then all analytics are suppressed, otherwise all tracking except for
+ VMAP tracking (adbreakStart and adbreakEnd) are suppressed.
+
+ The default value is `NO`.
+ */
+@property (nonatomic) BOOL suppressAllAnalytics;
+
+/**
  If present, defines the HTTP user-agent to be used by the Session Manager when initiating a redirect request as part of initialisation.
  */
 @property (nonatomic, copy) NSString* redirectUserAgent;// __attribute__((deprecated("This property will removed in a forthcoming release.")));

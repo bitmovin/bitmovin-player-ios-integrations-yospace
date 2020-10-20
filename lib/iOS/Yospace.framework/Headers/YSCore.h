@@ -14,6 +14,7 @@
 #import "YSAdvert.h"
 #import "YSLinearCreative.h"
 #import "YSNonLinearCreative.h"
+#import "YSCompanionCreative.h"
 
 #import "YSAdManagement.h"
 #import "YSAdManagementError.h"

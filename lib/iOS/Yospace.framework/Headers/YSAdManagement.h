@@ -90,6 +90,8 @@ typedef NS_ENUM(NSInteger, YSETrackingEvent)
     YSEClickTrackingEvent,
     /** Nonlinear click tracking event type */
     YSENonLinearClickTrackingEvent,
+    /** Companion click tracking event type */
+    YSECompanionClickTrackingEvent,
     /** Icon click tracking event type */
     YSEIconClickTrackingEvent,
     /** Icon view tracking event type */

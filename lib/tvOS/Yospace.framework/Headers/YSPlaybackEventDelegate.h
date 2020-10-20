@@ -53,6 +53,15 @@
  */
 - (void) nonlinearEvent:(NSString* _Nonnull)event didOccur:(NSString* _Nonnull)identifier;
 
+/** Indicates that a companion event occurred. Any `<Tracking>` event URL whose event type matches the string passed in are fired by the framework.<br/>
+ An event string may be one defined in the VAST spec, but may also be a custom event that is defined in the VAST document.
+ 
+ @param event The tracking event type.
+ @param identifier The Companion Creative's companionIdentifier.
+ @since from 1.12
+ */
+- (void) companionEvent:(NSString* _Nonnull)event didOccur:(NSString* _Nonnull)identifier;
+
 /** Indicates that a linear click-through event occurred. Any `<LinearClickTracking>` URLs associated with this Linear Creative are fired by the framework.
  
  @since from 1.2
@@ -65,6 +74,13 @@
  @since from 1.2
  */
 - (void) nonlinearClickThroughDidOccur:(NSString* _Nonnull)identifier;
+
+/** Indicates that a companion click-through event occurred - that the user clicked on a comapnion. Any `<CompanionClickTracking>` URLs associated with this Companion Creative are fired by the framework.
+ 
+ @param identifier The Companion Creative's companionIdentifier.
+ @since from 1.12
+ */
+- (void) companionClickThroughDidOccur:(NSString* _Nonnull)identifier;
 
 /** Indicates that a linear creative's icon click-through event occurred - that the user clicked on an industry icon. Any `<IconClickTracking>` URLs associated with this icon are fired by the framework.
  
