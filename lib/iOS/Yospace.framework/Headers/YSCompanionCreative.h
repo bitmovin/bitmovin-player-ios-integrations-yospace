@@ -97,7 +97,7 @@
  @return The source URL.
  @since from 1.12
  */
-- (NSURL* _Nonnull) creativeSource;
+- (NSURL* _Nullable) creativeSource;
 
 /** Returns the companion creative's pre-loaded resource, if pre-loading of VAST resources are enabled
  for this type. Pre-loading policy is defined in YSSessionProperties.
