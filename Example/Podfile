@@ -3,19 +3,19 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
-    pod 'BitmovinPlayer', '2.53.0'
+    pod 'BitmovinPlayer', '2.55.0'
 end
 
 target 'BitmovinYospaceModule_Example' do
     use_frameworks!
-    platform :ios, '9.0'
+    platform :ios, '10.0'
     shared_pods
     pod 'TruexAdRenderer-iOS', '3.2.1'
 end
 
 target 'BitmovinYospaceModule_Example_tvOS' do
     use_frameworks!
-    platform :tvos, '9.2'
+    platform :tvos, '10.0'
     shared_pods    
 end
 
