@@ -377,7 +377,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
 
         activeAd = createActiveAd(advert: advert)
-
+        
         #if os(iOS)
         if let renderer = truexRenderer, advert.hasLinearInteractiveUnit() {
             BitLog.d("TrueX ad found: \(advert)")
@@ -392,17 +392,22 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             renderer.renderTruexAd(advert: advert, adBreakPosition: adBreakPosition)
         }
         #endif
+        
+        let companionAds = (advert.companionCreativeElements() as? [YSCompanionCreative])?.map {
+            CompanionAd(
+                id: $0.adSlotIdentifier(),
+                width: $0.userInterfaceProperties().assetWidth(),
+                height: $0.userInterfaceProperties().assetHeight(),
+                source: $0.creativeSource()?.absoluteString
+            )
+        } ?? []
 
-        let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
+        let adStartedEvent = YospaceAdStartedEvent(
             clickThroughUrl: activeAd?.clickThroughUrl,
-            clientType: .IMA,
-            indexInQueue: 0,
             duration: advert.advertDuration(),
             timeOffset: advert.advertStart(),
-            skipOffset: 1,
-            position: "0",
             ad: activeAd,
-            truexAd: advert.hasLinearInteractiveUnit()
+            companionAds: companionAds
         )
 
         BitLog.d("Emitting AdStartedEvent")

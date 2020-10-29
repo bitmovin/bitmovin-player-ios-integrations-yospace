@@ -7,14 +7,26 @@
 
 import Foundation
 import BitmovinPlayer
+import Yospace
 
 public class YospaceAdStartedEvent: AdStartedEvent {
-    public var truexAd: Bool
+    public var companionAds: [CompanionAd]
 
-    // swiftlint:disable identifier_name
-    init(clickThroughUrl: URL?, clientType: BMPAdSourceType, indexInQueue: UInt, duration: TimeInterval, timeOffset: TimeInterval, skipOffset: TimeInterval, position: String?, ad: Ad?, truexAd: Bool = false) {
+    init(
+        clickThroughUrl: URL?,
+        clientType: BMPAdSourceType = .IMA,
+        indexInQueue: UInt = 0,
+        duration: TimeInterval,
+        timeOffset: TimeInterval,
+        skipOffset: TimeInterval = 1,
+        position: String = "0",
+        // swiftlint:disable identifier_name
+        ad: Ad?,
         // swiftlint:enable identifier_name
-        self.truexAd = truexAd
+        companionAds: [CompanionAd] = []
+    ) {
+        self.companionAds = companionAds
+        
         super.init(
             clickThroughUrl: clickThroughUrl,
             clientType: clientType,
