@@ -69,7 +69,7 @@ open class BitmovinYospacePlayer: Player {
             return timeline?.absoluteToRelative(time: super.currentTime) ?? super.currentTime
         }
     }
-    
+
     public var suppressAnalytics: Bool = false {
         didSet {
             sessionManager?.suppressAnalytics(suppressAnalytics)
@@ -146,7 +146,7 @@ open class BitmovinYospacePlayer: Player {
         resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
-        
+
         let yospaceProperties = YSSessionProperties()
         yospaceProperties.suppressAllAnalytics = true
 
@@ -377,7 +377,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
 
         activeAd = createActiveAd(advert: advert)
-        
+
         #if os(iOS)
         if let renderer = truexRenderer, advert.hasLinearInteractiveUnit() {
             BitLog.d("TrueX ad found: \(advert)")
@@ -392,7 +392,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             renderer.renderTruexAd(advert: advert, adBreakPosition: adBreakPosition)
         }
         #endif
-        
+
         let companionAds = (advert.companionCreativeElements() as? [YSCompanionCreative])?.map {
             CompanionAd(
                 id: $0.adSlotIdentifier(),
@@ -1006,7 +1006,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onConfigurationUpdated?(event)
         }
     }
-    
+
     public func onDrmDataParsed(_ event: DrmDataParsedEvent) {
         for listener: PlayerListener in listeners {
             listener.onDrmDataParsed?(event)

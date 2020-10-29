@@ -12,7 +12,7 @@ public struct CompanionAd {
     let width: Int?
     let height: Int?
     let source: String?
-    
+
     var debugDescription: String {
         return "id=\(id), width=\(width), height=\(height), source=\(source)"
     }
