@@ -26,7 +26,7 @@ public class YospaceAdStartedEvent: AdStartedEvent {
         companionAds: [CompanionAd] = []
     ) {
         self.companionAds = companionAds
-        
+
         super.init(
             clickThroughUrl: clickThroughUrl,
             clientType: clientType,
