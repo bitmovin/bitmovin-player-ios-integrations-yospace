@@ -237,8 +237,12 @@ open class BitmovinYospacePlayer: Player {
         yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
     }
 
-    public func clickThroughPressed() {
+    public func linearClickThroughPressed() {
         sessionManager?.linearClickThroughDidOccur()
+    }
+    
+    public func companionClickThroughPressed(identifier: String) {
+        sessionManager?.companionClickThroughDidOccur(identifier)
     }
 
     func resetYospaceSession() {
@@ -393,12 +397,24 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
         #endif
 
-        let companionAds = (advert.companionCreativeElements() as? [YSCompanionCreative])?.map {
-            CompanionAd(
-                id: $0.adSlotIdentifier(),
-                width: $0.userInterfaceProperties().assetWidth(),
-                height: $0.userInterfaceProperties().assetHeight(),
-                source: $0.creativeSource()?.absoluteString
+        let companionAds = (advert.companionCreativeElements() as? [YSCompanionCreative])?.map { (creative: YSCompanionCreative) -> CompanionAd in
+            
+            let resource: CompanionAdResource
+            
+            if let creativeElement = creative.creativeElement() {
+                let html = String(decoding: creativeElement, as: UTF8.self)
+                resource = CompanionAdResource(source: html, type: .html)
+            } else {
+                let source = creative.creativeSource()?.absoluteString
+                resource = CompanionAdResource(source: source, type: .static)
+            }
+            
+            return CompanionAd(
+                id: creative.adSlotIdentifier(),
+                width: creative.userInterfaceProperties().rect().width,
+                height: creative.userInterfaceProperties().rect().height,
+                clickThroughUrl: creative.clickThroughURL()?.absoluteString,
+                resource: resource
             )
         } ?? []
 
