@@ -69,7 +69,7 @@ open class BitmovinYospacePlayer: Player {
             return timeline?.absoluteToRelative(time: super.currentTime) ?? super.currentTime
         }
     }
-    
+
     public var suppressAnalytics: Bool = false {
         didSet {
             sessionManager?.suppressAnalytics(suppressAnalytics)
@@ -146,7 +146,7 @@ open class BitmovinYospacePlayer: Player {
         resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
         self.sourceConfiguration = sourceConfiguration
-        
+
         let yospaceProperties = YSSessionProperties()
         yospaceProperties.suppressAllAnalytics = true
 
@@ -237,8 +237,12 @@ open class BitmovinYospacePlayer: Player {
         yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
     }
 
-    public func clickThroughPressed() {
+    public func linearClickThroughPressed() {
         sessionManager?.linearClickThroughDidOccur()
+    }
+    
+    public func companionClickThroughPressed(identifier: String) {
+        sessionManager?.companionClickThroughDidOccur(identifier)
     }
 
     func resetYospaceSession() {
@@ -393,16 +397,33 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         }
         #endif
 
-        let adStartedEvent: YospaceAdStartedEvent = YospaceAdStartedEvent(
+        let companionAds = (advert.companionCreativeElements() as? [YSCompanionCreative])?.map { (creative: YSCompanionCreative) -> CompanionAd in
+            
+            let resource: CompanionAdResource
+            
+            if let creativeElement = creative.creativeElement() {
+                let html = String(decoding: creativeElement, as: UTF8.self)
+                resource = CompanionAdResource(source: html, type: .html)
+            } else {
+                let source = creative.creativeSource()?.absoluteString
+                resource = CompanionAdResource(source: source, type: .static)
+            }
+            
+            return CompanionAd(
+                id: creative.adSlotIdentifier(),
+                width: creative.userInterfaceProperties().rect().width,
+                height: creative.userInterfaceProperties().rect().height,
+                clickThroughUrl: creative.clickThroughURL()?.absoluteString,
+                resource: resource
+            )
+        } ?? []
+
+        let adStartedEvent = YospaceAdStartedEvent(
             clickThroughUrl: activeAd?.clickThroughUrl,
-            clientType: .IMA,
-            indexInQueue: 0,
             duration: advert.advertDuration(),
             timeOffset: advert.advertStart(),
-            skipOffset: 1,
-            position: "0",
             ad: activeAd,
-            truexAd: advert.hasLinearInteractiveUnit()
+            companionAds: companionAds
         )
 
         BitLog.d("Emitting AdStartedEvent")
@@ -1001,7 +1022,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onConfigurationUpdated?(event)
         }
     }
-    
+
     public func onDrmDataParsed(_ event: DrmDataParsedEvent) {
         for listener: PlayerListener in listeners {
             listener.onDrmDataParsed?(event)
