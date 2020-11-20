@@ -19,12 +19,13 @@ public struct CompanionAdResource {
 
 public struct CompanionAd {
     public let id: String?
+    public let adSlotId: String?
     public let width: CGFloat?
     public let height: CGFloat?
     public let clickThroughUrl: String?
     public let resource: CompanionAdResource?
 
     var debugDescription: String {
-        return "id=\(id), width=\(width), height=\(height), type=\(resource?.type) source=\(resource?.source)"
+        return "id=\(id), adSlotId=\(adSlotId), width=\(width), height=\(height), type=\(resource?.type) source=\(resource?.source)"
     }
 }

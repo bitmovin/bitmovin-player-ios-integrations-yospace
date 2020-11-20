@@ -237,12 +237,16 @@ open class BitmovinYospacePlayer: Player {
         yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
     }
 
-    public func linearClickThroughPressed() {
+    public func linearClickThroughDidOccur() {
         sessionManager?.linearClickThroughDidOccur()
     }
     
-    public func companionClickThroughPressed(identifier: String) {
-        sessionManager?.companionClickThroughDidOccur(identifier)
+    public func companionClickThroughDidOccur(companionId: String) {
+        sessionManager?.companionClickThroughDidOccur(companionId)
+    }
+    
+    public func fireCompanionEvent(eventName: String, companionId: String) {
+        sessionManager?.companionEvent(eventName, didOccur: companionId)
     }
 
     func resetYospaceSession() {
@@ -408,9 +412,10 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 let source = creative.creativeSource()?.absoluteString
                 resource = CompanionAdResource(source: source, type: .static)
             }
-            
+                        
             return CompanionAd(
-                id: creative.adSlotIdentifier(),
+                id: creative.companionIdentifier(),
+                adSlotId: creative.adSlotIdentifier(),
                 width: creative.userInterfaceProperties().rect().width,
                 height: creative.userInterfaceProperties().rect().height,
                 clickThroughUrl: creative.clickThroughURL()?.absoluteString,
