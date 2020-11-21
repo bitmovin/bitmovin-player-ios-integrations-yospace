@@ -245,8 +245,8 @@ open class BitmovinYospacePlayer: Player {
         sessionManager?.companionClickThroughDidOccur(companionId)
     }
     
-    public func fireCompanionEvent(eventName: String, companionId: String) {
-        sessionManager?.companionEvent(eventName, didOccur: companionId)
+    public func companionRendered(companionId: String) {
+        sessionManager?.companionEvent("creativeView", didOccur: companionId)
     }
 
     func resetYospaceSession() {
