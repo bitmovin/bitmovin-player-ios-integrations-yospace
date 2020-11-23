@@ -21,7 +21,8 @@ class DateRangeEmitter: NSObject {
     var initialPDT: Date = Date()
     var deviceOffsetFromPDT: TimeInterval = 0
     let adEventOffset = 0.1 // Offset from the start and end of the ad that we will send the S and E event
-    let mEventInterval = 2.0 //Interval at which we will send M event
+    let mEventInterval = 2.0 // Interval at which we will send M event
+    
     var seekableRange: TimeRange {
         guard let player = player else {
             return TimeRange(start: 0, end: 0)
@@ -45,21 +46,17 @@ class DateRangeEmitter: NSObject {
     }
 
     func trackEmsg(_ event: MetadataEvent) {
-        guard let dateRangeMetadata: DaterangeMetadata = event.metadata as? DaterangeMetadata else {
+        guard let dateRangeMetadata = event.metadata as? DaterangeMetadata else {
             return
         }
 
-        let mediaId = parseMediaId(daterangeMetadata: dateRangeMetadata)
+        let mediaId = dateRangeMetadata.parseMediaId()
+        let previousMetadataDate = processedDaterangeMetadata[mediaId]
 
-        let previousMetadataDate: Date? = processedDaterangeMetadata[mediaId]
-
-        /**
-        * Compare start date of current and previous metadata with the same id. If difference is less than 10 seconds it is a duplicate
-        */
-        if let date = previousMetadataDate,
-            abs(date.timeIntervalSinceReferenceDate - dateRangeMetadata.startDate.timeIntervalSinceReferenceDate) < 10 {
-                BitLog.d("[DateRangeEmitter] - duplicate metadata received - \(mediaId) \(dateRangeMetadata.startDate)")
-                return
+        // Ignore date if less than 10 seconds apart from previous
+        if let date = previousMetadataDate, abs(date - dateRangeMetadata.startDate) < 10 {
+            BitLog.d("Duplicate metadata received - \(dateRangeMetadata.startDate)")
+            return
         }
 
         processedDaterangeMetadata[mediaId] = dateRangeMetadata.startDate
@@ -68,43 +65,23 @@ class DateRangeEmitter: NSObject {
             return
         }
 
-        generateEventsForDateRange(mediaId: mediaId, startDate: dateRangeMetadata.startDate, endDate: endDate, player: player)
+        // Generate Yospace timed metadata events based on EXT-X-DATERANGE tag just processed
+        generateEventsForDateRange(
+            mediaId: mediaId,
+            startDate: dateRangeMetadata.startDate,
+            endDate: endDate,
+            player: player
+        )
     }
 
-    /**
-     Parse the mediaId our of the DaterangeMetadata
-    */
-    private func parseMediaId(daterangeMetadata: DaterangeMetadata) -> String {
-        var mediaId = ""
-        for entry: MetadataEntry in daterangeMetadata.entries where entry.metadataType == BMPMetadataType.daterange {
-            guard let entry = entry as? AVMetadataItem else {
-                continue
-            }
-
-            guard let key = entry.key, let value = entry.stringValue else {
-                continue
-            }
-
-            switch key.description {
-            case "X-COM-YOSPACE-YMID":
-                mediaId = value
-            default:
-                continue
-            }
-        }
-        return mediaId
-    }
-
-    /**
-     Generate all of our YSTimedMetadata events based on the EXT-X-DATERANGE tag that we just processed
-    */
     private func generateEventsForDateRange(mediaId: String, startDate: Date, endDate: Date, player: BitmovinYospacePlayer) {
-        let duration: Double = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
-        var currentTime =  player.currentTimeWithAds()
+        let duration = Double(endDate - startDate)
+        var currentTime = player.currentTimeWithAds()
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
+        
+        BitLog.d("Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)")
 
-        BitLog.d("[DateRangeEmitter] - handling daterange mediaId=\(mediaId) duration=\(duration) currentTime=\(currentTime) startDate=\(startDate)")
-
+        // Generate S event
         let startMetdata = YSTimedMetadata()
         startMetdata.mediaId = mediaId
         startMetdata.type = "S"
@@ -115,10 +92,11 @@ class DateRangeEmitter: NSObject {
         currentTime += adEventOffset
         let startTimedMetadataEvent = TimedMetadataEvent(time: currentTime, metadata: startMetdata)
         timedMetadataEvents.append(startTimedMetadataEvent)
-
+        
+        // Generate M events
         var iterator = adEventOffset + mEventInterval
         while iterator < duration {
-            let  midMetadata = YSTimedMetadata()
+            let midMetadata = YSTimedMetadata()
             midMetadata.mediaId = mediaId
             midMetadata.type = "M"
             midMetadata.segmentCount = 1
@@ -130,6 +108,7 @@ class DateRangeEmitter: NSObject {
             iterator += mEventInterval
         }
 
+        // Generate E event
         let endMetadata = YSTimedMetadata()
         endMetadata.mediaId = mediaId
         endMetadata.type = "E"
@@ -139,60 +118,19 @@ class DateRangeEmitter: NSObject {
         endMetadata.offset = duration - adEventOffset
         let endTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: endMetadata)
         timedMetadataEvents.append(endTimedMetadataEvent)
-
-        BitLog.d("[DateRangeEmitter] TimedMetadataEvents - \(timedMetadataEvents.map {$0.metadata.timestamp})" )
+        
+        BitLog.d("Generated TimedMetadataEvents: \(timedMetadataEvents.map {$0.metadata.timestamp})" )
+    }
+    
+    func reset() {
+        timedMetadataEvents = []
+        processedDaterangeMetadata = [String: Date]()
     }
 }
 
 extension DateRangeEmitter: PlayerListener {
-    public func onTimeChanged(_ event: TimeChangedEvent) {
-
-        //If we have no TimedMetadataEvents to send, return
-        guard let nextEvent = timedMetadataEvents.first else {
-            return
-        }
-
-        let currentTime = player?.currentTimeWithAds() ?? event.currentTime
-
-        // If our players currentTime is passed the nextEvents time, send a YSTimedMetadata event and remove it from our list
-        if (currentTime - nextEvent.time) >= -1 {
-            timedMetadataEvents.removeFirst(1)
-            let yoMetadata = nextEvent.metadata
-            // swiftlint:disable line_length
-            BitLog.d("[DateRangeEmitter] - Sending YSTimedMetada: currentDate=\(NSDate().timeIntervalSince1970) currentTime=\(currentTime) eventTime=\(nextEvent.time) mid=\(yoMetadata.mediaId) type=\(yoMetadata.type) tD=\(yoMetadata.timestamp) tN=\(yoMetadata.timestamp.timeIntervalSince1970) sN=\(yoMetadata.segmentNumber) sC=\(yoMetadata.segmentCount) o=\(yoMetadata.offset)")
-            // swiftlint:enable line_length
-            self.player?.notify(dictionary: [kYoMetadataKey: yoMetadata], name: YoTimedMetadataNotification)
-        }
-    }
-
-    public func onSourceLoaded(_ event: SourceLoadedEvent) {
-        timedMetadataEvents = []
-        processedDaterangeMetadata = [String: Date]()
-    }
-
-    public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
-        timedMetadataEvents = []
-        processedDaterangeMetadata = [String: Date]()
-    }
-
-    public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
-        BitLog.d("[DateRangeEmitter] - onAdBreakStarted")
-    }
-
-    public func onAdStarted(_ event: AdStartedEvent) {
-        BitLog.d("[DateRangeEmitter] - onAdStarted")
-    }
-
-    public func onAdFinished(_ event: AdFinishedEvent) {
-        BitLog.d("[DateRangeEmitter] - onAdFinished")
-    }
-
-    public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        BitLog.d("[DateRangeEmitter] - onAdBreakFinished")
-    }
-
+    
     public func onReady(_ event: ReadyEvent) {
-        BitLog.d("[DateRangeEmitter] - onReady")
         guard let player = player else {
             return
         }
@@ -202,10 +140,56 @@ extension DateRangeEmitter: PlayerListener {
         initialPDT = Date(timeIntervalSince1970: player.currentTimeWithAds())
         deviceOffsetFromPDT = Date().timeIntervalSince(initialPDT)
         let relativePlayheadTime = player.currentTimeWithAds() - seekableRange.start
-        // swiftlint:disable line_length
-        NSLog("[DateRangeEmitter] initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)")
-        // swiftlint:enable line_length
+        BitLog.d("initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)")
+    }
+    
+    public func onTimeChanged(_ event: TimeChangedEvent) {
+        guard let nextEvent = timedMetadataEvents.first else {
+            return
+        }
 
+        let currentTime = player?.currentTimeWithAds() ?? event.currentTime
+
+        // Send metadata event if playhead is within 1 second of metadata time
+        if currentTime - nextEvent.time >= -1 {
+            
+            timedMetadataEvents.removeFirst(1)
+            let metadata = nextEvent.metadata
+            
+            // swiftlint:disable line_length
+            BitLog.d("Sending metadata: currentDate=\(NSDate().timeIntervalSince1970), playerTime=\(currentTime), eventTime=\(nextEvent.time), metadataTime=\(metadata.timestamp.timeIntervalSince1970), id=\(metadata.mediaId), type=\(metadata.type), segment=\(metadata.segmentNumber), segmentCount=\(metadata.segmentCount), offset=\(metadata.offset)")
+            // swiftlint:enable line_length
+            
+            player?.notify(dictionary: [kYoMetadataKey: metadata], name: YoTimedMetadataNotification)
+        }
     }
 
+    public func onSourceLoaded(_ event: SourceLoadedEvent) {
+        reset()
+    }
+
+    public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
+        reset()
+    }
+    
+    func onError(_ event: ErrorEvent) {
+        reset()
+    }
+}
+
+// MARK: - Extensions
+
+extension DaterangeMetadata {
+    func parseMediaId() -> String {
+        return entries.filter { $0.metadataType == .daterange }
+            .compactMap { $0 as? AVMetadataItem }
+            .last(where: { $0.key?.description == "X-COM-YOSPACE-YMID" })?
+            .stringValue ?? ""
+    }
+}
+
+extension Date {
+    static func - (lhs: Date, rhs: Date) -> TimeInterval {
+        return lhs.timeIntervalSinceReferenceDate - rhs.timeIntervalSinceReferenceDate
+    }
 }
