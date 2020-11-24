@@ -15,6 +15,9 @@ struct TimedMetadataEvent {
 }
 
 class DateRangeEmitter: NSObject {
+    
+    // MARK: - Properties
+    
     weak var player: BitmovinYospacePlayer?
     var timedMetadataEvents: [TimedMetadataEvent] = []
     var processedDaterangeMetadata: [String: Date] = [:]
@@ -38,12 +41,23 @@ class DateRangeEmitter: NSObject {
             return TimeRange(start: 0, end: player.duration)
         }
     }
+    
+    // MARK: - Init
 
     init(player: BitmovinYospacePlayer) {
         super.init()
         self.player = player
         self.player?.add(listener: self)
     }
+    
+    // MARK: - Deinit
+    
+    func reset() {
+        timedMetadataEvents = []
+        processedDaterangeMetadata = [String: Date]()
+    }
+    
+    // MARK: - Emitter
 
     func trackEmsg(_ event: MetadataEvent) {
         guard let dateRangeMetadata = event.metadata as? DaterangeMetadata else {
@@ -78,55 +92,73 @@ class DateRangeEmitter: NSObject {
         let duration = Double(endDate - startDate)
         var currentTime = player.currentTimeWithAds()
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
-        
+                
         BitLog.d("Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)")
-
+        
         // Generate S event
-        let startMetdata = YSTimedMetadata()
-        startMetdata.mediaId = mediaId
-        startMetdata.type = "S"
-        startMetdata.segmentCount = 1
-        startMetdata.segmentNumber = 1
-        startMetdata.offset = adEventOffset
-        startMetdata.timestamp = Date(timeIntervalSince1970: startWallclock)
+        let sEvent = YSTimedMetadata()
+        sEvent.mediaId = mediaId
+        sEvent.type = "S"
+        sEvent.segmentCount = 1
+        sEvent.segmentNumber = 1
+        sEvent.offset = adEventOffset
+        sEvent.timestamp = Date(timeIntervalSince1970: startWallclock)
         currentTime += adEventOffset
-        let startTimedMetadataEvent = TimedMetadataEvent(time: currentTime, metadata: startMetdata)
-        timedMetadataEvents.append(startTimedMetadataEvent)
+        
+        let sTimedMetadataEvent = TimedMetadataEvent(time: currentTime, metadata: sEvent)
+        fireMetadataParsedEvent(event: sTimedMetadataEvent)
+        timedMetadataEvents.append(sTimedMetadataEvent)
         
         // Generate M events
-        var iterator = adEventOffset + mEventInterval
-        while iterator < duration {
-            let midMetadata = YSTimedMetadata()
-            midMetadata.mediaId = mediaId
-            midMetadata.type = "M"
-            midMetadata.segmentCount = 1
-            midMetadata.segmentNumber = 1
-            midMetadata.offset = iterator
-            midMetadata.timestamp = Date(timeIntervalSince1970: startWallclock + iterator)
-            let timedMetadataEvent = TimedMetadataEvent(time: currentTime + iterator, metadata: midMetadata)
-            timedMetadataEvents.append(timedMetadataEvent)
-            iterator += mEventInterval
+        var offset = adEventOffset + mEventInterval
+        while offset < duration {
+            let mEvent = YSTimedMetadata()
+            mEvent.mediaId = mediaId
+            mEvent.type = "M"
+            mEvent.segmentCount = 1
+            mEvent.segmentNumber = 1
+            mEvent.offset = offset
+            mEvent.timestamp = Date(timeIntervalSince1970: startWallclock + offset)
+            
+            let mTimedMetadataEvent = TimedMetadataEvent(time: currentTime + offset, metadata: mEvent)
+            fireMetadataParsedEvent(event: mTimedMetadataEvent)
+            timedMetadataEvents.append(mTimedMetadataEvent)
+            
+            offset += mEventInterval
         }
 
         // Generate E event
-        let endMetadata = YSTimedMetadata()
-        endMetadata.mediaId = mediaId
-        endMetadata.type = "E"
-        endMetadata.segmentCount = 1
-        endMetadata.segmentNumber = 1
-        endMetadata.timestamp = Date(timeIntervalSince1970: endDate.timeIntervalSince1970 + deviceOffsetFromPDT - adEventOffset)
-        endMetadata.offset = duration - adEventOffset
-        let endTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: endMetadata)
-        timedMetadataEvents.append(endTimedMetadataEvent)
+        let eEvent = YSTimedMetadata()
+        eEvent.mediaId = mediaId
+        eEvent.type = "E"
+        eEvent.segmentCount = 1
+        eEvent.segmentNumber = 1
+        eEvent.timestamp = Date(timeIntervalSince1970: endDate.timeIntervalSince1970 + deviceOffsetFromPDT - adEventOffset)
+        eEvent.offset = duration - adEventOffset
         
-        BitLog.d("Generated TimedMetadataEvents: \(timedMetadataEvents.map {$0.metadata.timestamp})" )
+        let eTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: eEvent)
+        fireMetadataParsedEvent(event: eTimedMetadataEvent)
+        timedMetadataEvents.append(eTimedMetadataEvent)
+    
+        BitLog.d("Generated TimedMetadataEvents: \(timedMetadataEvents.map { $0.metadata.timestamp })" )
     }
     
-    func reset() {
-        timedMetadataEvents = []
-        processedDaterangeMetadata = [String: Date]()
+    func fireMetadataParsedEvent(event: TimedMetadataEvent) {
+        let entries = [event.toYospaceId3MetadataEntry()]
+        let metadata = Id3Metadata(entries: entries, startTime: event.time)
+        let event = MetadataParsedEvent(metadata: metadata, type: .ID3)
+        player?.listeners.forEach { $0.onMetadataParsed?(event) }
+    }
+    
+    func fireMetadataEvent(event: TimedMetadataEvent) {
+        let entries = [event.toYospaceId3MetadataEntry()]
+        let metadata = Id3Metadata(entries: entries, startTime: event.time)
+        let event = MetadataEvent(metadata: metadata, type: .ID3)
+        player?.listeners.forEach { $0.onMetadata?(event) }
     }
 }
+
+// MARK: - PlayerListener
 
 extension DateRangeEmitter: PlayerListener {
     
@@ -152,7 +184,6 @@ extension DateRangeEmitter: PlayerListener {
 
         // Send metadata event if playhead is within 1 second of metadata time
         if currentTime - nextEvent.time >= -1 {
-            
             timedMetadataEvents.removeFirst(1)
             let metadata = nextEvent.metadata
             
@@ -161,6 +192,7 @@ extension DateRangeEmitter: PlayerListener {
             // swiftlint:enable line_length
             
             player?.notify(dictionary: [kYoMetadataKey: metadata], name: YoTimedMetadataNotification)
+            fireMetadataEvent(event: nextEvent)
         }
     }
 
@@ -177,7 +209,7 @@ extension DateRangeEmitter: PlayerListener {
     }
 }
 
-// MARK: - Extensions
+// MARK: - DaterangeMetadata Extensions
 
 extension DaterangeMetadata {
     func parseMediaId() -> String {
@@ -188,8 +220,25 @@ extension DaterangeMetadata {
     }
 }
 
+// MARK: - Date Extensions
+
 extension Date {
     static func - (lhs: Date, rhs: Date) -> TimeInterval {
         return lhs.timeIntervalSinceReferenceDate - rhs.timeIntervalSinceReferenceDate
+    }
+}
+
+// MARK: - TimedMetadataEvent Extensions
+
+extension TimedMetadataEvent {
+    func toYospaceId3MetadataEntry() -> YospaceId3MetadataEntry {
+        return YospaceId3MetadataEntry(
+            mediaId: metadata.mediaId,
+            type: metadata.type,
+            segmentCount: metadata.segmentCount,
+            segmentNumber: metadata.segmentNumber,
+            offset: metadata.offset,
+            timestamp: metadata.timestamp
+        )
     }
 }

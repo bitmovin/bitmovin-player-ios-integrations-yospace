@@ -714,21 +714,15 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onMetadata(_ event: MetadataEvent) {
-        if yospaceSourceConfiguration?.yospaceAssetType == YospaceAssetType.linear {
-            if event.metadataType == BMPMetadataType.ID3 {
+        if yospaceSourceConfiguration?.yospaceAssetType == .linear {
+            if event.metadataType == .ID3 {
                 trackId3(event)
-            } else if event.metadataType == BMPMetadataType.daterange {
-                trackDateRange(event)
+            } else if event.metadataType == .daterange {
+                dateRangeEmitter?.trackEmsg(event)
             }
         }
         for listener: PlayerListener in listeners {
             listener.onMetadata?(event)
-        }
-    }
-
-    public func onMetadataParsed(_ event: MetadataParsedEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onMetadataParsed?(event)
         }
     }
 
@@ -739,9 +733,11 @@ extension BitmovinYospacePlayer: PlayerListener {
             self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
         }
     }
-
-    func trackDateRange(_ event: MetadataEvent) {
-        self.dateRangeEmitter?.trackEmsg(event)
+    
+    public func onMetadataParsed(_ event: MetadataParsedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onMetadataParsed?(event)
+        }
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {
