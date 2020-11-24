@@ -240,11 +240,11 @@ open class BitmovinYospacePlayer: Player {
     public func linearClickThroughDidOccur() {
         sessionManager?.linearClickThroughDidOccur()
     }
-    
+
     public func companionClickThroughDidOccur(companionId: String) {
         sessionManager?.companionClickThroughDidOccur(companionId)
     }
-    
+
     public func companionRendered(companionId: String) {
         sessionManager?.companionEvent("creativeView", didOccur: companionId)
     }
@@ -402,9 +402,9 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
         #endif
 
         let companionAds = (advert.companionCreativeElements() as? [YSCompanionCreative])?.map { (creative: YSCompanionCreative) -> CompanionAd in
-            
+
             let resource: CompanionAdResource
-            
+
             if let creativeElement = creative.creativeElement() {
                 let html = String(decoding: creativeElement, as: UTF8.self)
                 resource = CompanionAdResource(source: html, type: .html)
@@ -412,7 +412,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 let source = creative.creativeSource()?.absoluteString
                 resource = CompanionAdResource(source: source, type: .static)
             }
-                        
+
             return CompanionAd(
                 id: creative.companionIdentifier(),
                 adSlotId: creative.adSlotIdentifier(),
@@ -714,21 +714,15 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onMetadata(_ event: MetadataEvent) {
-        if yospaceSourceConfiguration?.yospaceAssetType == YospaceAssetType.linear {
-            if event.metadataType == BMPMetadataType.ID3 {
+        if yospaceSourceConfiguration?.yospaceAssetType == .linear {
+            if event.metadataType == .ID3 {
                 trackId3(event)
-            } else if event.metadataType == BMPMetadataType.daterange {
-                trackDateRange(event)
+            } else if event.metadataType == .daterange {
+                dateRangeEmitter?.trackEmsg(event)
             }
         }
         for listener: PlayerListener in listeners {
             listener.onMetadata?(event)
-        }
-    }
-
-    public func onMetadataParsed(_ event: MetadataParsedEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onMetadataParsed?(event)
         }
     }
 
@@ -740,8 +734,10 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    func trackDateRange(_ event: MetadataEvent) {
-        self.dateRangeEmitter?.trackEmsg(event)
+    public func onMetadataParsed(_ event: MetadataParsedEvent) {
+        for listener: PlayerListener in listeners {
+            listener.onMetadataParsed?(event)
+        }
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {
