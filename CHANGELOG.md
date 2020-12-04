@@ -12,12 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.17.2]
 
 ### Changed
-- `BitmovinYospacePlayer.fireCompanionEvent()` function signature to `BitmovinYospacePlayer.companionRendered()`
+- `fireCompanionEvent()` in `BitmovinYospacePlayer`  to `companionRendered()`
 
 ## [1.17.1]
 
 ### Added
-- `BitmovinYospacePlayer.fireCompanionEvent()`, which sends companion tracking events to the Yospace SDK
+- `fireCompanionEvent()` to `BitmovinYospacePlayer`, which sends companion tracking events to the Yospace SDK
 
 ## [1.17.0]
 
@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.14.0]
 
 ### Added
-- `BitmovinYospacePlayer.suppressAnalytics()`, which suppresses creative tracking beacons 
+- `suppressAnalytics()` to `BitmovinYospacePlayer`, which suppresses creative tracking beacons 
 
 ### Changed
 - Yospace SDK to `1.12.0`
@@ -112,14 +112,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.4.0]
 
 ### Added
-- `AdBreak.position` (pre/mid/post roll or unknown)
+- `position` (pre/mid/post roll or unknown) to `AdBreak`
 
 ### Changed
 - Bitmovin player to `2.45.0` 
 - Yospace errors to be emitted in the `PlayerListener`
 
 ### Removed
-- `YospaceListener.onYospaceError()`
+- `onYospaceError()` from `YospaceListener`
 
 ## [1.3.1]
 
@@ -136,7 +136,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - tvOS TruexRenderer build issues 
-- `YospaceAdStartedEvent.truexAd` not being respected
+- `truexAd` in `YospaceAdStartedEvent` not being respected
 
 ## [1.2.10]
 
