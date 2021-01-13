@@ -9,11 +9,11 @@ import Foundation
 import BitmovinPlayer
 
 public class YospaceAdBreak: NSObject, AdBreak {
-    public private(set) var relativeStart: TimeInterval
-    public private(set) var duration: TimeInterval
-    public private(set) var absoluteStart: TimeInterval
-    public private(set) var absoluteEnd: TimeInterval
-    public private(set) var identifier: String
+    public let identifier: String
+    public let absoluteStart: TimeInterval
+    public let relativeStart: TimeInterval
+    public let duration: TimeInterval
+    public let absoluteEnd: TimeInterval
     public private(set) var ads: [Ad] = []
     public var scheduleTime: TimeInterval
     public var replaceContentDuration: TimeInterval
@@ -31,12 +31,12 @@ public class YospaceAdBreak: NSObject, AdBreak {
     }
 
     public func register(_ adItem: Ad) {
-        self.ads.append(adItem)
+        ads.append(adItem)
     }
 
     override public var debugDescription: String {
         // swiftlint:disable line_length
-        return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), ads=\(ads.map {$0.identifier})"
+        return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), ads=\(ads.count), scheduleTime=\(scheduleTime), replaceContentDuration=\(replaceContentDuration), position=\(position.rawValue)"
         // swiftlint:enable line_length
     }
 }
