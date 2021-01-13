@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+
+### Added
+- `creativeId`, `sequence`, `title`, `avertiser`, `system` and `isFiller` properties to `YospaceAd`
+
+### Changed
+- `id` property from `YospaceAd` now returns shortened identifier
+- `mediaFileUrl` property from `YospaceAd` now returns the interactive unit source
+
 ## [1.19.0]
 
 ### Changed
