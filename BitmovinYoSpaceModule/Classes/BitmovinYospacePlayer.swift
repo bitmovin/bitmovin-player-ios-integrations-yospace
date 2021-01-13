@@ -1030,3 +1030,57 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 }
+
+// MARK: - Ad Transformation
+
+extension YSAdvert {
+    func toYospaceAd(absoluteStart: Double, relativeStart: Double) -> YospaceAd {
+        return YospaceAd(
+            identifier: advertIdentifier(),
+            creativeId: linearCreativeElement().linearIdentifier(),
+            sequence: advertProperty("sequence"),
+            absoluteStart: absoluteStart,
+            relativeStart: relativeStart,
+            duration: advertDuration(),
+            absoluteEnd: absoluteStart + advertDuration(),
+            system: advertProperty("AdSystem"),
+            title: advertProperty("AdTitle"),
+            advertiser: advertProperty("Advertiser"),
+            hasInteractiveUnit: hasLinearInteractiveUnit(),
+            extensions:
+            // advertExtensions() returns the "extensions" node itself
+            // This creates a list of child "extension" nodes to be consistent with Android
+            advertExtensions()?.children().compactMap { $0 as? YSXmlNode } ?? [YSXmlNode](),
+            isFiller: isFiller(),
+            isLinear: !hasLinearInteractiveUnit(),
+            clickThroughUrl: linearCreativeElement().linearClickthroughURL(),
+            mediaFileUrl: linearCreativeElement().interactiveUnit()?.unitSource()
+        )
+    }
+}
+
+// MARK: AdBreak Transformation
+
+extension YSAdBreak {
+    func toYospaceAdBreak(absoluteStart: Double, relativeStart: Double) -> YospaceAdBreak {
+        let yospaceAdBreak = YospaceAdBreak(
+            identifier: adBreakIdentifier(),
+            absoluteStart: absoluteStart,
+            absoluteEnd: absoluteStart + adBreakDuration(),
+            duration: adBreakDuration(),
+            relativeStart: relativeStart,
+            scheduleTime: 0,
+            replaceContentDuration: 0,
+            position: adBreakPosition().toAdBreakPosition()
+        )
+
+        // Add adverts to ad break
+        var adAbsoluteStart = absoluteStart
+        for case let advert as YSAdvert in adverts() {
+            yospaceAdBreak.register(advert.toYospaceAd(absoluteStart: adAbsoluteStart, relativeStart: relativeStart))
+            adAbsoluteStart += advert.advertDuration()
+        }
+
+        return yospaceAdBreak
+    }
+}
