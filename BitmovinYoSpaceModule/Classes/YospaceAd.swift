@@ -21,6 +21,7 @@ public class YospaceAd: NSObject, Ad {
     public let title: String?
     public let advertiser: String?
     public let hasInteractiveUnit: Bool
+    public let lineage: YSAdvertWrapper?
     public let extensions: [YSXmlNode]
     public let isFiller: Bool
     public let isLinear: Bool
@@ -30,7 +31,7 @@ public class YospaceAd: NSObject, Ad {
     public var height: Int = -1
     public var mediaFileUrl: URL?
 
-    required init(identifier: String?, creativeId: String?, sequence: String?, absoluteStart: TimeInterval, relativeStart: TimeInterval, duration: TimeInterval, absoluteEnd: TimeInterval, system: String?, title: String?, advertiser: String?, hasInteractiveUnit: Bool, extensions: [YSXmlNode], isFiller: Bool, isLinear: Bool, clickThroughUrl: URL?, mediaFileUrl: URL?) {
+    required init(identifier: String?, creativeId: String?, sequence: String?, absoluteStart: TimeInterval, relativeStart: TimeInterval, duration: TimeInterval, absoluteEnd: TimeInterval, system: String?, title: String?, advertiser: String?, hasInteractiveUnit: Bool, lineage: YSAdvertWrapper?, extensions: [YSXmlNode], isFiller: Bool, isLinear: Bool, clickThroughUrl: URL?, mediaFileUrl: URL?) {
         self.identifier = identifier
         self.creativeId = creativeId
         self.sequence = sequence
@@ -42,6 +43,7 @@ public class YospaceAd: NSObject, Ad {
         self.title = title
         self.advertiser = advertiser
         self.hasInteractiveUnit = hasInteractiveUnit
+        self.lineage = lineage
         self.extensions = extensions
         self.isFiller = isFiller
         self.isLinear = isLinear
@@ -51,7 +53,7 @@ public class YospaceAd: NSObject, Ad {
 
     override public var debugDescription: String {
         // swiftlint:disable line_length
-        return "id=\(identifier ?? "unknown"), creativeId=\(creativeId ?? "") sequence=\(sequence ?? ""), absoluteStart=\(absoluteStart), relativeStart=\(relativeStart), duration=\(duration), absoluteEnd=\(absoluteEnd), system=\(system ?? ""), title=\(title ?? ""), advertiser=\(advertiser ?? ""), hasInteractiveUnit=\(hasInteractiveUnit), isFiller=\(isFiller), isLinear=\(isLinear), clickThroughUrl=\(clickThroughUrl)"
+        return "id=\(identifier ?? "unknown"), creativeId=\(creativeId ?? "") sequence=\(sequence ?? ""), absoluteStart=\(absoluteStart), relativeStart=\(relativeStart), duration=\(duration), absoluteEnd=\(absoluteEnd), system=\(system ?? ""), title=\(title ?? ""), advertiser=\(advertiser ?? ""), hasInteractiveUnit=\(hasInteractiveUnit), isFiller=\(isFiller), isLinear=\(isLinear), clickThroughUrl=\(clickThroughUrl?.absoluteString ?? "")"
         // swiftlint:enable line_length
     }
 }
@@ -79,6 +81,7 @@ extension YospaceAd: BMPJsonable {
             title: nil,
             advertiser: nil,
             hasInteractiveUnit: false,
+            lineage: nil,
             extensions: [],
             isFiller: false,
             isLinear: false,
