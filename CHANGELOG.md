@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased]
 
 ### Added
-- `creativeId`, `sequence`, `title`, `avertiser`, `system` and `isFiller` properties to `YospaceAd`
+- `creativeId`, `sequence`, `title`, `avertiser`, `system`, `lineage` and `isFiller` properties to `YospaceAd`
 
 ### Changed
 - `id` property from `YospaceAd` now returns shortened identifier
