@@ -1061,13 +1061,13 @@ extension YSEAdBreakPosition {
     func toYospaceAdBreakPosition() -> YospaceAdBreakPosition {
         switch self {
         case .prerollPosition:
-            return YospaceAdBreakPosition.preroll
+            return .preroll
         case .midrollPosition:
-            return YospaceAdBreakPosition.midroll
+            return .midroll
         case .postrollPosition:
-            return YospaceAdBreakPosition.postroll
+            return .postroll
         case .unknownPosition, _:
-            return YospaceAdBreakPosition.unknown
+            return .unknown
         }
     }
 }
@@ -1088,6 +1088,7 @@ extension YSAdvert {
             title: advertProperty("AdTitle"),
             advertiser: advertProperty("Advertiser"),
             hasInteractiveUnit: hasLinearInteractiveUnit(),
+            lineage: advertLineage(),
             extensions:
             // advertExtensions() returns the "extensions" node itself
             // This creates a list of child "extension" nodes to be consistent with Android

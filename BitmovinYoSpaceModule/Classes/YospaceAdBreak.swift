@@ -36,7 +36,7 @@ public class YospaceAdBreak: NSObject, AdBreak {
 
     override public var debugDescription: String {
         // swiftlint:disable line_length
-        return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), ads=\(ads.count), scheduleTime=\(scheduleTime), replaceContentDuration=\(replaceContentDuration), position=\(position.rawValue)"
+        return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), scheduleTime=\(scheduleTime), replaceContentDuration=\(replaceContentDuration), position=\(position.rawValue), ads=\(ads.count)"
         // swiftlint:enable line_length
     }
 }
