@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - `id` property from `YospaceAd` now returns shortened identifier
 - `mediaFileUrl` property from `YospaceAd` now returns the interactive unit source
+- `AdBreakPosition` to `YospaceAdBreakPosition`
 
 ## [1.19.0]
 
