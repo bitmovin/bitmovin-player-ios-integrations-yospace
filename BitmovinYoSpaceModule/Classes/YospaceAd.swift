@@ -67,6 +67,23 @@ extension YospaceAd: BMPJsonable {
     }
 
     public static func fromJsonData(_ jsonData: [AnyHashable: Any]) throws -> Self {
-        return Self.init(identifier: nil, creativeId: nil, sequence: nil, absoluteStart: 0, relativeStart: 0, duration: 0, absoluteEnd: 0, system: nil, title: nil, advertiser: nil, hasInteractiveUnit: false, extensions: [], isFiller: false, isLinear: false, clickThroughUrl: nil, mediaFileUrl: nil)
+        return Self.init(
+            identifier: nil,
+            creativeId: nil,
+            sequence: nil,
+            absoluteStart: 0,
+            relativeStart: 0,
+            duration: 0,
+            absoluteEnd: 0,
+            system: nil,
+            title: nil,
+            advertiser: nil,
+            hasInteractiveUnit: false,
+            extensions: [],
+            isFiller: false,
+            isLinear: false,
+            clickThroughUrl: nil,
+            mediaFileUrl: nil
+        )
     }
 }
