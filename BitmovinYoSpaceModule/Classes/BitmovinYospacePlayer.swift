@@ -396,7 +396,7 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             BitLog.d("Pausing player")
             super.pause()
 
-            let adBreakPosition: AdBreakPosition = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
+            let adBreakPosition: YospaceAdBreakPosition = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
             renderer.renderTruexAd(advert: advert, adBreakPosition: adBreakPosition)
         }
         #endif
@@ -1043,7 +1043,7 @@ extension YSAdBreak {
             relativeStart: relativeStart,
             scheduleTime: 0,
             replaceContentDuration: 0,
-            position: adBreakPosition().toAdBreakPosition()
+            position: adBreakPosition().toYospaceAdBreakPosition()
         )
 
         // Add adverts to ad break
@@ -1054,6 +1054,21 @@ extension YSAdBreak {
         }
 
         return yospaceAdBreak
+    }
+}
+
+extension YSEAdBreakPosition {
+    func toYospaceAdBreakPosition() -> YospaceAdBreakPosition {
+        switch self {
+        case .prerollPosition:
+            return YospaceAdBreakPosition.preroll
+        case .midrollPosition:
+            return YospaceAdBreakPosition.midroll
+        case .postrollPosition:
+            return YospaceAdBreakPosition.postroll
+        case .unknownPosition, _:
+            return YospaceAdBreakPosition.unknown
+        }
     }
 }
 

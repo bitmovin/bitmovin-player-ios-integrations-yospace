@@ -17,9 +17,9 @@ public class YospaceAdBreak: NSObject, AdBreak {
     public private(set) var ads: [Ad] = []
     public var scheduleTime: TimeInterval
     public var replaceContentDuration: TimeInterval
-    public let position: AdBreakPosition
+    public let position: YospaceAdBreakPosition
 
-    required init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, scheduleTime: TimeInterval, replaceContentDuration: TimeInterval, position: AdBreakPosition = .unknown) {
+    required init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, scheduleTime: TimeInterval, replaceContentDuration: TimeInterval, position: YospaceAdBreakPosition = .unknown) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
