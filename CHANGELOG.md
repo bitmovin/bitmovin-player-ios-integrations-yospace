@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [1.20.0]
 
 ### Added
 - `creativeId`, `sequence`, `title`, `avertiser`, `system`, `lineage` and `isFiller` properties to `YospaceAd`
