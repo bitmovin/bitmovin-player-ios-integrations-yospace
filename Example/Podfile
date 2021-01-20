@@ -3,7 +3,7 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
-    pod 'BitmovinPlayer', '2.57.1'
+    pod 'BitmovinPlayer', '2.59.0'
 end
 
 target 'BitmovinYospaceModule_Example' do
