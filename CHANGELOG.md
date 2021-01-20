@@ -6,8 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 
+### Added
+- `creativeId`, `sequence`, `title`, `avertiser`, `system`, `lineage` and `isFiller` properties to `YospaceAd`
+
 ### Changed
 - Bitmovin player to `2.59.0` 
+- `id` property from `YospaceAd` now returns shortened identifier
+- `mediaFileUrl` property from `YospaceAd` now returns the interactive unit source
+- `AdBreakPosition` to `YospaceAdBreakPosition`
 
 ## [1.19.0]
 

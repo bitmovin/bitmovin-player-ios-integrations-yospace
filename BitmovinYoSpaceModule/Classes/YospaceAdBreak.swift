@@ -9,17 +9,17 @@ import Foundation
 import BitmovinPlayer
 
 public class YospaceAdBreak: NSObject, AdBreak {
-    public private(set) var relativeStart: TimeInterval
-    public private(set) var duration: TimeInterval
-    public private(set) var absoluteStart: TimeInterval
-    public private(set) var absoluteEnd: TimeInterval
-    public private(set) var identifier: String
+    public let identifier: String
+    public let absoluteStart: TimeInterval
+    public let relativeStart: TimeInterval
+    public let duration: TimeInterval
+    public let absoluteEnd: TimeInterval
     public private(set) var ads: [Ad] = []
     public var scheduleTime: TimeInterval
     public var replaceContentDuration: TimeInterval
-    public let position: AdBreakPosition
+    public let position: YospaceAdBreakPosition
 
-    required init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, scheduleTime: TimeInterval, replaceContentDuration: TimeInterval, position: AdBreakPosition = .unknown) {
+    required init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, scheduleTime: TimeInterval, replaceContentDuration: TimeInterval, position: YospaceAdBreakPosition = .unknown) {
         self.identifier = identifier
         self.absoluteStart = absoluteStart
         self.absoluteEnd = absoluteEnd
@@ -31,12 +31,12 @@ public class YospaceAdBreak: NSObject, AdBreak {
     }
 
     public func register(_ adItem: Ad) {
-        self.ads.append(adItem)
+        ads.append(adItem)
     }
 
     override public var debugDescription: String {
         // swiftlint:disable line_length
-        return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), ads=\(ads.map {$0.identifier})"
+        return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), scheduleTime=\(scheduleTime), replaceContentDuration=\(replaceContentDuration), position=\(position.rawValue), ads=\(ads.count)"
         // swiftlint:enable line_length
     }
 }
