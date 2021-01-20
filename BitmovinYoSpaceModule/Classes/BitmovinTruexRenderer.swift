@@ -16,7 +16,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     private weak var eventDelegate: TruexAdRendererEventDelegate?
     private var renderer: TruexAdRenderer?
     private var interactiveUnit: YSInteractiveUnit?
-    private var adBreakPosition: AdBreakPosition = .preroll
+    private var adBreakPosition: YospaceAdBreakPosition = .preroll
     private var adFree = false
     private var sessionAdFree = false
 
@@ -25,7 +25,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         self.eventDelegate = eventDelegate
     }
 
-    func renderTruexAd(advert: YSAdvert, adBreakPosition: AdBreakPosition) {
+    func renderTruexAd(advert: YSAdvert, adBreakPosition: YospaceAdBreakPosition) {
         guard let interactiveUnit = advert.linearCreativeElement().interactiveUnit() else {
             return
         }
