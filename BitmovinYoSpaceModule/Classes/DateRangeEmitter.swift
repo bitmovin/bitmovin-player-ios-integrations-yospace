@@ -25,7 +25,9 @@ class DateRangeEmitter: NSObject {
     var deviceOffsetFromPDT: TimeInterval = 0
     let adEventOffset = 0.1 // Offset from the start and end of the ad that we will send the S and E event
     let mEventInterval = 2.0 // Interval at which we will send M event
-
+    
+    var playheadNormalizer: PlayheadNormalizer?
+    
     var seekableRange: TimeRange {
         guard let player = player else {
             return TimeRange(start: 0, end: 0)
@@ -44,9 +46,17 @@ class DateRangeEmitter: NSObject {
 
     // MARK: - Init
 
-    init(player: BitmovinYospacePlayer) {
+    init(player: BitmovinYospacePlayer, normalize: Bool = false) {
         super.init()
         self.player = player
+        
+        // For the immediate, normalizing inside the DateEmitter, as that solves the most pressing problems
+        // We can potentially expand to normalizing all time values post-validation
+        // Initializing the normalizer before adding listeners here, to give event handler precedence to the normalizer
+        if (normalize) {
+            self.playheadNormalizer = PlayheadNormalizer(player: player)
+        }
+        
         self.player?.add(listener: self)
     }
 
@@ -90,7 +100,15 @@ class DateRangeEmitter: NSObject {
 
     private func generateEventsForDateRange(mediaId: String, startDate: Date, endDate: Date, player: BitmovinYospacePlayer) {
         let duration = Double(endDate - startDate)
+        
         var currentTime = player.currentTimeWithAds()
+        if let playheadNormalizer = playheadNormalizer {
+            // Note - if normalizing, there's a small chance of incrementing the playhead when we shouldn't
+            // If we're in an unexpected jump period, while this event is being processed, it could increment inappropriately
+            // We can attempt to guard against that in the normalizer by examining the time that comes in, but that's not deterministic
+            currentTime = playheadNormalizer.normalize(time: currentTime)
+        }
+        
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
         BitLog.d("Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)")
@@ -180,8 +198,11 @@ extension DateRangeEmitter: PlayerListener {
             return
         }
 
-        let currentTime = player?.currentTimeWithAds() ?? event.currentTime
-
+        var currentTime = player?.currentTimeWithAds() ?? event.currentTime
+        if let playheadNormalizer = playheadNormalizer {
+            currentTime = playheadNormalizer.normalize(time: currentTime)
+        }
+        
         // Send metadata event if playhead is within 1 second of metadata time
         if currentTime - nextEvent.time >= -1 {
             timedMetadataEvents.removeFirst(1)

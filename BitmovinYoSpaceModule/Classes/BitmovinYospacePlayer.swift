@@ -92,7 +92,8 @@ open class BitmovinYospacePlayer: Player {
         sessionStatus = .notInitialised
         super.add(listener: self)
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
-        self.dateRangeEmitter = DateRangeEmitter(player: self)
+        // TODO: tie the normalize flag to a config tweak
+        self.dateRangeEmitter = DateRangeEmitter(player: self, normalize: true)
         BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? false
     }
 
