@@ -15,6 +15,7 @@ struct Stream {
     var contentUrl: String
     var fairplayLicenseUrl: String?
     var fairplayCertUrl: String?
+    var drmHeader: String?
     var yospaceSourceConfig: YospaceSourceConfiguration?
 }
 
@@ -46,6 +47,21 @@ class ViewController: UIViewController {
         
     lazy var streams = [
         Stream(
+            title: "Metadata fix",
+            contentUrl: "https://csm-e-cetuusexaws208j8-6lppcszb2ede.bln1.yospace.com/csm/extlive/turner01,timed-tbseast-cbcs.m3u8?yo.pst=true&yo.av=2&yo.pdt=true&yo.t.jt=1000&yo.me=true&yo.ap=https://vod-media-aka.warnermediacdn.com&yo.po=-4&yo.up=https://live-media-aka.warnermediacdn.com&yo.asd=true&yo.pdt=true&yo.dr=true&_fw_ae=53da17a30bd0d3c946a41c86cb5873f1&_fw_ar=1&afid=180483280&conf_csid=tbs.com_desktop_live_east&nw=42448&prof=48804:tbs_ios_live",
+            fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/de4c1d30-ac22-4669-8824-19ba9a1dc128",
+            fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/de4c1d30-ac22-4669-8824-19ba9a1dc128",
+            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ._Y3KGenESJE86od8bU5R0w.QxjBP2BQ9LPDwHKs839wikSGAzZXoSivLVMC_z4o_ONF2PlbKZQ0xTF46m7mNBj2Ps7q53tT_cmNqvJV8SXwoeVDUwpUOt5aiRsVGBDX8760SPwBpEKqVM9N5OFZOPIi8jTuVmh04cfVLzLOdvesEa_00A4OmIJ1jFryDX_qobdLmmiR8ILvAiKHOutTQSI00sRdE86Z4xJsmfAY3yeShWQiFJVRuKyMTDuAwfzCWOOcTqYwPCYiAyt9w_woO8OdiygHeQ.1BRXjxq4OHcxsgjbqCbt9g"
+        ),
+        Stream(
+            title: "MML live",
+            contentUrl: "https://live-manifests-att-qa.warnermediacdn.com/csmp/cmaf/live/2018448/mml000-cbcs/master_fp_ph.m3u8?_fw_ae=%5Bfw_ae%5D&_fw_ar=%5B_fw_ar%5D&_fw_did=%5B_fw_did%5D&_fw_is_lat=%5B_fw_is_lat%5D&_fw_nielsen_app_id=P923E8EA9-9B1B-4F15-A180-F5A4FD01FE38&_fw_us_privacy=%5B_fw_us_privacy%5D&_fw_vcid2=%5B_fw_vcid2%5D&afid=180494037&caid=hylda_beta_test_asset&conf_csid=ncaa.com_mml_iphone&nw=42448&playername=top-2.1.2&prct=text%252Fhtml_doc_lit_mobile%252Ctext%252Fhtml_doc_ref&prof=48804%3Amml_ios_live&yo.asd=true&yo.dnt=false&yo.pst=true",
+            fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
+            fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
+            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.SV4EHc8vsJ51hRL0e8nhfg.sg72LeHo9ocvM0lVTxzNe3UXpgHqjsbzXX_AELV86llKEIqxAS97dT__Gmi7buzVQKbmZqAYJDlyWkHBgUAcyyYGh0GpbM_iv08jk9KceKNptohYnvNQ72RfZb5fxBgb8Q-KVna4j0k9irlOTPuqI-XeiZ2GNRT2eb-M6Kpx0uHm-73xz1JmHTNUaT3ETffa21wbFXHINrftAAZMfN5UMpOu42jqO88JI0Fi96eJeIyKWCUAWhhf1A.VsaIvVV_Vlr6HsgvQM4CnA",
+            yospaceSourceConfig: .init(yospaceAssetType: .linear)
+        ),
+        Stream(
             title: "Montage FP",
             contentUrl: "https://live-montage-aka-qa.warnermediacdn.com/int/manifest/me-drm-cbcs/master_de.m3u8",
             fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/a229afbf-e1d3-499e-8127-c33cd7231e58",
@@ -57,6 +73,8 @@ class ViewController: UIViewController {
             yospaceSourceConfig: .init(yospaceAssetType: .vod)
         )
     ]
+    
+    lazy var playheadNormalizer = PlayheadNormalizer(player: player)
     
     var selectedStreamIndex = 0
     
@@ -107,6 +125,7 @@ class ViewController: UIViewController {
 
     func loadStream(stream: Stream) {
         guard let streamUrl = URL(string: stream.contentUrl) else { return }
+        print("Loading \(streamUrl)")
         
         let sourceConfig = SourceConfiguration()
         let sourceItem = SourceItem(hlsSource: HLSSource(url: streamUrl))
@@ -117,6 +136,12 @@ class ViewController: UIViewController {
                 license: URL(string: fairplayLicense),
                 certificateURL: URL(string: fairplayCert)!
             )
+            
+            if let drmHeader = stream.drmHeader {
+                print("Setting DRM header")
+                drmConfig.licenseRequestHeaders = ["x-isp-token": drmHeader]
+            }
+
             prepareDRM(config: drmConfig)
             sourceItem.add(drmConfiguration: drmConfig)
         }
@@ -151,6 +176,30 @@ class ViewController: UIViewController {
             return ckcResult
         }
     }
+    
+    var timeChangedFired = false
+    var prevTimeChanged = 0.0
+    func detectTimeJump(time: Double) {
+        if (!timeChangedFired) {
+            prevTimeChanged = time
+            timeChangedFired = true
+            return
+        }
+        
+        let delta = time - prevTimeChanged
+        if (delta > 1.5 || delta < 0.0) {
+            print("[raw] Time jump detected: \(delta) [\(time), \(prevTimeChanged)] ❌")
+        } else {
+//            print("[raw] Time update: \(time) | \(delta)")
+        }
+        prevTimeChanged = time
+    }
+    
+//    let playheadNormalizer: PlayheadNormalizer = PlayheadNormalizer()
+    func testNormalizeTime(time: Double) {
+        let newTime = playheadNormalizer.normalize(time: time)
+//        print("[normalized] Time update: \(time) | \(newTime)")
+    }
 
 }
 
@@ -178,7 +227,24 @@ extension ViewController: PlayerListener {
         loadUnloadButton.setTitle("Unload", for: .normal)
     }
 
+    func onTimeChanged(_ event: TimeChangedEvent) {
+        detectTimeJump(time: event.currentTime)
+        
+        // If it's not a yospace stream, use the external normalizer
+        if streams[selectedStreamIndex].yospaceSourceConfig == nil {
+            testNormalizeTime(time: event.currentTime)
+        }
+    }
+    
+    func onMetadataParsed(_ event: MetadataParsedEvent) {
+//        print("metadataParsed - \(event.metadataType), \(event.metadata.entries)")
+    }
+    
     func onSourceUnloaded(_ event: SourceUnloadedEvent) {
         loadUnloadButton.setTitle("Load", for: .normal)
+    }
+ 
+    func onError(_ event: ErrorEvent) {
+        print("[onError] \(event.message)")
     }
 }
