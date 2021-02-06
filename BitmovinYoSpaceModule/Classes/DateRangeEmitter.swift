@@ -46,16 +46,10 @@ class DateRangeEmitter: NSObject {
 
     // MARK: - Init
 
-    init(player: BitmovinYospacePlayer, normalize: Bool = false) {
+    init(player: BitmovinYospacePlayer, normalizer: PlayheadNormalizer? = nil) {
         super.init()
         self.player = player
-        
-        // For the immediate, normalizing inside the DateEmitter, as that solves the most pressing problems
-        // We can potentially expand to normalizing all time values post-validation
-        // Initializing the normalizer before adding listeners here, to give event handler precedence to the normalizer
-        if (normalize) {
-            self.playheadNormalizer = PlayheadNormalizer(player: player)
-        }
+        self.playheadNormalizer = normalizer
         
         self.player?.add(listener: self)
     }
@@ -101,13 +95,15 @@ class DateRangeEmitter: NSObject {
     private func generateEventsForDateRange(mediaId: String, startDate: Date, endDate: Date, player: BitmovinYospacePlayer) {
         let duration = Double(endDate - startDate)
         
-        var currentTime = player.currentTimeWithAds()
-        if let playheadNormalizer = playheadNormalizer {
-            // Note - if normalizing, there's a small chance of incrementing the playhead when we shouldn't
-            // If we're in an unexpected jump period, while this event is being processed, it could increment inappropriately
-            // We can attempt to guard against that in the normalizer by examining the time that comes in, but that's not deterministic
-            currentTime = playheadNormalizer.normalize(time: currentTime)
-        }
+        var currentTime: Double = {
+            if let playheadNormalizer = playheadNormalizer {
+                return playheadNormalizer.currentNormalizedTime()
+            } else {
+                return player.currentTimeWithAds()
+            }
+        }()
+        // TODO: remove, testing only
+        print("cdg - [D.R.E] generateEventsForDateRange: \(currentTime)")
         
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
@@ -158,7 +154,9 @@ class DateRangeEmitter: NSObject {
         fireMetadataParsedEvent(event: eTimedMetadataEvent)
         timedMetadataEvents.append(eTimedMetadataEvent)
 
-        BitLog.d("Generated TimedMetadataEvents: \(timedMetadataEvents.map { $0.metadata.timestamp })" )
+        BitLog.d("Generated TimedMetadataEvents: \(timedMetadataEvents.map { "\($0.metadata.timestamp), \($0.time) | " })" )
+        // TODO: remove, testing only
+        timedMetadataEvents.forEach { print("cdg - [D.R.E] generated: \($0.metadata.timestamp), \($0.time)") }
     }
 
     func fireMetadataParsedEvent(event: TimedMetadataEvent) {
@@ -197,17 +195,24 @@ extension DateRangeEmitter: PlayerListener {
         guard let nextEvent = timedMetadataEvents.first else {
             return
         }
-
-        var currentTime = player?.currentTimeWithAds() ?? event.currentTime
-        if let playheadNormalizer = playheadNormalizer {
-            currentTime = playheadNormalizer.normalize(time: currentTime)
-        }
+        
+        let currentTime: Double = {
+            if let playheadNormalizer = playheadNormalizer {
+                return playheadNormalizer.currentNormalizedTime()
+            } else {
+                return player?.currentTimeWithAds() ?? event.currentTime
+            }
+        }()
+        // TODO: remove, testing only
+        print("cdg - [D.R.E] onTimeChanged: \(currentTime) | nextEvent.time: \(nextEvent.time)")
         
         // Send metadata event if playhead is within 1 second of metadata time
         if currentTime - nextEvent.time >= -1 {
             timedMetadataEvents.removeFirst(1)
             let metadata = nextEvent.metadata
-
+            // TODO: remove, testing only
+            print("cdg - [D.R.E] onTimeChanged - firing ID3: \(metadata.timestamp)")
+            
             // swiftlint:disable line_length
             BitLog.d("Sending metadata: currentDate=\(NSDate().timeIntervalSince1970), playerTime=\(currentTime), eventTime=\(nextEvent.time), metadataTime=\(metadata.timestamp.timeIntervalSince1970), id=\(metadata.mediaId), type=\(metadata.type), segment=\(metadata.segmentNumber), segmentCount=\(metadata.segmentCount), offset=\(metadata.offset)")
             // swiftlint:enable line_length
