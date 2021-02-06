@@ -38,7 +38,7 @@ public class PlayheadNormalizer: NSObject {
     // If we had an unexpected jump, expect the reverse jump
     private var expectingJump: Jump = .none
     // Ensure any seeks are not tracked as unexpected jumps
-    // TODO:
+    private var isSeeking: Bool = false
     
     // MARK: - initializer
     
@@ -67,6 +67,18 @@ public class PlayheadNormalizer: NSObject {
         return prevNormalizedPlayhead + inc
     }
     
+    /**
+            Reset all playhead values - should only be called when an external signal tells us to reset:
+     
+                - on seeking / timeshifting
+                - on either a time validation clamp (PDT, ad end)
+     */
+    private func resetPlayhead(time: Double) {
+        log("Resetting playhead to: \(time)")
+        prevPlayhead = time
+        prevNormalizedPlayhead = time
+    }
+    
     // MARK: - public instance methods
     
     public func normalize(time: Double) -> Double {
@@ -75,6 +87,13 @@ public class PlayheadNormalizer: NSObject {
             processedFirstValue = true
             prevPlayhead = time
             prevNormalizedPlayhead = time
+            return prevNormalizedPlayhead
+        }
+        
+        // If seeking, a time changed event should be kicked up
+        // If it is, return the last normalized value
+        if (isSeeking) {
+            log("Received time changed while seeking; returning last normalized value")
             return prevNormalizedPlayhead
         }
         
@@ -159,16 +178,37 @@ extension PlayheadNormalizer: PlayerListener {
     
     public func onSeek(_ event: SeekEvent) {
         // VOD - Seek started
+        log("VOD Seek started - \(event.seekTarget)")
+        isSeeking = true
     }
     public func onSeeked(_ event: SeekedEvent) {
+        guard let player = player else {
+            return
+        }
+        
         // VOD - Seek ended
+        let updatedTime = player.currentTimeWithAds()
+        log("VOD Seek finished - resetting to \(updatedTime)")
+        resetPlayhead(time: updatedTime)
+        isSeeking = false
     }
     
     public func onTimeShift(_ event: TimeShiftEvent) {
         // Live - Seek started
+        log("Live Seek started - \(event.timeShift)")
+        isSeeking = true
     }
     
     public func onTimeShifted(_ event: TimeShiftedEvent) {
         // Live - Seek ended
+        guard let player = player else {
+            return
+        }
+        
+        // VOD - Seek ended
+        let updatedTime = player.currentTimeWithAds()
+        log("VOD Seek finished - resetting to \(updatedTime)")
+        resetPlayhead(time: updatedTime)
+        isSeeking = false
     }
 }
