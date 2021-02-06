@@ -73,10 +73,11 @@ public class PlayheadNormalizer: NSObject {
                 - on seeking / timeshifting
                 - on either a time validation clamp (PDT, ad end)
      */
-    private func resetPlayhead(time: Double) {
+    private func resetPlayheadAndJumpStatus(time: Double) {
         log("Resetting playhead to: \(time) from \(prevPlayhead) | \(prevNormalizedPlayhead)")
         prevPlayhead = time
         prevNormalizedPlayhead = time
+        expectingJump = .none
     }
     
     // MARK: - public instance methods
@@ -90,7 +91,7 @@ public class PlayheadNormalizer: NSObject {
             return prevNormalizedPlayhead
         }
         
-        // If seeking, a time changed event should be kicked up
+        // If seeking, a time changed event should not be kicked up
         // If it is, return the last normalized value
         if (isSeeking) {
             log("Received time changed while seeking; returning last normalized value")
@@ -172,15 +173,17 @@ extension PlayheadNormalizer: PlayerListener {
         //active = false
         log("Ad break finished")
         
-        // TODO: given we the player doesn't raise enough events for us to use PDT as a clamp,
+        // Note - given we the player doesn't raise enough events for us to use PDT as a clamp,
         // using this instead
         // This may have the side effect of causing ad events / beacons to be slightly offset,
         // if future date range metadata was received during an ad break which had a time jump
+        // That should never happen, given that the DateEmitter is using onMetadata, which should only fire
+        // when metadata is encountered for an actively playing fragment, but noting the possibility
         guard let player = player else {
             return
         }
         
-        resetPlayhead(time: player.currentTimeWithAds())
+        resetPlayheadAndJumpStatus(time: player.currentTimeWithAds())
     }
     
     public func onSeek(_ event: SeekEvent) {
@@ -196,7 +199,7 @@ extension PlayheadNormalizer: PlayerListener {
         // VOD - Seek ended
         let updatedTime = player.currentTimeWithAds()
         log("VOD Seek finished - resetting to \(updatedTime)")
-        resetPlayhead(time: updatedTime)
+        resetPlayheadAndJumpStatus(time: updatedTime)
         isSeeking = false
     }
     
@@ -215,7 +218,7 @@ extension PlayheadNormalizer: PlayerListener {
         // VOD - Seek ended
         let updatedTime = player.currentTimeWithAds()
         log("VOD Seek finished - resetting to \(updatedTime)")
-        resetPlayhead(time: updatedTime)
+        resetPlayheadAndJumpStatus(time: updatedTime)
         isSeeking = false
     }
 }
