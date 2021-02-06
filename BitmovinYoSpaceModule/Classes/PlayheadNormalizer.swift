@@ -39,6 +39,9 @@ public class PlayheadNormalizer: NSObject {
     private var expectingJump: Jump = .none
     // Ensure any seeks are not tracked as unexpected jumps
     private var isSeeking: Bool = false
+    // Allows a reset to happen a set number of time changed updates after an event
+    // More info on why this is needed in the ad break events
+    private var resetInTimeChangedUpdateCount: Int = -1
     
     // MARK: - initializer
     
@@ -101,7 +104,29 @@ public class PlayheadNormalizer: NSObject {
         // If the given time delta is over the respective thresholds, treat it as an unexpected jump
         var normalizedTime: Double = 0.0
         let delta = time - lastPlayhead
-
+        
+        // If we've scheduled a reset in x number of time changed updates, reset here if appropriate
+        if (resetInTimeChangedUpdateCount > 0) {
+            resetInTimeChangedUpdateCount -= 1
+            
+            if (resetInTimeChangedUpdateCount == 0) {
+                resetInTimeChangedUpdateCount = -1
+                
+                // If we're waiting for a jump, reset the time and jump status now
+                // and return immediately
+                //
+                // This is necessary because there's no determinstic way, using the info surfaced by the iOS player,
+                // to validate whether a jump is resetting things properly. Because of that, we're using ad break finished as a clamp.
+                // On occasion, there has been a jump that occurs just after ad break finished, which invalidates the clamp.
+                // This allows for waiting beyond the end of the ad break, to allow for any jumps that come in to be processed as a reset.
+                if (expectingJump != .none) {
+                    log("Hit scheduled reset")
+                    resetPlayheadAndJumpStatus(time: time)
+                    return time
+                }
+            }
+        }
+        
         if (delta > MAX_UNEXPECTED_JUMP_FORWARD) {
             if (expectingJump == .forwards) {
                 // We jumped forward, and were expecting it
@@ -171,7 +196,6 @@ extension PlayheadNormalizer: PlayerListener {
     
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
         //active = false
-        log("Ad break finished")
         
         // Note - given we the player doesn't raise enough events for us to use PDT as a clamp,
         // using this instead
@@ -179,11 +203,12 @@ extension PlayheadNormalizer: PlayerListener {
         // if future date range metadata was received during an ad break which had a time jump
         // That should never happen, given that the DateEmitter is using onMetadata, which should only fire
         // when metadata is encountered for an actively playing fragment, but noting the possibility
-        guard let player = player else {
-            return
-        }
         
-        resetPlayheadAndJumpStatus(time: player.currentTimeWithAds())
+        // On occasion, there has been a reciprocal time jump received just after an ad break end
+        // Because of that, and because we still want to clamp to prevent normalized drift,
+        // scheduling a reset 2 timed changed events (e.g., 2 secs) in the future
+        resetInTimeChangedUpdateCount = 2
+        log("Ad break finished - scheduled a reset in \(resetInTimeChangedUpdateCount)")
     }
     
     public func onSeek(_ event: SeekEvent) {
