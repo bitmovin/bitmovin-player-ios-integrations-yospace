@@ -28,9 +28,9 @@ public class PlayheadNormalizer: NSObject {
     // Determines whether to normalize a passed time value
     private var active = false
     // The last raw playhead
-    private var prevPlayhead: Double = 0.0
+    private var lastPlayhead: Double = 0.0
     // The last normalized playhead
-    private var prevNormalizedPlayhead: Double = 0.0
+    private var lastNormalizedPlayhead: Double = 0.0
     // The last delta that did not represent an unexpected jump or a timeshift
     private var lastGoodDelta: Double = 0.0
     // Default increment to use, if a good delta hasn't been calculated yet
@@ -64,7 +64,7 @@ public class PlayheadNormalizer: NSObject {
      */
     private func incrementPrev() -> Double {
         let inc = (lastGoodDelta > 0.0) ? lastGoodDelta : defaultIncrement
-        return prevNormalizedPlayhead + inc
+        return lastNormalizedPlayhead + inc
     }
     
     /**
@@ -74,9 +74,9 @@ public class PlayheadNormalizer: NSObject {
                 - on either a time validation clamp (PDT, ad end)
      */
     private func resetPlayheadAndJumpStatus(time: Double) {
-        log("Resetting playhead to: \(time) from \(prevPlayhead) | \(prevNormalizedPlayhead)")
-        prevPlayhead = time
-        prevNormalizedPlayhead = time
+        log("Resetting playhead to: \(time) from \(lastPlayhead) | \(lastNormalizedPlayhead)")
+        lastPlayhead = time
+        lastNormalizedPlayhead = time
         expectingJump = .none
     }
     
@@ -86,21 +86,21 @@ public class PlayheadNormalizer: NSObject {
 //        log("normalizing \(time); previous \(prevPlayhead)")
         if (!processedFirstValue) {
             processedFirstValue = true
-            prevPlayhead = time
-            prevNormalizedPlayhead = time
-            return prevNormalizedPlayhead
+            lastPlayhead = time
+            lastNormalizedPlayhead = time
+            return lastNormalizedPlayhead
         }
         
         // If seeking, a time changed event should not be kicked up
         // If it is, return the last normalized value
         if (isSeeking) {
             log("Received time changed while seeking; returning last normalized value")
-            return prevNormalizedPlayhead
+            return lastNormalizedPlayhead
         }
         
         // If the given time delta is over the respective thresholds, treat it as an unexpected jump
         var normalizedTime: Double = 0.0
-        let delta = time - prevPlayhead
+        let delta = time - lastPlayhead
 
         if (delta > MAX_UNEXPECTED_JUMP_FORWARD) {
             if (expectingJump == .forwards) {
@@ -139,13 +139,13 @@ public class PlayheadNormalizer: NSObject {
             lastGoodDelta = delta
         }
         
-        prevPlayhead = time
-        prevNormalizedPlayhead = normalizedTime
+        lastPlayhead = time
+        lastNormalizedPlayhead = normalizedTime
         return normalizedTime
     }
     
     public func currentNormalizedTime() -> Double {
-        return prevNormalizedPlayhead
+        return lastNormalizedPlayhead
     }
 }
 
