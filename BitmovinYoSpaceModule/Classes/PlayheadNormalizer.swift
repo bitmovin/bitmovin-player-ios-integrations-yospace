@@ -74,7 +74,7 @@ public class PlayheadNormalizer: NSObject {
                 - on either a time validation clamp (PDT, ad end)
      */
     private func resetPlayhead(time: Double) {
-        log("Resetting playhead to: \(time)")
+        log("Resetting playhead to: \(time) from \(prevPlayhead) | \(prevNormalizedPlayhead)")
         prevPlayhead = time
         prevNormalizedPlayhead = time
     }
@@ -104,7 +104,7 @@ public class PlayheadNormalizer: NSObject {
         if (delta > MAX_UNEXPECTED_JUMP_FORWARD) {
             if (expectingJump == .forwards) {
                 // We jumped forward, and were expecting it
-                log("Received expected jump \(expectingJump); reset playhead to \(time)")
+                log("✅ Received expected jump \(expectingJump); reset playhead to \(time)")
                 normalizedTime = time
                 expectingJump = .none
                 // TODO: ideally we have another check to clamp the bounds, to ensure the reverse jump was valid
@@ -117,7 +117,7 @@ public class PlayheadNormalizer: NSObject {
         } else if (delta < MAX_UNEXPECTED_JUMP_BACK) {
             if (expectingJump == .backwards) {
                 // We jumped backwards, and were expecting it
-                log("Received expected jump \(expectingJump); reset playhead to \(time)")
+                log("✅ Received expected jump \(expectingJump); reset playhead to \(time)")
                 normalizedTime = time
                 expectingJump = .none
                 // TODO: ideally we have another check to clamp the bounds, to ensure the reverse jump was valid
@@ -173,7 +173,14 @@ extension PlayheadNormalizer: PlayerListener {
         log("Ad break finished")
         
         // TODO: given we the player doesn't raise enough events for us to use PDT as a clamp,
-        // we can potentially use this instead
+        // using this instead
+        // This may have the side effect of causing ad events / beacons to be slightly offset,
+        // if future date range metadata was received during an ad break which had a time jump
+        guard let player = player else {
+            return
+        }
+        
+        resetPlayhead(time: player.currentTimeWithAds())
     }
     
     public func onSeek(_ event: SeekEvent) {
