@@ -24,6 +24,7 @@ open class BitmovinYospacePlayer: Player {
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
     var dateRangeEmitter: DateRangeEmitter?
+    var playheadNormalizer: PlayheadNormalizer?
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
     var liveAdPaused = false
@@ -91,10 +92,16 @@ open class BitmovinYospacePlayer: Player {
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
         super.add(listener: self)
-        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
-        // TODO: tie the normalize flag to a config tweak
-        self.dateRangeEmitter = DateRangeEmitter(player: self, normalize: true)
+        
         BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? false
+        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
+        
+        // TODO: tie the normalize flag to a config tweak
+        // For the immediate, only utilizing the normalizer inside the DateEmitter, as that solves the most pressing problems
+        // We can potentially expand to normalizing all time values post-validation
+        // Note - we may need to initialize the normalizer before adding listeners here, to give event handler precedence to the normalizer
+        self.playheadNormalizer = PlayheadNormalizer(player: self)
+        self.dateRangeEmitter = DateRangeEmitter(player: self, normalizer: playheadNormalizer)
     }
 
     open override func destroy() {
@@ -773,6 +780,11 @@ extension BitmovinYospacePlayer: PlayerListener {
             }
             liveAdPaused = false
         }
+        
+        // Send to the normalizer so the date emitter can use the normalized value
+        // Future use could propagate to the event as well, for media time
+        let _ = playheadNormalizer?.normalize(time: self.currentTimeWithAds())
+        
         for listener: PlayerListener in listeners {
             listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime))
         }

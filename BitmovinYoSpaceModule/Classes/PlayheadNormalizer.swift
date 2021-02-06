@@ -18,6 +18,10 @@ enum Jump: String {
 public class PlayheadNormalizer: NSObject {
     // MARK: - properties
     
+    // TODO: make these relative to the Yospace timeout length
+    let MAX_UNEXPECTED_JUMP_FORWARD = 2.0
+    let MAX_UNEXPECTED_JUMP_BACK = -0.5
+    
     private weak var player: BitmovinYospacePlayer?
     
     private var processedFirstValue: Bool = false
@@ -39,16 +43,20 @@ public class PlayheadNormalizer: NSObject {
     // MARK: - initializer
     
     public init (player: BitmovinYospacePlayer) {
+        super.init()
         self.player = player
-        
-        // TODO - temp
-        BitLog.isEnabled = true
+        self.player?.add(listener: self)
+        self.log("Initialized")
     }
     
     // MARK: - private instance methods
     
     private func log(_ msg: String) {
-        BitLog.d("[PlayheadNormalizer] \(msg)")
+//        BitLog.d("[PlayheadNormalizer] \(msg)")
+        
+        // For targeted test logging always print for now
+        // TODO: Switch to the above before merging
+        print("cdg - [PlayheadNormalizer] \(msg)")
     }
     
     /**
@@ -62,6 +70,7 @@ public class PlayheadNormalizer: NSObject {
     // MARK: - public instance methods
     
     public func normalize(time: Double) -> Double {
+//        log("normalizing \(time); previous \(prevPlayhead)")
         if (!processedFirstValue) {
             processedFirstValue = true
             prevPlayhead = time
@@ -73,7 +82,7 @@ public class PlayheadNormalizer: NSObject {
         var normalizedTime: Double = 0.0
         let delta = time - prevPlayhead
 
-        if (delta > 1.5) {
+        if (delta > MAX_UNEXPECTED_JUMP_FORWARD) {
             if (expectingJump == .forwards) {
                 // We jumped forward, and were expecting it
                 log("Received expected jump \(expectingJump); reset playhead to \(time)")
@@ -86,7 +95,7 @@ public class PlayheadNormalizer: NSObject {
                 normalizedTime = incrementPrev()
                 log("❌ Unexpected jump forwards of \(delta); normalizing \(time) to \(normalizedTime)")
             }
-        } else if (delta < -0.5) {
+        } else if (delta < MAX_UNEXPECTED_JUMP_BACK) {
             if (expectingJump == .backwards) {
                 // We jumped backwards, and were expecting it
                 log("Received expected jump \(expectingJump); reset playhead to \(time)")
@@ -114,18 +123,38 @@ public class PlayheadNormalizer: NSObject {
         prevNormalizedPlayhead = normalizedTime
         return normalizedTime
     }
+    
+    public func currentNormalizedTime() -> Double {
+        return prevNormalizedPlayhead
+    }
 }
 
 extension PlayheadNormalizer: PlayerListener {
+    public func onReady(_ event: ReadyEvent) {
+        guard let player = player else {
+            return
+        }
+        
+        // Seed the first values, to ensure there's an initial normalized value for the date emitter
+        // to query if there's a preroll
+        let initialPlayhead = normalize(time: player.currentTimeWithAds())
+        log("initial playhead: \(initialPlayhead)")
+    }
+    
     public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
         // There's a potential optimization here, assuming the problem only happens inside an ad break, after it's already started
         // As long as we're normalizing inside an ad break, we should be able to guarantee that an ad break end will be hit (baseline scenario)
         
         //active = true
+        log("Ad break started")
     }
     
     public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
         //active = false
+        log("Ad break finished")
+        
+        // TODO: given we the player doesn't raise enough events for us to use PDT as a clamp,
+        // we can potentially use this instead
     }
     
     public func onSeek(_ event: SeekEvent) {
