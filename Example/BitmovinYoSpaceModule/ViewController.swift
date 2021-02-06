@@ -28,10 +28,11 @@ class ViewController: UIViewController {
         let configuration = PlayerConfiguration()
         configuration.playbackConfiguration.isAutoplayEnabled = true
         configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
+        configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
 
         let player = BitmovinYospacePlayer(
             configuration: configuration,
-            yospaceConfiguration: YospaceConfiguration()
+            yospaceConfiguration: YospaceConfiguration(isDebugEnabled: true)
         )
         player.add(listener: self)
 
@@ -53,9 +54,18 @@ class ViewController: UIViewController {
             fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/de4c1d30-ac22-4669-8824-19ba9a1dc128",
             drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ._Y3KGenESJE86od8bU5R0w.QxjBP2BQ9LPDwHKs839wikSGAzZXoSivLVMC_z4o_ONF2PlbKZQ0xTF46m7mNBj2Ps7q53tT_cmNqvJV8SXwoeVDUwpUOt5aiRsVGBDX8760SPwBpEKqVM9N5OFZOPIi8jTuVmh04cfVLzLOdvesEa_00A4OmIJ1jFryDX_qobdLmmiR8ILvAiKHOutTQSI00sRdE86Z4xJsmfAY3yeShWQiFJVRuKyMTDuAwfzCWOOcTqYwPCYiAyt9w_woO8OdiygHeQ.1BRXjxq4OHcxsgjbqCbt9g"
         ),
+        // Note - this stream wasn't getting ads; TBD which kvp was causing that
         Stream(
             title: "MML live",
             contentUrl: "https://live-manifests-att-qa.warnermediacdn.com/csmp/cmaf/live/2018448/mml000-cbcs/master_fp_ph.m3u8?_fw_ae=%5Bfw_ae%5D&_fw_ar=%5B_fw_ar%5D&_fw_did=%5B_fw_did%5D&_fw_is_lat=%5B_fw_is_lat%5D&_fw_nielsen_app_id=P923E8EA9-9B1B-4F15-A180-F5A4FD01FE38&_fw_us_privacy=%5B_fw_us_privacy%5D&_fw_vcid2=%5B_fw_vcid2%5D&afid=180494037&caid=hylda_beta_test_asset&conf_csid=ncaa.com_mml_iphone&nw=42448&playername=top-2.1.2&prct=text%252Fhtml_doc_lit_mobile%252Ctext%252Fhtml_doc_ref&prof=48804%3Amml_ios_live&yo.asd=true&yo.dnt=false&yo.pst=true",
+            fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
+            fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
+            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.SV4EHc8vsJ51hRL0e8nhfg.sg72LeHo9ocvM0lVTxzNe3UXpgHqjsbzXX_AELV86llKEIqxAS97dT__Gmi7buzVQKbmZqAYJDlyWkHBgUAcyyYGh0GpbM_iv08jk9KceKNptohYnvNQ72RfZb5fxBgb8Q-KVna4j0k9irlOTPuqI-XeiZ2GNRT2eb-M6Kpx0uHm-73xz1JmHTNUaT3ETffa21wbFXHINrftAAZMfN5UMpOu42jqO88JI0Fi96eJeIyKWCUAWhhf1A.VsaIvVV_Vlr6HsgvQM4CnA",
+            yospaceSourceConfig: .init(yospaceAssetType: .linear)
+        ),
+        Stream(
+            title: "MML live - Safari",
+            contentUrl: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2018448/mml000-cbcs/master_fp_de.m3u8?_fw_ae=&_fw_ar=&_fw_did=&_fw_is_lat=&_fw_nielsen_app_id=P923E8EA9-9B1B-4F15-A180-F5A4FD01FE38&_fw_us_privacy=&_fw_vcid2=&afid=180494037&caid=hylda_beta_test_asset&conf_csid=ncaa.com_mml_iphone&nw=42448&playername=top-2.1.2&prct=text%2Fhtml_doc_lit_mobile%2Ctext%2Fhtml_doc_ref&prof=48804:mml_ios_live&yo.asd=true&yo.dnt=false&yo.pst=true&yo.dr=true&yo.ad=true",
             fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
             fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
             drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.SV4EHc8vsJ51hRL0e8nhfg.sg72LeHo9ocvM0lVTxzNe3UXpgHqjsbzXX_AELV86llKEIqxAS97dT__Gmi7buzVQKbmZqAYJDlyWkHBgUAcyyYGh0GpbM_iv08jk9KceKNptohYnvNQ72RfZb5fxBgb8Q-KVna4j0k9irlOTPuqI-XeiZ2GNRT2eb-M6Kpx0uHm-73xz1JmHTNUaT3ETffa21wbFXHINrftAAZMfN5UMpOu42jqO88JI0Fi96eJeIyKWCUAWhhf1A.VsaIvVV_Vlr6HsgvQM4CnA",
@@ -76,7 +86,7 @@ class ViewController: UIViewController {
     
     lazy var playheadNormalizer = PlayheadNormalizer(player: player)
     
-    var selectedStreamIndex = 0
+    var selectedStreamIndex = 2
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,7 +113,7 @@ class ViewController: UIViewController {
         
         streamsTextField.inputView = streamPicker
         streamsTextField.inputAccessoryView = toolBar
-        streamsTextField.text = streams.first!.title
+        streamsTextField.text = streams[selectedStreamIndex].title
     }
 
     @objc func closePicker() {
@@ -187,7 +197,7 @@ class ViewController: UIViewController {
         }
         
         let delta = time - prevTimeChanged
-        if (delta > 1.5 || delta < 0.0) {
+        if (delta > 2.0 || delta < -0.5) {
             print("[raw] Time jump detected: \(delta) [\(time), \(prevTimeChanged)] ❌")
         } else {
 //            print("[raw] Time update: \(time) | \(delta)")
@@ -228,16 +238,19 @@ extension ViewController: PlayerListener {
     }
 
     func onTimeChanged(_ event: TimeChangedEvent) {
-        detectTimeJump(time: event.currentTime)
+        
         
         // If it's not a yospace stream, use the external normalizer
         if streams[selectedStreamIndex].yospaceSourceConfig == nil {
+            detectTimeJump(time: event.currentTime)
             testNormalizeTime(time: event.currentTime)
+        } else {
+            detectTimeJump(time: player.currentTimeWithAds())
         }
     }
     
     func onMetadataParsed(_ event: MetadataParsedEvent) {
-//        print("metadataParsed - \(event.metadataType), \(event.metadata.entries)")
+        print("cdg - metadataParsed - \(event.metadataType), \(event.metadata.entries)")
     }
     
     func onSourceUnloaded(_ event: SourceUnloadedEvent) {
