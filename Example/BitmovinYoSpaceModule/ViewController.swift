@@ -72,6 +72,13 @@ class ViewController: UIViewController {
             yospaceSourceConfig: .init(yospaceAssetType: .linear)
         ),
         Stream(
+            title: "MML live - no ads",
+            contentUrl: "https://mml-live-media-aka-qa.warnermediacdn.com/cmaf/live/2018448/mml000-cbcs/master_fp_de.m3u8",
+            fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
+            fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
+            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.SV4EHc8vsJ51hRL0e8nhfg.sg72LeHo9ocvM0lVTxzNe3UXpgHqjsbzXX_AELV86llKEIqxAS97dT__Gmi7buzVQKbmZqAYJDlyWkHBgUAcyyYGh0GpbM_iv08jk9KceKNptohYnvNQ72RfZb5fxBgb8Q-KVna4j0k9irlOTPuqI-XeiZ2GNRT2eb-M6Kpx0uHm-73xz1JmHTNUaT3ETffa21wbFXHINrftAAZMfN5UMpOu42jqO88JI0Fi96eJeIyKWCUAWhhf1A.VsaIvVV_Vlr6HsgvQM4CnA"
+        ),
+        Stream(
             title: "Montage FP",
             contentUrl: "https://live-montage-aka-qa.warnermediacdn.com/int/manifest/me-drm-cbcs/master_de.m3u8",
             fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/a229afbf-e1d3-499e-8127-c33cd7231e58",
