@@ -14,6 +14,11 @@ enum Jump: String {
     case forwards
 }
 
+struct JumpEntry {
+    let rawTime: Double
+    let delta: Double
+}
+
 // TODO: public for test purposes
 public class PlayheadNormalizer: NSObject {
     // MARK: - properties
@@ -37,11 +42,15 @@ public class PlayheadNormalizer: NSObject {
     private var defaultIncrement: Double = 1.0
     // If we had an unexpected jump, expect the reverse jump
     private var expectingJump: Jump = .none
+    // Track the last n number of jumps
+    private var jumpEntries: [JumpEntry] = []
     // Ensure any seeks are not tracked as unexpected jumps
     private var isSeeking: Bool = false
     // Allows a reset to happen a set number of time changed updates after an event
     // More info on why this is needed in the ad break events
     private var resetInTimeChangedUpdateCount: Int = -1
+    
+    private var logVerbose = false
     
     // MARK: - initializer
     
@@ -62,6 +71,11 @@ public class PlayheadNormalizer: NSObject {
         print("cdg - [PlayheadNormalizer] \(msg)")
     }
     
+    private func logV(_ msg: String) {
+        if (logVerbose) {
+            log(msg)
+        }
+    }
     /**
            Given an unexpected jump, bump the previous known good playhead by an appropriate increment
      */
@@ -70,6 +84,16 @@ public class PlayheadNormalizer: NSObject {
         return lastNormalizedPlayhead + inc
     }
     
+    private func addJumpEntry(rawTime: Double, delta: Double) {
+        log("Adding jump entry: \(rawTime) | \(delta)")
+        jumpEntries.append(JumpEntry(rawTime: rawTime, delta: delta))
+        
+        // We only need to preserve entries for calculations to be adjusted, which shouldn't go beyond an ad break
+        // Pruning at 20 to be safe
+        if (jumpEntries.count > 20) {
+            jumpEntries.remove(at: 0)
+        }
+    }
     /**
             Reset all playhead values - should only be called when an external signal tells us to reset:
      
@@ -122,6 +146,11 @@ public class PlayheadNormalizer: NSObject {
                 if (expectingJump != .none) {
                     log("Hit scheduled reset")
                     resetPlayheadAndJumpStatus(time: time)
+                    
+                    // If the delta is outside the range, add it to the jump list
+                    if (delta > MAX_UNEXPECTED_JUMP_FORWARD || delta < MAX_UNEXPECTED_JUMP_BACK) {
+                        addJumpEntry(rawTime: time, delta: delta)
+                    }
                     return time
                 }
             }
@@ -130,28 +159,32 @@ public class PlayheadNormalizer: NSObject {
         if (delta > MAX_UNEXPECTED_JUMP_FORWARD) {
             if (expectingJump == .forwards) {
                 // We jumped forward, and were expecting it
-                log("✅ Received expected jump \(expectingJump); reset playhead to \(time)")
+                log("✅ Received expected jump \(expectingJump) of \(delta); reset playhead to \(time)")
                 normalizedTime = time
                 expectingJump = .none
+                addJumpEntry(rawTime: time, delta: delta)
                 // TODO: ideally we have another check to clamp the bounds, to ensure the reverse jump was valid
             } else {
                 // We jumped forward, and weren't expecting it
                 expectingJump = .backwards
                 normalizedTime = incrementPrev()
                 log("❌ Unexpected jump forwards of \(delta); normalizing \(time) to \(normalizedTime)")
+                addJumpEntry(rawTime: time, delta: delta)
             }
         } else if (delta < MAX_UNEXPECTED_JUMP_BACK) {
             if (expectingJump == .backwards) {
                 // We jumped backwards, and were expecting it
-                log("✅ Received expected jump \(expectingJump); reset playhead to \(time)")
+                log("✅ Received expected jump \(expectingJump) of \(delta); reset playhead to \(time)")
                 normalizedTime = time
                 expectingJump = .none
+                addJumpEntry(rawTime: time, delta: delta)
                 // TODO: ideally we have another check to clamp the bounds, to ensure the reverse jump was valid
             } else {
                 // We jumped backward, and weren't expecting it
                 expectingJump = .forwards
                 normalizedTime = incrementPrev()
                 log("❌ Unexpected jump backwards of \(delta); normalizing \(time) to \(normalizedTime)")
+                addJumpEntry(rawTime: time, delta: delta)
             }
         } else if (expectingJump != .none) {
             // We're expecting a reverse jump, but haven't received it yet
@@ -169,7 +202,50 @@ public class PlayheadNormalizer: NSObject {
         return normalizedTime
     }
     
+    /**
+            Given a raw, non-normalized time, look up the time change delta since that time
+     */
+    public func getDeltaSince(rawTime: Double) -> Double {
+        var delta = 0.0
+        if (jumpEntries.isEmpty) {
+            return delta
+        }
+        
+        // Start at the most recent, and work back
+        var index = jumpEntries.count - 1
+        while (jumpEntries[index].rawTime > rawTime) {
+            delta += jumpEntries[index].delta
+            index -= 1
+        }
+        
+        logV("[getDeltaSince] delta: \(delta)")
+        return delta
+    }
+    
+    /**
+            Given a raw base time, and the normalization that was done initially, this method will check for additional time jumps that apply and update the normalized time w/ the delta
+     
+            Given the following sequence:
+            - have an initial playhead of 1000
+            - have a jump back of -5 - raw: 995, normalized: 1001 (delta: 6)
+            - generate metadata against the normalized time: 1001
+            - have a jump forward of 7 - raw: 1002, normalized: 1002  (delta: 7)
+            - normalizeToCurrent on generated metadata (995, 1001) -> (7)ds -> (1001 - 995)i -> (-1)rd -> 1001 - -1 -> 1002
+     */
+    public func normalizeToCurrent(rawTime: Double, normalized: Double) -> Double {
+        let deltaSince = getDeltaSince(rawTime: rawTime)
+        if (deltaSince == 0.0) {
+            return normalized
+        }
+        
+        let initialDelta = normalized - rawTime
+        let remainingDelta = deltaSince - initialDelta
+        logV("[normalizeToCurrent] initial: \(normalized), \(rawTime), \(initialDelta) | remaining: \(remainingDelta) | n: \(normalized - remainingDelta)")
+        return normalized - remainingDelta
+    }
+    
     public func currentNormalizedTime() -> Double {
+        logV("[currentNormalizedTime] \(lastNormalizedPlayhead)")
         return lastNormalizedPlayhead
     }
 }
@@ -242,7 +318,7 @@ extension PlayheadNormalizer: PlayerListener {
         
         // VOD - Seek ended
         let updatedTime = player.currentTimeWithAds()
-        log("VOD Seek finished - resetting to \(updatedTime)")
+        log("Live Seek finished - resetting to \(updatedTime)")
         resetPlayheadAndJumpStatus(time: updatedTime)
         isSeeking = false
     }

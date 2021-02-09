@@ -12,6 +12,10 @@ import Yospace
 struct TimedMetadataEvent {
     let time: TimeInterval
     let metadata: YSTimedMetadata
+    
+    // Part of the iOS time jump workaround, to account for jumps that could've occurred between generation and firing
+    let rawTime: Double
+    let normalizedTime: Double
 }
 
 class DateRangeEmitter: NSObject {
@@ -95,6 +99,9 @@ class DateRangeEmitter: NSObject {
     private func generateEventsForDateRange(mediaId: String, startDate: Date, endDate: Date, player: BitmovinYospacePlayer) {
         let duration = Double(endDate - startDate)
         
+        // TODO: remove, testing only - Mock jump back before generation
+//        let _ = playheadNormalizer?.normalize(time: player.currentTimeWithAds() - 5.0)
+        
         var currentTime: Double = {
             if let playheadNormalizer = playheadNormalizer {
                 return playheadNormalizer.currentNormalizedTime()
@@ -102,8 +109,10 @@ class DateRangeEmitter: NSObject {
                 return player.currentTimeWithAds()
             }
         }()
+        let currentTimeAtStart = currentTime
+        let rawTime = player.currentTimeWithAds()
         // TODO: remove, testing only
-        print("cdg - [D.R.E] generateEventsForDateRange: \(currentTime)")
+        print("cdg - [D.R.E] generateEventsForDateRange: \(currentTime) | rawTime: \(rawTime)")
         
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
@@ -119,7 +128,7 @@ class DateRangeEmitter: NSObject {
         sEvent.timestamp = Date(timeIntervalSince1970: startWallclock)
         currentTime += adEventOffset
 
-        let sTimedMetadataEvent = TimedMetadataEvent(time: currentTime, metadata: sEvent)
+        let sTimedMetadataEvent = TimedMetadataEvent(time: currentTime, metadata: sEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart)
         fireMetadataParsedEvent(event: sTimedMetadataEvent)
         timedMetadataEvents.append(sTimedMetadataEvent)
 
@@ -134,7 +143,7 @@ class DateRangeEmitter: NSObject {
             mEvent.offset = offset
             mEvent.timestamp = Date(timeIntervalSince1970: startWallclock + offset)
 
-            let mTimedMetadataEvent = TimedMetadataEvent(time: currentTime + offset, metadata: mEvent)
+            let mTimedMetadataEvent = TimedMetadataEvent(time: currentTime + offset, metadata: mEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart)
             fireMetadataParsedEvent(event: mTimedMetadataEvent)
             timedMetadataEvents.append(mTimedMetadataEvent)
 
@@ -150,7 +159,7 @@ class DateRangeEmitter: NSObject {
         eEvent.timestamp = Date(timeIntervalSince1970: endDate.timeIntervalSince1970 + deviceOffsetFromPDT - adEventOffset)
         eEvent.offset = duration - adEventOffset
 
-        let eTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: eEvent)
+        let eTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: eEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart)
         fireMetadataParsedEvent(event: eTimedMetadataEvent)
         timedMetadataEvents.append(eTimedMetadataEvent)
 
@@ -203,11 +212,28 @@ extension DateRangeEmitter: PlayerListener {
                 return player?.currentTimeWithAds() ?? event.currentTime
             }
         }()
+        
+        // Note - it's possible that there was a time jump between when the metadata was generated, and when it was activated here
+        // Getting the delta since it was originally normalized to ensure the conditional below fires at the right time
+        // Without this, it's possible to jump ahead far enough that all beacons end up being fired at once
+        var nextEventTime = nextEvent.time
+        if let playheadNormalizer = playheadNormalizer {
+            let deltaSinceNormalization = playheadNormalizer.getDeltaSince(rawTime: nextEvent.rawTime)
+            print("cdg - [D.R.E] [onTimeChanged] deltaSinceNormalization: \(deltaSinceNormalization) | rawTime: \(nextEvent.rawTime)")
+            if (deltaSinceNormalization > 0.0) {
+                nextEventTime = playheadNormalizer.normalizeToCurrent(rawTime: nextEvent.rawTime, normalized: nextEvent.normalizedTime)
+                BitLog.d("[onTimeChanged] The delta has changed since normalizing metadata; adjusting to \(nextEventTime) from \(nextEvent.time)")
+                
+                // TODO: do the Yo/metadata/timestamp properties have to be updated as well?
+                //  how does yospace use that particular property?
+            }
+        }
+        
         // TODO: remove, testing only
-        print("cdg - [D.R.E] onTimeChanged: \(currentTime) | nextEvent.time: \(nextEvent.time)")
+        print("cdg - [D.R.E] onTimeChanged: \(currentTime) | normalized nextEvent.time: \(nextEventTime) | raw nextEvent.time: \(nextEvent.time)")
         
         // Send metadata event if playhead is within 1 second of metadata time
-        if currentTime - nextEvent.time >= -1 {
+        if currentTime - nextEventTime >= -1 {
             timedMetadataEvents.removeFirst(1)
             let metadata = nextEvent.metadata
             // TODO: remove, testing only
