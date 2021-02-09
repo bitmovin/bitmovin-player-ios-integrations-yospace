@@ -213,7 +213,7 @@ public class PlayheadNormalizer: NSObject {
         
         // Start at the most recent, and work back
         var index = jumpEntries.count - 1
-        while (jumpEntries[index].rawTime > rawTime) {
+        while (index >= 0 && jumpEntries[index].rawTime > rawTime) {
             delta += jumpEntries[index].delta
             index -= 1
         }
