@@ -60,7 +60,7 @@ class ViewController: UIViewController {
             contentUrl: "https://live-manifests-att-qa.warnermediacdn.com/csmp/cmaf/live/2018448/mml000-cbcs/master_fp_ph.m3u8?_fw_ae=%5Bfw_ae%5D&_fw_ar=%5B_fw_ar%5D&_fw_did=%5B_fw_did%5D&_fw_is_lat=%5B_fw_is_lat%5D&_fw_nielsen_app_id=P923E8EA9-9B1B-4F15-A180-F5A4FD01FE38&_fw_us_privacy=%5B_fw_us_privacy%5D&_fw_vcid2=%5B_fw_vcid2%5D&afid=180494037&caid=hylda_beta_test_asset&conf_csid=ncaa.com_mml_iphone&nw=42448&playername=top-2.1.2&prct=text%252Fhtml_doc_lit_mobile%252Ctext%252Fhtml_doc_ref&prof=48804%3Amml_ios_live&yo.asd=true&yo.dnt=false&yo.pst=true",
             fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
             fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
-            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.SV4EHc8vsJ51hRL0e8nhfg.sg72LeHo9ocvM0lVTxzNe3UXpgHqjsbzXX_AELV86llKEIqxAS97dT__Gmi7buzVQKbmZqAYJDlyWkHBgUAcyyYGh0GpbM_iv08jk9KceKNptohYnvNQ72RfZb5fxBgb8Q-KVna4j0k9irlOTPuqI-XeiZ2GNRT2eb-M6Kpx0uHm-73xz1JmHTNUaT3ETffa21wbFXHINrftAAZMfN5UMpOu42jqO88JI0Fi96eJeIyKWCUAWhhf1A.VsaIvVV_Vlr6HsgvQM4CnA",
+            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.hcU9wETKG96GJKUW5Vb7mQ.JeEpL1BSu85sEOvLi72fLAibF58_uk01pdwbghvtzfTnh4HG88mB7GHEqTYz--kWgBeL0gfIapqENku2P8eSOAeDWculu85dOdHDGbZKZS_m4Ut_4B18cE362R_U6rVz1J9uDPL4TCvniO6I-pv8xwHdIdYxmkk4R9sz5mvASlWtqSa4EwNp5cSrmPXxFHvRLdNmxzA2WNxzqI-S3t1KXxgy5wBQj2nxCVcJrrRFgFoIiZJgJqXyaA.5CeKW7zibMN4iqCqGkZcug",
             yospaceSourceConfig: .init(yospaceAssetType: .linear)
         ),
         Stream(
@@ -68,7 +68,7 @@ class ViewController: UIViewController {
             contentUrl: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2018448/mml000-cbcs/master_fp_de.m3u8?_fw_ae=&_fw_ar=&_fw_did=&_fw_is_lat=&_fw_nielsen_app_id=P923E8EA9-9B1B-4F15-A180-F5A4FD01FE38&_fw_us_privacy=&_fw_vcid2=&afid=180494037&caid=hylda_beta_test_asset&conf_csid=ncaa.com_mml_iphone&nw=42448&playername=top-2.1.2&prct=text%2Fhtml_doc_lit_mobile%2Ctext%2Fhtml_doc_ref&prof=48804:mml_ios_live&yo.asd=true&yo.dnt=false&yo.pst=true&yo.dr=true&yo.ad=true",
             fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
             fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
-            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.SV4EHc8vsJ51hRL0e8nhfg.sg72LeHo9ocvM0lVTxzNe3UXpgHqjsbzXX_AELV86llKEIqxAS97dT__Gmi7buzVQKbmZqAYJDlyWkHBgUAcyyYGh0GpbM_iv08jk9KceKNptohYnvNQ72RfZb5fxBgb8Q-KVna4j0k9irlOTPuqI-XeiZ2GNRT2eb-M6Kpx0uHm-73xz1JmHTNUaT3ETffa21wbFXHINrftAAZMfN5UMpOu42jqO88JI0Fi96eJeIyKWCUAWhhf1A.VsaIvVV_Vlr6HsgvQM4CnA",
+            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.hcU9wETKG96GJKUW5Vb7mQ.JeEpL1BSu85sEOvLi72fLAibF58_uk01pdwbghvtzfTnh4HG88mB7GHEqTYz--kWgBeL0gfIapqENku2P8eSOAeDWculu85dOdHDGbZKZS_m4Ut_4B18cE362R_U6rVz1J9uDPL4TCvniO6I-pv8xwHdIdYxmkk4R9sz5mvASlWtqSa4EwNp5cSrmPXxFHvRLdNmxzA2WNxzqI-S3t1KXxgy5wBQj2nxCVcJrrRFgFoIiZJgJqXyaA.5CeKW7zibMN4iqCqGkZcug",
             yospaceSourceConfig: .init(yospaceAssetType: .linear)
         ),
         Stream(
@@ -76,7 +76,7 @@ class ViewController: UIViewController {
             contentUrl: "https://mml-live-media-aka-qa.warnermediacdn.com/cmaf/live/2018448/mml000-cbcs/master_fp_de.m3u8",
             fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
             fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
-            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.SV4EHc8vsJ51hRL0e8nhfg.sg72LeHo9ocvM0lVTxzNe3UXpgHqjsbzXX_AELV86llKEIqxAS97dT__Gmi7buzVQKbmZqAYJDlyWkHBgUAcyyYGh0GpbM_iv08jk9KceKNptohYnvNQ72RfZb5fxBgb8Q-KVna4j0k9irlOTPuqI-XeiZ2GNRT2eb-M6Kpx0uHm-73xz1JmHTNUaT3ETffa21wbFXHINrftAAZMfN5UMpOu42jqO88JI0Fi96eJeIyKWCUAWhhf1A.VsaIvVV_Vlr6HsgvQM4CnA"
+            drmHeader: "eyJ2ZXIiOjEsInR5cCI6IkpXVCIsImVuYyI6IkExMjhHQ00ifQ.hcU9wETKG96GJKUW5Vb7mQ.JeEpL1BSu85sEOvLi72fLAibF58_uk01pdwbghvtzfTnh4HG88mB7GHEqTYz--kWgBeL0gfIapqENku2P8eSOAeDWculu85dOdHDGbZKZS_m4Ut_4B18cE362R_U6rVz1J9uDPL4TCvniO6I-pv8xwHdIdYxmkk4R9sz5mvASlWtqSa4EwNp5cSrmPXxFHvRLdNmxzA2WNxzqI-S3t1KXxgy5wBQj2nxCVcJrrRFgFoIiZJgJqXyaA.5CeKW7zibMN4iqCqGkZcug"
         ),
         Stream(
             title: "Montage FP",
