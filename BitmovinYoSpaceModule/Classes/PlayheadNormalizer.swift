@@ -63,6 +63,18 @@ public class PlayheadNormalizer: NSObject {
     
     // MARK: - private instance methods
     
+    private func reset() {
+        active = true
+        
+        lastPlayhead = 0.0
+        lastNormalizedPlayhead = 0.0
+        lastGoodDelta = 0.0
+        expectingJump = .none
+        jumpEntries = []
+        isSeeking = false
+        resetInTimeChangedUpdateCount = -1
+    }
+    
     private func log(_ msg: String) {
 //        BitLog.d("[PlayheadNormalizer] \(msg)")
         
@@ -252,6 +264,9 @@ public class PlayheadNormalizer: NSObject {
 
 extension PlayheadNormalizer: PlayerListener {
     public func onReady(_ event: ReadyEvent) {
+        // On source loaded, ensure all state is reset
+        reset()
+        
         guard let player = player else {
             return
         }
