@@ -38,6 +38,7 @@ class ViewController: UIViewController {
             integrationConfiguration: integrationConfig
         )
         player.add(listener: self)
+        player.add(integrationListener: self)
 
         return player
     }()
@@ -94,7 +95,7 @@ class ViewController: UIViewController {
         )
     ]
     
-    lazy var playheadNormalizer = PlayheadNormalizer(player: player)
+//    lazy var playheadNormalizer = PlayheadNormalizer(player: player)
     
     var selectedStreamIndex = 2
     
@@ -217,7 +218,7 @@ class ViewController: UIViewController {
     
 //    let playheadNormalizer: PlayheadNormalizer = PlayheadNormalizer()
     func testNormalizeTime(time: Double) {
-        let newTime = playheadNormalizer.normalize(time: time)
+//        let newTime = playheadNormalizer.normalize(time: time)
 //        print("[normalized] Time update: \(time) | \(newTime)")
     }
 
@@ -239,6 +240,16 @@ extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedStreamIndex = row
         streamsTextField.text = streams[row].title
+    }
+}
+
+extension ViewController: IntegrationListener {
+    func onPlayheadNormalizingStarted() {
+        print("cdg - onPlayheadNormalizingStarted")
+    }
+    
+    func onPlayheadNormalizingFinished() {
+        print("cdg - onPlayheadNormalizingFinished")
     }
 }
 
