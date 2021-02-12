@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.21.0]
+
+### Added
+- Added support for normalizing the playhead, to guard against the known Apple bug where unexpected time jumps can intermittently occur
+- Added an `IntegrationConfiguration` to toggle whether to use normalization
+
+### Changed
+- updated the `DateEmitter` to utilize the playhead normalizer, when so configured
+- changed the `BitmovinYospacePlayer` init to optionally take a `IntegrationConfiguration` instance
+
 ## [1.20.0]
 
 ### Added
