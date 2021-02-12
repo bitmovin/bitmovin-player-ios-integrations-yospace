@@ -102,6 +102,10 @@ class DateRangeEmitter: NSObject {
         // TODO: remove, testing only - Mock jump back before generation
 //        let _ = playheadNormalizer?.normalize(time: player.currentTimeWithAds() - 5.0)
         
+        // Upon receipt of timed metadata, inform the normalizer (if instantiated)
+        // This will reset any active normalization, and switch modes to attempting to ensure all the following generated metadata is always fired at the proper intervals
+        playheadNormalizer?.notifyDateRangeMetadataReceived()
+        
         var currentTime: Double = {
             if let playheadNormalizer = playheadNormalizer {
                 return playheadNormalizer.currentNormalizedTime()
@@ -112,7 +116,7 @@ class DateRangeEmitter: NSObject {
         let currentTimeAtStart = currentTime
         let rawTime = player.currentTimeWithAds()
         // TODO: remove, testing only
-        print("cdg - [D.R.E] generateEventsForDateRange: \(currentTime) | rawTime: \(rawTime)")
+        BitLog.d("cdg - [D.R.E] generateEventsForDateRange: \(currentTime) | rawTime: \(rawTime)")
         
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
@@ -165,7 +169,7 @@ class DateRangeEmitter: NSObject {
 
         BitLog.d("Generated TimedMetadataEvents: \(timedMetadataEvents.map { "\($0.metadata.timestamp), \($0.time) | " })" )
         // TODO: remove, testing only
-        timedMetadataEvents.forEach { print("cdg - [D.R.E] generated: \($0.metadata.timestamp), \($0.time)") }
+        timedMetadataEvents.forEach { BitLog.d("cdg - [D.R.E] generated: \($0.metadata.timestamp), \($0.time)") }
     }
 
     func fireMetadataParsedEvent(event: TimedMetadataEvent) {
@@ -214,30 +218,19 @@ extension DateRangeEmitter: PlayerListener {
         }()
         
         // Note - it's possible that there was a time jump between when the metadata was generated, and when it was activated here
-        // Getting the delta since it was originally normalized to ensure the conditional below fires at the right time
-        // Without this, it's possible to jump ahead far enough that all beacons end up being fired at once
-        var nextEventTime = nextEvent.time
-        if let playheadNormalizer = playheadNormalizer {
-            let deltaSinceNormalization = playheadNormalizer.getDeltaSince(rawTime: nextEvent.rawTime)
-            print("cdg - [D.R.E] [onTimeChanged] deltaSinceNormalization: \(deltaSinceNormalization) | rawTime: \(nextEvent.rawTime)")
-            if (deltaSinceNormalization > 0.0) {
-                nextEventTime = playheadNormalizer.normalizeToCurrent(rawTime: nextEvent.rawTime, normalized: nextEvent.normalizedTime)
-                BitLog.d("[onTimeChanged] The delta has changed since normalizing metadata; adjusting to \(nextEventTime) from \(nextEvent.time)")
-                
-                // TODO: do the Yo/metadata/timestamp properties have to be updated as well?
-                //  how does yospace use that particular property?
-            }
-        }
+        // If a jump does happen, the normalizer will be in ads mode and will move into normalizing for the remainder of the break
+        // That should ensure that between date range metadata receipt -> ad break finished time will increase monotonically
+        let nextEventTime = nextEvent.time
         
         // TODO: remove, testing only
-        print("cdg - [D.R.E] onTimeChanged: \(currentTime) | normalized nextEvent.time: \(nextEventTime) | raw nextEvent.time: \(nextEvent.time)")
+        BitLog.d("cdg - [D.R.E] onTimeChanged: \(currentTime) | nextEvent.time: \(nextEventTime)")
         
         // Send metadata event if playhead is within 1 second of metadata time
         if currentTime - nextEventTime >= -1 {
             timedMetadataEvents.removeFirst(1)
             let metadata = nextEvent.metadata
             // TODO: remove, testing only
-            print("cdg - [D.R.E] onTimeChanged - firing ID3: \(metadata.timestamp)")
+            BitLog.d("cdg - [D.R.E] onTimeChanged - firing ID3: \(metadata.timestamp)")
             
             // swiftlint:disable line_length
             BitLog.d("Sending metadata: currentDate=\(NSDate().timeIntervalSince1970), playerTime=\(currentTime), eventTime=\(nextEvent.time), metadataTime=\(metadata.timestamp.timeIntervalSince1970), id=\(metadata.mediaId), type=\(metadata.type), segment=\(metadata.segmentNumber), segmentCount=\(metadata.segmentCount), offset=\(metadata.offset)")
