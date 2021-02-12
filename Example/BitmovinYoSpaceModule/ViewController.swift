@@ -30,9 +30,12 @@ class ViewController: UIViewController {
         configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
         configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
 
+        let integrationConfig = IntegrationConfiguration(enablePlayheadNormalization: true)
+        
         let player = BitmovinYospacePlayer(
             configuration: configuration,
-            yospaceConfiguration: YospaceConfiguration(isDebugEnabled: true)
+            yospaceConfiguration: YospaceConfiguration(isDebugEnabled: true),
+            integrationConfiguration: integrationConfig
         )
         player.add(listener: self)
 

@@ -30,7 +30,7 @@ class DateRangeEmitter: NSObject {
     let adEventOffset = 0.1 // Offset from the start and end of the ad that we will send the S and E event
     let mEventInterval = 2.0 // Interval at which we will send M event
     
-    var playheadNormalizer: PlayheadNormalizer?
+    weak var playheadNormalizer: PlayheadNormalizer?
     
     var seekableRange: TimeRange {
         guard let player = player else {

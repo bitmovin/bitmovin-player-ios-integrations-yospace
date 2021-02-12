@@ -48,7 +48,7 @@ public class PlayheadNormalizer: NSObject {
     // Determines whether to normalize a passed time value
     private var active = false
     // The last raw playhead
-    private var lastPlayhead: Double = 0.0
+    private var lastRawPlayhead: Double = 0.0
     // The last normalized playhead
     private var lastNormalizedPlayhead: Double = 0.0
     // The last delta that did not represent an unexpected jump or a timeshift
@@ -83,7 +83,7 @@ public class PlayheadNormalizer: NSObject {
         
         setMode(.unknown)
         
-        lastPlayhead = 0.0
+        lastRawPlayhead = 0.0
         lastNormalizedPlayhead = 0.0
         lastGoodDelta = 0.0
         expectingJump = .none
@@ -130,8 +130,8 @@ public class PlayheadNormalizer: NSObject {
                 - on either a time validation clamp (PDT, ad end)
      */
     private func resetPlayheadAndJumpStatus(time: Double) {
-        log("Resetting playhead to: \(time) from \(lastPlayhead) | \(lastNormalizedPlayhead)")
-        lastPlayhead = time
+        log("Resetting playhead to: \(time) from \(lastRawPlayhead) | \(lastNormalizedPlayhead)")
+        lastRawPlayhead = time
         lastNormalizedPlayhead = time
         expectingJump = .none
     }
@@ -245,7 +245,7 @@ public class PlayheadNormalizer: NSObject {
         }
         
         log("[notifyDateRangeMetadataReceived] Resetting normalization and jump status - currently: \(expectingJump)")
-        resetPlayheadAndJumpStatus(time: lastPlayhead)
+        resetPlayheadAndJumpStatus(time: lastRawPlayhead)
         setMode(.metadataReceived)
         
         // TODO: we should likely start a timer here, and if no ad break started event has been received after a given threshold, switch to a status of unknown. Protects against an edge case were we have date range metadata, but an ad break does not start.
@@ -255,7 +255,7 @@ public class PlayheadNormalizer: NSObject {
 //        log("normalizing \(time); previous \(prevPlayhead)")
         if !processedFirstValue {
             processedFirstValue = true
-            lastPlayhead = time
+            lastRawPlayhead = time
             lastNormalizedPlayhead = time
             return lastNormalizedPlayhead
         }
@@ -268,7 +268,7 @@ public class PlayheadNormalizer: NSObject {
         }
 
         // If the given time delta is over the respective thresholds, treat it as an unexpected jump
-        let delta = time - lastPlayhead
+        let delta = time - lastRawPlayhead
 
         // If we've scheduled a reset in x number of time changed updates, reset here if appropriate
         if resetInTimeChangedUpdateCount > 0 {
@@ -311,7 +311,7 @@ public class PlayheadNormalizer: NSObject {
             }
         }
 
-        lastPlayhead = time
+        lastRawPlayhead = time
         lastNormalizedPlayhead = normalizedTime
         return normalizedTime
     }
