@@ -38,7 +38,8 @@ public class PlayheadNormalizer: NSObject {
     let maxDefaultUnexpectedJumpBack = -0.5
 
     private weak var player: BitmovinYospacePlayer?
-
+    private weak var eventDelegate: PlayheadNormalizerEventDelegate?
+    
     // What mode we're in drives how any normalization is done
     private var mode: Mode = .unknown
     // For this pass, only normalize when we think we're in an ad-like mode
@@ -69,9 +70,11 @@ public class PlayheadNormalizer: NSObject {
 
     // MARK: - initializer
 
-    public init (player: BitmovinYospacePlayer) {
+    init (player: BitmovinYospacePlayer, eventDelegate: PlayheadNormalizerEventDelegate) {
         super.init()
         self.player = player
+        self.eventDelegate = eventDelegate
+        
         self.player?.add(listener: self)
         self.log("Initialized")
     }
@@ -133,12 +136,29 @@ public class PlayheadNormalizer: NSObject {
         log("Resetting playhead to: \(time) from \(lastRawPlayhead) | \(lastNormalizedPlayhead)")
         lastRawPlayhead = time
         lastNormalizedPlayhead = time
-        expectingJump = .none
+        
+        setExpectingJump(.none)
     }
     
     private func setMode(_ newMode: Mode) {
         log("[setMode] updating from \(mode) to \(newMode)")
         mode = newMode
+    }
+    
+    private func setExpectingJump(_ jump: Jump) {
+        if (jump == expectingJump) {
+            return
+        }
+        
+        log("[setExpectingJump] updating from \(expectingJump) to \(jump)")
+        expectingJump = jump
+        
+        if (expectingJump != .none) {
+            eventDelegate?.normalizingStarted()
+        } else {
+            eventDelegate?.normalizingFinished()
+        }
+        
     }
     
     // MARK: - private instance methods, default / media playing modes
@@ -156,12 +176,12 @@ public class PlayheadNormalizer: NSObject {
                 // We jumped forward, and were expecting it
                 log("✅ Received expected jump \(expectingJump) of \(delta); reset playhead to \(time)")
                 normalizedTime = time
-                expectingJump = .none
+                setExpectingJump(.none)
                 addJumpEntry(rawTime: time, delta: delta)
                 // TODO: ideally we have another check to clamp the bounds, to ensure the reverse jump was valid
             } else {
                 // We jumped forward, and weren't expecting it
-                expectingJump = .backwards
+                setExpectingJump(.backwards)
                 normalizedTime = incrementPrev()
                 log("❌ Unexpected jump forwards of \(delta); normalizing \(time) to \(normalizedTime)")
                 addJumpEntry(rawTime: time, delta: delta)
@@ -171,12 +191,12 @@ public class PlayheadNormalizer: NSObject {
                 // We jumped backwards, and were expecting it
                 log("✅ Received expected jump \(expectingJump) of \(delta); reset playhead to \(time)")
                 normalizedTime = time
-                expectingJump = .none
+                setExpectingJump(.none)
                 addJumpEntry(rawTime: time, delta: delta)
                 // TODO: ideally we have another check to clamp the bounds, to ensure the reverse jump was valid
             } else {
                 // We jumped backward, and weren't expecting it
-                expectingJump = .forwards
+                setExpectingJump(.forwards)
                 normalizedTime = incrementPrev()
                 log("❌ Unexpected jump backwards of \(delta); normalizing \(time) to \(normalizedTime)")
                 addJumpEntry(rawTime: time, delta: delta)
@@ -217,13 +237,13 @@ public class PlayheadNormalizer: NSObject {
             log("Waiting for jump; normalizing incrementally to \(normalizedTime)")
         } else if delta > maxAdsUnexpectedJumpForward {
             // We jumped forward, and weren't expecting it
-            expectingJump = .backwards
+            setExpectingJump(.backwards)
             normalizedTime = incrementPrev()
             log("❌ Unexpected jump forwards of \(delta); normalizing \(time) to \(normalizedTime)")
             addJumpEntry(rawTime: time, delta: delta)
         } else if delta < maxAdsUnexpectedJumpBack {
             // We jumped backward, and weren't expecting it
-            expectingJump = .forwards
+            setExpectingJump(.forwards)
             normalizedTime = incrementPrev()
             log("❌ Unexpected jump backwards of \(delta); normalizing \(time) to \(normalizedTime)")
             addJumpEntry(rawTime: time, delta: delta)

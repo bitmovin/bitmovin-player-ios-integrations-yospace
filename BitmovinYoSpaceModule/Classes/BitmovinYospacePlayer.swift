@@ -26,6 +26,7 @@ open class BitmovinYospacePlayer: Player {
     var truexConfiguration: TruexConfiguration?
     var dateRangeEmitter: DateRangeEmitter?
     var playheadNormalizer: PlayheadNormalizer?
+    var integrationListeners: [IntegrationListener] = []
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
     var liveAdPaused = false
@@ -104,7 +105,7 @@ open class BitmovinYospacePlayer: Player {
         if let integrationConfiguration = self.integrationConfiguration {
             // Using playhead normalization is opt-in
             if (integrationConfiguration.enablePlayheadNormalization) {
-                self.playheadNormalizer = PlayheadNormalizer(player: self)
+                self.playheadNormalizer = PlayheadNormalizer(player: self, eventDelegate: self)
             }
         }
         self.dateRangeEmitter = DateRangeEmitter(player: self, normalizer: playheadNormalizer)
@@ -112,6 +113,7 @@ open class BitmovinYospacePlayer: Player {
 
     open override func destroy() {
         resetYospaceSession()
+        integrationListeners.removeAll()
         yospaceListeners.removeAll()
         listeners.removeAll()
         super.destroy()
@@ -250,6 +252,14 @@ open class BitmovinYospacePlayer: Player {
     public func remove(yospaceListener: YospaceListener) {
         yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
     }
+    
+    public func add(integrationListener: IntegrationListener) {
+        integrationListeners.append(integrationListener)
+    }
+
+    public func remove(integrationListener: IntegrationListener) {
+        integrationListeners = integrationListeners.filter { $0 !== integrationListener }
+    }
 
     public func linearClickThroughDidOccur() {
         sessionManager?.linearClickThroughDidOccur()
@@ -338,6 +348,21 @@ open class BitmovinYospacePlayer: Player {
 
     public func getActiveAd() -> YospaceAd? {
         return activeAd
+    }
+}
+
+// MARK: - PlayheadNormalizerEventDelegate
+extension BitmovinYospacePlayer: PlayheadNormalizerEventDelegate {
+    func normalizingStarted() {
+        for listener in integrationListeners {
+            listener.onPlayheadNormalizingStarted()
+        }
+    }
+    
+    func normalizingFinished() {
+        for listener in integrationListeners {
+            listener.onPlayheadNormalizingFinished()
+        }
     }
 }
 
