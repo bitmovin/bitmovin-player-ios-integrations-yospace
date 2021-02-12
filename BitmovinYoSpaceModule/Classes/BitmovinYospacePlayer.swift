@@ -15,6 +15,7 @@ open class BitmovinYospacePlayer: Player {
     var sessionStatus: SessionStatus = .notInitialised
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var yospaceConfiguration: YospaceConfiguration?
+    var integrationConfiguration: IntegrationConfiguration?
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
     var yospacePlayerPolicy: YospacePlayerPolicy?
@@ -24,6 +25,8 @@ open class BitmovinYospacePlayer: Player {
     var realAdBreaks: [YSAdBreak] = []
     var truexConfiguration: TruexConfiguration?
     var dateRangeEmitter: DateRangeEmitter?
+    var playheadNormalizer: PlayheadNormalizer?
+    var integrationListeners: [IntegrationListener] = []
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
     var liveAdPaused = false
@@ -86,18 +89,31 @@ open class BitmovinYospacePlayer: Player {
      - configuration: Traditional PlayerConfiguration used by Bitmovin
      - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
      */
-    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration?) {
+    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration? = nil, integrationConfiguration: IntegrationConfiguration? = nil) {
         self.yospaceConfiguration = yospaceConfiguration
+        self.integrationConfiguration = integrationConfiguration
         super.init(configuration: configuration)
         sessionStatus = .notInitialised
         super.add(listener: self)
-        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
-        self.dateRangeEmitter = DateRangeEmitter(player: self)
+        
         BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? false
+        self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
+        
+        // For the immediate, only utilizing the normalizer inside the DateEmitter, as that solves the most pressing problems
+        // We can potentially expand to normalizing all time values post-validation
+        // Note - we may need to initialize the normalizer before adding listeners here, to give event handler precedence to the normalizer
+        if let integrationConfiguration = self.integrationConfiguration {
+            // Using playhead normalization is opt-in
+            if (integrationConfiguration.enablePlayheadNormalization) {
+                self.playheadNormalizer = PlayheadNormalizer(player: self, eventDelegate: self)
+            }
+        }
+        self.dateRangeEmitter = DateRangeEmitter(player: self, normalizer: playheadNormalizer)
     }
 
     open override func destroy() {
         resetYospaceSession()
+        integrationListeners.removeAll()
         yospaceListeners.removeAll()
         listeners.removeAll()
         super.destroy()
@@ -236,6 +252,14 @@ open class BitmovinYospacePlayer: Player {
     public func remove(yospaceListener: YospaceListener) {
         yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
     }
+    
+    public func add(integrationListener: IntegrationListener) {
+        integrationListeners.append(integrationListener)
+    }
+
+    public func remove(integrationListener: IntegrationListener) {
+        integrationListeners = integrationListeners.filter { $0 !== integrationListener }
+    }
 
     public func linearClickThroughDidOccur() {
         sessionManager?.linearClickThroughDidOccur()
@@ -324,6 +348,21 @@ open class BitmovinYospacePlayer: Player {
 
     public func getActiveAd() -> YospaceAd? {
         return activeAd
+    }
+}
+
+// MARK: - PlayheadNormalizerEventDelegate
+extension BitmovinYospacePlayer: PlayheadNormalizerEventDelegate {
+    func normalizingStarted() {
+        for listener in integrationListeners {
+            listener.onPlayheadNormalizingStarted()
+        }
+    }
+    
+    func normalizingFinished() {
+        for listener in integrationListeners {
+            listener.onPlayheadNormalizingFinished()
+        }
     }
 }
 
@@ -772,6 +811,11 @@ extension BitmovinYospacePlayer: PlayerListener {
             }
             liveAdPaused = false
         }
+        
+        // Send to the normalizer so the date emitter can use the normalized value
+        // Future use could propagate to the event as well, for media time
+        let _ = playheadNormalizer?.normalize(time: self.currentTimeWithAds())
+        
         for listener: PlayerListener in listeners {
             listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime))
         }
