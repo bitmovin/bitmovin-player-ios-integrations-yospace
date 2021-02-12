@@ -1,6 +1,6 @@
 PODS:
   - BitmovinPlayer (2.59.0)
-  - BitmovinYospaceModule (1.20.0):
+  - BitmovinYospaceModule (1.21.0):
     - BitmovinPlayer (= 2.59.0)
     - TruexAdRenderer-iOS (= 3.2.1)
   - TruexAdRenderer-iOS (3.2.1)
@@ -22,9 +22,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BitmovinPlayer: 67a7d39ca6cdc716c0eaf3bd74894d7d1d42cd2d
-  BitmovinYospaceModule: 0f2b67ab2130117b238aaa1184d79c961c381d24
+  BitmovinYospaceModule: 9e9b00220f81e1fd6c7a907d582c855c5515c588
   TruexAdRenderer-iOS: ae88dfba906c2ec8ad6f4a6ad150e42f2bbc3726
 
 PODFILE CHECKSUM: 5ed1426315f21fa2a74b6942675f064bcce53015
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.9.3
