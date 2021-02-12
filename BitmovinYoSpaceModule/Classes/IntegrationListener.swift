@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol IntegrationListener: class {
+public protocol IntegrationListener: AnyObject {
     func onPlayheadNormalizingStarted()
     func onPlayheadNormalizingFinished()
 }
