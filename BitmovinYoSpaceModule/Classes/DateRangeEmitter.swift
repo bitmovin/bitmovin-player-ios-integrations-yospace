@@ -99,9 +99,6 @@ class DateRangeEmitter: NSObject {
     private func generateEventsForDateRange(mediaId: String, startDate: Date, endDate: Date, player: BitmovinYospacePlayer) {
         let duration = Double(endDate - startDate)
         
-        // TODO: remove, testing only - Mock jump back before generation
-//        let _ = playheadNormalizer?.normalize(time: player.currentTimeWithAds() - 5.0)
-        
         // Upon receipt of timed metadata, inform the normalizer (if instantiated)
         // This will reset any active normalization, and switch modes to attempting to ensure all the following generated metadata is always fired at the proper intervals
         playheadNormalizer?.notifyDateRangeMetadataReceived()
@@ -115,8 +112,6 @@ class DateRangeEmitter: NSObject {
         }()
         let currentTimeAtStart = currentTime
         let rawTime = player.currentTimeWithAds()
-        // TODO: remove, testing only
-        BitLog.d("cdg - [D.R.E] generateEventsForDateRange: \(currentTime) | rawTime: \(rawTime)")
         
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
@@ -167,9 +162,7 @@ class DateRangeEmitter: NSObject {
         fireMetadataParsedEvent(event: eTimedMetadataEvent)
         timedMetadataEvents.append(eTimedMetadataEvent)
 
-        BitLog.d("Generated TimedMetadataEvents: \(timedMetadataEvents.map { "\($0.metadata.timestamp), \($0.time) | " })" )
-        // TODO: remove, testing only
-        timedMetadataEvents.forEach { BitLog.d("cdg - [D.R.E] generated: \($0.metadata.timestamp), \($0.time)") }
+        timedMetadataEvents.forEach { BitLog.d("generated event: \($0.metadata.timestamp), \($0.time)") }
     }
 
     func fireMetadataParsedEvent(event: TimedMetadataEvent) {
@@ -222,15 +215,11 @@ extension DateRangeEmitter: PlayerListener {
         // That should ensure that between date range metadata receipt -> ad break finished time will increase monotonically
         let nextEventTime = nextEvent.time
         
-        // TODO: remove, testing only
-        BitLog.d("cdg - [D.R.E] onTimeChanged: \(currentTime) | nextEvent.time: \(nextEventTime)")
-        
         // Send metadata event if playhead is within 1 second of metadata time
         if currentTime - nextEventTime >= -1 {
             timedMetadataEvents.removeFirst(1)
             let metadata = nextEvent.metadata
-            // TODO: remove, testing only
-            BitLog.d("cdg - [D.R.E] onTimeChanged - firing ID3: \(metadata.timestamp)")
+            BitLog.d("[onTimeChanged] - firing ID3: \(metadata.timestamp)")
             
             // swiftlint:disable line_length
             BitLog.d("Sending metadata: currentDate=\(NSDate().timeIntervalSince1970), playerTime=\(currentTime), eventTime=\(nextEvent.time), metadataTime=\(metadata.timestamp.timeIntervalSince1970), id=\(metadata.mediaId), type=\(metadata.type), segment=\(metadata.segmentNumber), segmentCount=\(metadata.segmentCount), offset=\(metadata.offset)")

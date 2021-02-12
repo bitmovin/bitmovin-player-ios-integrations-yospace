@@ -96,11 +96,7 @@ public class PlayheadNormalizer: NSObject {
     }
     
     private func log(_ msg: String) {
-//        BitLog.d("[PlayheadNormalizer] \(msg)")
-
-        // For targeted test logging always prefix for now
-        // TODO: Switch to the above before merging
-        BitLog.d("cdg - [PlayheadNormalizer] \(msg)")
+        BitLog.d("\(msg)")
     }
 
     private func logV(_ msg: String) {
