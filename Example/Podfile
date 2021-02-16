@@ -4,6 +4,8 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
     pod 'BitmovinPlayer', '2.60.0'
+    pod 'BitmovinAnalyticsCollector/Core', git: 'https://github.com/bitmovin/bitmovin-analytics-collector-ios.git', tag: '1.17.0'
+    pod 'BitmovinAnalyticsCollector/BitmovinPlayer', git: 'https://github.com/bitmovin/bitmovin-analytics-collector-ios.git', tag: '1.17.0'
 end
 
 target 'BitmovinYospaceModule_Example' do

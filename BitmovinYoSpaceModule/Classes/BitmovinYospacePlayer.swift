@@ -1,6 +1,7 @@
 import UIKit
 import BitmovinPlayer
 import Yospace
+import BitmovinAnalyticsCollector
 
 enum SessionStatus: Int {
     case notInitialised
@@ -30,6 +31,7 @@ open class BitmovinYospacePlayer: Player {
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
     var liveAdPaused = false
+    var analyticsCollector: BitmovinAnalytics?
 
     #if os(iOS)
     private var truexRenderer: BitmovinTruexRenderer?
@@ -108,10 +110,17 @@ open class BitmovinYospacePlayer: Player {
                 self.playheadNormalizer = PlayheadNormalizer(player: self, eventDelegate: self)
             }
         }
+        
+        if let analyticsConfig = yospaceConfiguration.analyticsConfig {
+            analyticsCollector = BitmovinAnalytics(config: analyticsConfig)
+            analyticsCollector?.attachBitmovinPlayer(player: self)
+        }
+        
         self.dateRangeEmitter = DateRangeEmitter(player: self, normalizer: playheadNormalizer)
     }
 
     open override func destroy() {
+        analyticsCollector?.detachPlayer()
         resetYospaceSession()
         integrationListeners.removeAll()
         yospaceListeners.removeAll()

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BitmovinAnalyticsCollector
 
 public class YospaceConfiguration {
     // MARK: - Yospace Configuration attributes
@@ -14,6 +15,7 @@ public class YospaceConfiguration {
     let timeout: TimeInterval?
     let pollingInterval: Int?
     let isDebugEnabled: Bool
+    let analyticsConfig: BitmovinAnalyticsConfig?
 
     // MARK: - initializer
     /**
@@ -25,10 +27,11 @@ public class YospaceConfiguration {
      - timeout: HTTP timeout value in millisenconds to be used for Yospace HTTP requests
      
      */
-    public init(userAgent: String? = nil, timeout: TimeInterval? = nil, pollingInterval: Int? = nil, isDebugEnabled: Bool = false) {
+    public init(userAgent: String? = nil, timeout: TimeInterval? = nil, pollingInterval: Int? = nil, isDebugEnabled: Bool = false, analyticsConfig: BitmovinAnalyticsConfig? = nil) {
         self.userAgent = userAgent
         self.timeout = timeout
         self.pollingInterval = pollingInterval
         self.isDebugEnabled = isDebugEnabled
+        self.analyticsConfig = analyticsConfig
     }
 }
