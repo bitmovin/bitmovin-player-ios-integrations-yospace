@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+
+### Changed
+- `IntegrationConfiguration` to `BitmovinYospaceIntegration`
+- Added `PlayerConfiguration` and `YospaceConfiguration` to `BitmovinYospaceIntegration`
+
 ## [1.22.0]
 
 ### Changed
