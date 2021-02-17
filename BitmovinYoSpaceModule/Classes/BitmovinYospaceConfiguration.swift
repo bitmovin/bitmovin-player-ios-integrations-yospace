@@ -1,5 +1,5 @@
 //
-//  IntegrationConfiguration.swift
+//  BitmovinYospaceConfiguration.swift
 //  Pods
 //
 //  Created by cdg on 2/11/21.
