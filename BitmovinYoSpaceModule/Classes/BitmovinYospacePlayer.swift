@@ -14,8 +14,7 @@ open class BitmovinYospacePlayer: Player {
     var yospaceStream: YSStream?
     var sessionStatus: SessionStatus = .notInitialised
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
-    var yospaceConfiguration: YospaceConfiguration?
-    var integrationConfiguration: IntegrationConfiguration?
+    var configuration: BitmovinYospaceConfiguration
     var sourceConfiguration: SourceConfiguration?
     var listeners: [PlayerListener] = []
     var yospacePlayerPolicy: YospacePlayerPolicy?
@@ -89,24 +88,21 @@ open class BitmovinYospacePlayer: Player {
      - configuration: Traditional PlayerConfiguration used by Bitmovin
      - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
      */
-    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration? = nil, integrationConfiguration: IntegrationConfiguration? = nil) {
-        self.yospaceConfiguration = yospaceConfiguration
-        self.integrationConfiguration = integrationConfiguration
-        super.init(configuration: configuration)
+    public init(configuration: BitmovinYospaceConfiguration) {
+        self.configuration = configuration
+        super.init(configuration: configuration.playerConfiguration)
         sessionStatus = .notInitialised
         super.add(listener: self)
         
-        BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? false
+        BitLog.isEnabled = configuration.yospaceConfiguration?.isDebugEnabled ?? false
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         
         // For the immediate, only utilizing the normalizer inside the DateEmitter, as that solves the most pressing problems
         // We can potentially expand to normalizing all time values post-validation
         // Note - we may need to initialize the normalizer before adding listeners here, to give event handler precedence to the normalizer
-        if let integrationConfiguration = self.integrationConfiguration {
-            // Using playhead normalization is opt-in
-            if (integrationConfiguration.enablePlayheadNormalization) {
-                self.playheadNormalizer = PlayheadNormalizer(player: self, eventDelegate: self)
-            }
+        // Using playhead normalization is opt-in
+        if configuration.enablePlayheadNormalization {
+            self.playheadNormalizer = PlayheadNormalizer(player: self, eventDelegate: self)
         }
         self.dateRangeEmitter = DateRangeEmitter(player: self, normalizer: playheadNormalizer)
     }
@@ -166,20 +162,20 @@ open class BitmovinYospacePlayer: Player {
         let yospaceProperties = YSSessionProperties()
         yospaceProperties.suppressAllAnalytics = true
 
-        if let timeout = yospaceConfiguration?.timeout {
+        if let timeout = configuration.yospaceConfiguration?.timeout {
             yospaceProperties.timeout = timeout
         }
 
-        if let pollingInterval = yospaceConfiguration?.pollingInterval {
+        if let pollingInterval = configuration.yospaceConfiguration?.pollingInterval {
             yospaceProperties.targetDuration = pollingInterval
         }
 
-        if let userAgent = yospaceConfiguration?.userAgent {
+        if let userAgent = configuration.yospaceConfiguration?.userAgent {
             yospaceProperties.analyticsUserAgent = userAgent
             yospaceProperties.redirectUserAgent = userAgent
         }
 
-        if yospaceConfiguration?.isDebugEnabled == true {
+        if configuration.yospaceConfiguration?.isDebugEnabled == true {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ALL.rawValue)
             YSSessionProperties.add(_:combined!)
         }
