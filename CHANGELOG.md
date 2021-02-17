@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased]
 
 ### Changed
-- `IntegrationConfiguration` to `BitmovinYospaceIntegration`
+- `IntegrationConfiguration` class name to `BitmovinYospaceIntegration`
 - Added `PlayerConfiguration` and `YospaceConfiguration` to `BitmovinYospaceIntegration`
 
 ## [1.22.0]
