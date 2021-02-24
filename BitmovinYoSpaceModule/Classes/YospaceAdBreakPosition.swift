@@ -7,6 +7,7 @@
 
 import Foundation
 
+@frozen
 public enum YospaceAdBreakPosition: String {
     case preroll, midroll, postroll, unknown
 }
