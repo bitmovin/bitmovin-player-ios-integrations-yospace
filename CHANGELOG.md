@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.22.1]
+
+### Changed
+- Mark all public structs and enums as frozen
+
 ## [1.22.0]
 
 ### Changed

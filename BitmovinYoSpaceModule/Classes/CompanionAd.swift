@@ -7,16 +7,19 @@
 
 import Foundation
 
+@frozen
 public enum CompanionAdType {
     case html
     case `static`
 }
 
+@frozen
 public struct CompanionAdResource {
     public let source: String?
     public let type: CompanionAdType
 }
 
+@frozen
 public struct CompanionAd {
     public let id: String?
     public let adSlotId: String?
