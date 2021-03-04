@@ -88,7 +88,6 @@ class DateRangeEmitter: NSObject {
         }
 
         // Generate Yospace timed metadata events based on EXT-X-DATERANGE tag just processed
-        BitLog.d("cdg - trackEmsg: generateEventsForDateRange")
         generateEventsForDateRange(
             mediaId: mediaId,
             startDate: dateRangeMetadata.startDate,
