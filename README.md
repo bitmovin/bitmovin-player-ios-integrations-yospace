@@ -110,7 +110,7 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 ```
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.22.1'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.22.2'
   pod 'BitmovinPlayer', tag: '2.41.0'
 
   use_frameworks!
