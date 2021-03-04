@@ -761,17 +761,15 @@ extension BitmovinYospacePlayer: PlayerListener {
         // parse it and track it as an ID3
         //
         // If onMetadata does fire afterwards, it will be ignored by handling in DateRangeEmitter
-        if (receivedFirstPlayhead == false) {
+        if receivedFirstPlayhead == false {
             if yospaceSourceConfiguration?.yospaceAssetType == .linear {
-                if event.metadataType == .daterange {
-                    if let dateRangeMetadata = event.metadata as? DaterangeMetadata {
-                        let metadataTime = String(format: "%.2f", dateRangeMetadata.startDate.timeIntervalSince1970)
-                        let currentTime = String(format: "%.2f", self.currentTimeWithAds())
-                        BitLog.d("cdg - onMetadataParsed: dateRange | \(metadataTime) | \(currentTime)")
-                        if (metadataTime == currentTime) {
-                            BitLog.d("cdg - onMetadataParsed: tracking initial emsg")
-                            dateRangeEmitter?.trackEmsg(event)
-                        }
+                if let dateRangeMetadata = event.metadata as? DaterangeMetadata {
+                    let metadataTime = String(format: "%.2f", dateRangeMetadata.startDate.timeIntervalSince1970)
+                    let currentTime = String(format: "%.2f", self.currentTimeWithAds())
+                    BitLog.d("cdg - onMetadataParsed: dateRange | \(metadataTime) | \(currentTime)")
+                    if metadataTime == currentTime {
+                        BitLog.d("cdg - onMetadataParsed: tracking initial emsg")
+                        dateRangeEmitter?.trackEmsg(event)
                     }
                 }
             }
