@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.22.2]
+
+### Added
+- Missing `onMetadata` workaround to use `onMetadataParsed` to generate ID3 for first `MetadataParsedEvent` in session
+
 ## [1.22.1]
 
 ### Changed
