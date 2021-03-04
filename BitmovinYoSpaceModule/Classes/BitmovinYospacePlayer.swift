@@ -26,6 +26,7 @@ open class BitmovinYospacePlayer: Player {
     var truexConfiguration: TruexConfiguration?
     var dateRangeEmitter: DateRangeEmitter?
     var playheadNormalizer: PlayheadNormalizer?
+    var receivedFirstPlayhead: Bool = false
     var integrationListeners: [IntegrationListener] = []
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
@@ -282,6 +283,7 @@ open class BitmovinYospacePlayer: Player {
         self.activeAdBreak = nil
         liveAdPaused = false
         sessionStatus = .notInitialised
+        receivedFirstPlayhead = false
         #if os(iOS)
         self.truexRenderer?.stopRenderer()
         #endif
@@ -752,6 +754,31 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
+    public func onMetadataParsed(_ event: MetadataParsedEvent) {
+        // Note - this is a workaround for the intermittent missing iOS metadata issue,
+        // where on start of the stream, date range metadata is not always being propagated to onMetadata
+        // It is surfaced as parsed metadata, so we'll check here if it's the correct type and time, and if so,
+        // parse it and track it as an ID3
+        //
+        // If onMetadata does fire afterwards, it will be ignored by handling in DateRangeEmitter
+        if receivedFirstPlayhead == false {
+            if yospaceSourceConfiguration?.yospaceAssetType == .linear {
+                if let dateRangeMetadata = event.metadata as? DaterangeMetadata {
+                    let metadataTime = String(format: "%.2f", dateRangeMetadata.startDate.timeIntervalSince1970)
+                    let currentTime = String(format: "%.2f", self.currentTimeWithAds())
+                    if metadataTime == currentTime {
+                        BitLog.d("onMetadataParsed: tracking initial emsg")
+                        dateRangeEmitter?.trackEmsg(event)
+                    }
+                }
+            }
+        }
+        
+        for listener: PlayerListener in listeners {
+            listener.onMetadataParsed?(event)
+        }
+    }
+    
     public func onMetadata(_ event: MetadataEvent) {
         if yospaceSourceConfiguration?.yospaceAssetType == .linear {
             if event.metadataType == .ID3 {
@@ -770,12 +797,6 @@ extension BitmovinYospacePlayer: PlayerListener {
         if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {
             let dictionary = [kYoMetadataKey: meta]
             self.notify(dictionary: dictionary, name: YoTimedMetadataNotification)
-        }
-    }
-
-    public func onMetadataParsed(_ event: MetadataParsedEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onMetadataParsed?(event)
         }
     }
 
@@ -802,6 +823,8 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onTimeChanged(_ event: TimeChangedEvent) {
+        receivedFirstPlayhead = true
+        
         if liveAdPaused {
             if let adBreak = activeAdBreak, let advert = activeAd {
                 // Send skip event if live window has moved beyond paused ad
