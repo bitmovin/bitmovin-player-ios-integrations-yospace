@@ -766,9 +766,8 @@ extension BitmovinYospacePlayer: PlayerListener {
                 if let dateRangeMetadata = event.metadata as? DaterangeMetadata {
                     let metadataTime = String(format: "%.2f", dateRangeMetadata.startDate.timeIntervalSince1970)
                     let currentTime = String(format: "%.2f", self.currentTimeWithAds())
-                    BitLog.d("cdg - onMetadataParsed: dateRange | \(metadataTime) | \(currentTime)")
                     if metadataTime == currentTime {
-                        BitLog.d("cdg - onMetadataParsed: tracking initial emsg")
+                        BitLog.d("onMetadataParsed: tracking initial emsg")
                         dateRangeEmitter?.trackEmsg(event)
                     }
                 }
@@ -785,7 +784,6 @@ extension BitmovinYospacePlayer: PlayerListener {
             if event.metadataType == .ID3 {
                 trackId3(event)
             } else if event.metadataType == .daterange {
-                BitLog.d("cdg - onMetadata: dateRangee | \(event.timestamp) | \(self.currentTimeWithAds())")
                 dateRangeEmitter?.trackEmsg(event)
             }
         }
