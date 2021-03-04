@@ -77,7 +77,7 @@ class DateRangeEmitter: NSObject {
 
         // Ignore date if less than 10 seconds apart from previous
         if let date = previousMetadataDate, abs(date - dateRangeMetadata.startDate) < 10 {
-            BitLog.d("Duplicate metadata received - \(dateRangeMetadata.startDate)")
+            BitLog.d("cdg - Duplicate metadata received - \(dateRangeMetadata.startDate)")
             return
         }
 
@@ -88,6 +88,7 @@ class DateRangeEmitter: NSObject {
         }
 
         // Generate Yospace timed metadata events based on EXT-X-DATERANGE tag just processed
+        BitLog.d("cdg - trackEmsg: generateEventsForDateRange")
         generateEventsForDateRange(
             mediaId: mediaId,
             startDate: dateRangeMetadata.startDate,

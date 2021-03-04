@@ -271,7 +271,7 @@ extension ViewController: PlayerListener {
     }
     
     func onMetadataParsed(_ event: MetadataParsedEvent) {
-        print("cdg - metadataParsed - \(event.metadataType), \(event.metadata.entries)")
+        print("c.extra - metadataParsed - \(event.metadataType), \(event.metadata.entries)")
     }
     
     func onSourceUnloaded(_ event: SourceUnloadedEvent) {
