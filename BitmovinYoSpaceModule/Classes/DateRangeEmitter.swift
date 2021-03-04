@@ -77,7 +77,7 @@ class DateRangeEmitter: NSObject {
 
         // Ignore date if less than 10 seconds apart from previous
         if let date = previousMetadataDate, abs(date - dateRangeMetadata.startDate) < 10 {
-            BitLog.d("cdg - Duplicate metadata received - \(dateRangeMetadata.startDate)")
+            BitLog.d("Duplicate metadata received - \(dateRangeMetadata.startDate)")
             return
         }
 
