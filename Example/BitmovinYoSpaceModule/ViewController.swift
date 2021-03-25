@@ -28,14 +28,14 @@ class ViewController: UIViewController {
         let playerConfig = PlayerConfiguration()
         playerConfig.playbackConfiguration.isAutoplayEnabled = true
         playerConfig.tweaksConfiguration.isNativeHlsParsingEnabled = true
-        playerConfig.tweaksConfiguration.isNativeHlsParsingEnabled = true
 
-        let yospaceConfig = YospaceConfiguration(isDebugEnabled: true)
+        let yospaceConfig = YospaceConfiguration(debug: true)
         
         let bitmovinYospaceConfig = BitmovinYospaceConfiguration(
             playerConfiguration: playerConfig,
             yospaceConfiguration: yospaceConfig,
-            enablePlayheadNormalization: true
+            enablePlayheadNormalization: true,
+            debug: true
         )
         
         let player = BitmovinYospacePlayer(configuration: bitmovinYospaceConfig)

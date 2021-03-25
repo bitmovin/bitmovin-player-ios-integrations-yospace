@@ -93,10 +93,10 @@ open class BitmovinYospacePlayer: Player {
         super.init(configuration: configuration.playerConfiguration)
         sessionStatus = .notInitialised
         super.add(listener: self)
-        
-        BitLog.isEnabled = configuration.yospaceConfiguration?.isDebugEnabled ?? false
+
+        BitLog.isEnabled = configuration.debug
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
-        
+
         // For the immediate, only utilizing the normalizer inside the DateEmitter, as that solves the most pressing problems
         // We can potentially expand to normalizing all time values post-validation
         // Note - we may need to initialize the normalizer before adding listeners here, to give event handler precedence to the normalizer
@@ -175,7 +175,7 @@ open class BitmovinYospacePlayer: Player {
             yospaceProperties.redirectUserAgent = userAgent
         }
 
-        if configuration.yospaceConfiguration?.isDebugEnabled == true {
+        if configuration.yospaceConfiguration?.debug == true {
             let combined = YSEDebugFlags(rawValue: YSEDebugFlags.DEBUG_ALL.rawValue)
             YSSessionProperties.add(_:combined!)
         }
@@ -248,7 +248,7 @@ open class BitmovinYospacePlayer: Player {
     public func remove(yospaceListener: YospaceListener) {
         yospaceListeners = yospaceListeners.filter { $0 !== yospaceListener }
     }
-    
+
     public func add(integrationListener: IntegrationListener) {
         integrationListeners.append(integrationListener)
     }
@@ -354,7 +354,7 @@ extension BitmovinYospacePlayer: PlayheadNormalizerEventDelegate {
             listener.onPlayheadNormalizingStarted()
         }
     }
-    
+
     func normalizingFinished() {
         for listener in integrationListeners {
             listener.onPlayheadNormalizingFinished()
@@ -807,11 +807,11 @@ extension BitmovinYospacePlayer: PlayerListener {
             }
             liveAdPaused = false
         }
-        
+
         // Send to the normalizer so the date emitter can use the normalized value
         // Future use could propagate to the event as well, for media time
-        let _ = playheadNormalizer?.normalize(time: self.currentTimeWithAds())
-        
+        _ = playheadNormalizer?.normalize(time: self.currentTimeWithAds())
+
         for listener: PlayerListener in listeners {
             listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime))
         }
