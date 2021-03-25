@@ -25,18 +25,20 @@ class ViewController: UIViewController {
     @IBOutlet weak var streamsTextField: UITextField!
     
     lazy var player: BitmovinYospacePlayer = {
-        let configuration = PlayerConfiguration()
-        configuration.playbackConfiguration.isAutoplayEnabled = true
-        configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
-        configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
+        let playerConfig = PlayerConfiguration()
+        playerConfig.playbackConfiguration.isAutoplayEnabled = true
+        playerConfig.tweaksConfiguration.isNativeHlsParsingEnabled = true
 
-        let integrationConfig = IntegrationConfiguration(enablePlayheadNormalization: true)
+        let yospaceConfig = YospaceConfiguration(debug: true)
         
-        let player = BitmovinYospacePlayer(
-            configuration: configuration,
-            yospaceConfiguration: YospaceConfiguration(isDebugEnabled: true),
-            integrationConfiguration: integrationConfig
+        let bitmovinYospaceConfig = BitmovinYospaceConfiguration(
+            playerConfiguration: playerConfig,
+            yospaceConfiguration: yospaceConfig,
+            enablePlayheadNormalization: true,
+            debug: true
         )
+        
+        let player = BitmovinYospacePlayer(configuration: bitmovinYospaceConfig)
         player.add(listener: self)
         player.add(integrationListener: self)
 
