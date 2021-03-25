@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `IntegrationConfiguration` class name to `BitmovinYospaceIntegration`
 - Added `PlayerConfiguration` and `YospaceConfiguration` to `BitmovinYospaceIntegration`
 
+## [1.22.2]
+
+### Added
+- Missing `onMetadata` workaround to use `onMetadataParsed` to generate ID3 for first `MetadataParsedEvent` in session
+
+## [1.22.1]
+
+### Changed
+- Mark all public structs and enums as frozen
+
 ## [1.22.0]
 
 ### Changed
