@@ -16,11 +16,15 @@ Pod::Spec.new do |s|
   s.ios.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.exclude_files = 'BitmovinYospaceModule/Classes/BitmovinTruexRenderer.swift'
+  s.ios.dependency 'BitmovinAnalyticsCollector/Core'
+  s.ios.dependency 'BitmovinAnalyticsCollector/BitmovinPlayer'
 
   s.ios.dependency 'BitmovinPlayer', '2.60.0'
   s.ios.dependency 'TruexAdRenderer-iOS', '3.2.1'
   s.tvos.dependency 'BitmovinPlayer', '2.60.0'
-
+  s.tvos.dependency 'BitmovinAnalyticsCollector/Core'
+  s.tvos.dependency 'BitmovinAnalyticsCollector/BitmovinPlayer'
+  
   s.ios.vendored_framework = 'lib/ios/Yospace.framework'
   s.tvos.vendored_framework = 'lib/tvOS/Yospace.framework'
   
