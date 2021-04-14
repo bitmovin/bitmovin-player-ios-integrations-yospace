@@ -777,12 +777,12 @@ extension BitmovinYospacePlayer: PlayerListener {
                 }
             }
         }
-        
+
         for listener: PlayerListener in listeners {
             listener.onMetadataParsed?(event)
         }
     }
-    
+
     public func onMetadata(_ event: MetadataEvent) {
         if yospaceSourceConfiguration?.yospaceAssetType == .linear {
             if event.metadataType == .ID3 {
@@ -828,7 +828,7 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onTimeChanged(_ event: TimeChangedEvent) {
         receivedFirstPlayhead = true
-        
+
         if liveAdPaused {
             if let adBreak = activeAdBreak, let advert = activeAd {
                 // Send skip event if live window has moved beyond paused ad
