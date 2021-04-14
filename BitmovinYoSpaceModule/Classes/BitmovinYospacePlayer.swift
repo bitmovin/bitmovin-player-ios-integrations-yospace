@@ -16,7 +16,7 @@ open class BitmovinYospacePlayer: Player {
     var sessionStatus: SessionStatus = .notInitialised
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var configuration: BitmovinYospaceConfiguration
-    var sourceConfiguration: SourceConfiguration?
+    var sourceItem: SourceItem?
     var listeners: [PlayerListener] = []
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospacePlayer: YospacePlayer?
@@ -133,10 +133,10 @@ open class BitmovinYospacePlayer: Player {
      **!! The BitmovinYospacePlayer will only be able to play Yospace streams. It will error out on all other streams. Please add a YospaceListener to be notified of these errors !!**
      
      - Parameters:
-     - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
+     - sourceItem: SourceItem of your Yospace HLSSource
      - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
      */
-    open func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration? = nil, truexConfiguration: TruexConfiguration? = nil) {
+    open func load(sourceItem: SourceItem, yospaceSourceConfiguration: YospaceSourceConfiguration? = nil, truexConfiguration: TruexConfiguration? = nil) {
         #if os(iOS)
         if let truexConfiguration = truexConfiguration {
             self.truexConfiguration = truexConfiguration
@@ -148,7 +148,7 @@ open class BitmovinYospacePlayer: Player {
         #endif
 
         var logMessage = "Load: "
-        if let url = sourceConfiguration.firstSourceItem?.hlsSource?.url {
+        if let url = sourceItem.hlsSource?.url {
             logMessage.append("Source=\(url.absoluteString)")
         }
         if let yospaceSourceConfiguration = yospaceSourceConfiguration {
@@ -167,7 +167,7 @@ open class BitmovinYospacePlayer: Player {
 
         resetYospaceSession()
         self.yospaceSourceConfiguration = yospaceSourceConfiguration
-        self.sourceConfiguration = sourceConfiguration
+        self.sourceItem = sourceItem
 
         let yospaceProperties = YSSessionProperties()
         yospaceProperties.suppressAllAnalytics = true
@@ -190,13 +190,13 @@ open class BitmovinYospacePlayer: Player {
             YSSessionProperties.add(_:combined!)
         }
 
-        guard let url: URL = self.sourceConfiguration?.firstSourceItem?.hlsSource?.url else {
+        guard let url: URL = self.sourceItem?.hlsSource?.url else {
             onError(ErrorEvent(code: YospaceErrorCode.invalidSource.rawValue, message: "Invalid source provided. Yospace URL must be HLS"))
             return
         }
 
         guard let yospaceSourceConfiguration = yospaceSourceConfiguration else {
-            load(sourceConfiguration: sourceConfiguration)
+            load(sourceItem: sourceItem)
             return
         }
 
@@ -614,46 +614,45 @@ extension BitmovinYospacePlayer: YSSessionManagerObserver {
         switch sessionManager.initialisationState {
         case .notInitialised:
             BitLog.e("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+            if let sourceItem = self.sourceItem, yospaceSourceConfiguration?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
                 self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
-                load(sourceConfiguration: sourceConfiguration)
+                load(sourceItem: sourceItem)
             } else {
                 onError(ErrorEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized"))
             }
         case .initialisedNoAnalytics:
             BitLog.d("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+            if let sourceItem = self.sourceItem, yospaceSourceConfiguration?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
                 self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
-                load(sourceConfiguration: sourceConfiguration)
+                load(sourceItem: sourceItem)
             } else {
                 onError(ErrorEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics"))
             }
 
         case .initialisedWithAnalytics:
             BitLog.d("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-            let sourceConfig = SourceConfiguration()
-            sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
-            if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
-                sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
+            let sourceItem = SourceItem(hlsSource: HLSSource(url: stream.streamSource()))
+            if let drmConfiguration = self.sourceItem?.drmConfigurations?.first {
+                sourceItem.add(drmConfiguration: drmConfiguration)
             }
-            load(sourceConfiguration: sourceConfig)
+            self.sourceItem = sourceItem
+            load(sourceItem: sourceItem)
         default:
             break
         }
     }
 
     public func operationDidFailWithError(_ error: Error) {
-        if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+        if let sourceItem = self.sourceItem, yospaceSourceConfiguration?.retryExcludingYospace == true {
             BitLog.w("Attempting to playback the stream url without Yospace")
             self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
-            load(sourceConfiguration: sourceConfiguration)
+            load(sourceItem: sourceItem)
         } else {
             onError(ErrorEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
         }
     }
-
 }
 
 // MARK: - PlayerListener
