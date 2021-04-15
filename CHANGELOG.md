@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `IntegrationConfiguration` class name to `BitmovinYospaceIntegration`
 - Added `PlayerConfiguration` and `YospaceConfiguration` to `BitmovinYospaceIntegration`
 
+### Deprecated
+- `SourceConfiguration` used in `load()` - replaced with `SourceItem`
+
 ## [1.22.2]
 
 ### Added
