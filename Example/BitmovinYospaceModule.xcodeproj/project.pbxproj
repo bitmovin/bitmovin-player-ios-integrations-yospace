@@ -18,6 +18,7 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		AD572CE4B1F0FC930B18DA89 /* Pods_BitmovinYospaceModule_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8613D4EE52E41339E3BA6838 /* Pods_BitmovinYospaceModule_Example.framework */; };
 		D8EC1B00377AC2E7952C5EB5 /* Pods_BitmovinYospaceModule_Example_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CD4AA7D4FFFC3733F28A7FD /* Pods_BitmovinYospaceModule_Example_tvOS.framework */; };
+		E903CFE4262770AB00352D82 /* Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = E903CFE3262770AB00352D82 /* Stream.swift */; };
 		E94796FD23FDD21500BE05E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E94796FC23FDD21500BE05E2 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +50,7 @@
 		C90D327416965D4681E951CB /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		D18674A6BFCDF0055801630A /* Pods-BitmovinYoSpaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYoSpaceModule_Example/Pods-BitmovinYoSpaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		DE83C64B7C17AFEC4D46150E /* Pods-BitmovinYospaceModule_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		E903CFE3262770AB00352D82 /* Stream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stream.swift; sourceTree = "<group>"; };
 		E94796FC23FDD21500BE05E2 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F219C37BDC456B34012838FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F7403BAC4D076B0444701C90 /* Pods-BitmovinYospaceModule_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitmovinYospaceModule_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
+				E903CFE3262770AB00352D82 /* Stream.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				E94796FC23FDD21500BE05E2 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -377,12 +380,14 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BitmovinAnalyticsCollector-tvOS/BitmovinAnalyticsCollector.framework",
 				"${PODS_ROOT}/BitmovinPlayer/BitmovinPlayer/tvOS/BitmovinPlayer.framework",
 				"${PODS_ROOT}/../../lib/tvOS/Yospace.framework",
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-tvOS/BitmovinYospaceModule.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinAnalyticsCollector.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Yospace.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinYospaceModule.framework",
@@ -399,19 +404,19 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BitmovinAnalyticsCollector-iOS/BitmovinAnalyticsCollector.framework",
 				"${PODS_ROOT}/BitmovinPlayer/BitmovinPlayer/iOS/BitmovinPlayer.framework",
 				"${PODS_ROOT}/../../lib/iOS/Yospace.framework",
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-iOS/BitmovinYospaceModule.framework",
 				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.1/TruexAdRenderer.framework",
-				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.1/TruexAdRenderer.framework.dSYM",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinAnalyticsCollector.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Yospace.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinYospaceModule.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TruexAdRenderer.framework",
-				"${DWARF_DSYM_FOLDER_PATH}/TruexAdRenderer.framework.dSYM",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -436,6 +441,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				E903CFE4262770AB00352D82 /* Stream.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

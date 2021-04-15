@@ -102,6 +102,8 @@ class YospaceUtil {
             return "progressEvent"
         case .nonLinearClickTrackingEvent:
             return "nonLinearClickTrackingEvent"
+        case .companionClickTrackingEvent:
+            return "companionClickTrackingEvent"
         @unknown default:
             return "default"
         }

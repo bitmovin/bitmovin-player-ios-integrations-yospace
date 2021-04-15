@@ -21,7 +21,9 @@ public struct CompanionAdResource {
 
 @frozen
 public struct CompanionAd {
+    // swiftlint:disable identifier_name
     public let id: String?
+    // swiftlint:enable identifier_name
     public let adSlotId: String?
     public let width: CGFloat?
     public let height: CGFloat?
@@ -29,6 +31,8 @@ public struct CompanionAd {
     public let resource: CompanionAdResource?
 
     var debugDescription: String {
-        return "id=\(id), adSlotId=\(adSlotId), width=\(width), height=\(height), type=\(resource?.type) source=\(resource?.source)"
+        // swiftlint:disable line_length
+        return "id=\(String(describing: id)), adSlotId=\(String(describing: adSlotId)), width=\(String(describing: width)), height=\(String(describing: height)), type=\(String(describing: resource?.type)) source=\(String(describing: resource?.source))"
+        // swiftlint:enable line_length
     }
 }

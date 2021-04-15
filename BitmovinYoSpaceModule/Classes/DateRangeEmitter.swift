@@ -115,7 +115,9 @@ class DateRangeEmitter: NSObject {
 
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
-        BitLog.d("Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)")
+        BitLog.d(
+            "Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)"
+        )
 
         // Generate S event
         let sEvent = YSTimedMetadata()
@@ -142,7 +144,9 @@ class DateRangeEmitter: NSObject {
             mEvent.offset = offset
             mEvent.timestamp = Date(timeIntervalSince1970: startWallclock + offset)
 
-            let mTimedMetadataEvent = TimedMetadataEvent(time: currentTime + offset, metadata: mEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart)
+            let mTimedMetadataEvent = TimedMetadataEvent(
+                time: currentTime + offset, metadata: mEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart
+            )
             fireMetadataParsedEvent(event: mTimedMetadataEvent)
             timedMetadataEvents.append(mTimedMetadataEvent)
 
@@ -158,7 +162,12 @@ class DateRangeEmitter: NSObject {
         eEvent.timestamp = Date(timeIntervalSince1970: endDate.timeIntervalSince1970 + deviceOffsetFromPDT - adEventOffset)
         eEvent.offset = duration - adEventOffset
 
-        let eTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: eEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart)
+        let eTimedMetadataEvent = TimedMetadataEvent(
+            time: currentTime + duration - adEventOffset,
+            metadata: eEvent,
+            rawTime: rawTime,
+            normalizedTime: currentTimeAtStart
+        )
         fireMetadataParsedEvent(event: eTimedMetadataEvent)
         timedMetadataEvents.append(eTimedMetadataEvent)
 
@@ -194,7 +203,9 @@ extension DateRangeEmitter: PlayerListener {
         initialPDT = Date(timeIntervalSince1970: player.currentTimeWithAds())
         deviceOffsetFromPDT = Date().timeIntervalSince(initialPDT)
         let relativePlayheadTime = player.currentTimeWithAds() - seekableRange.start
-        BitLog.d("initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)")
+        BitLog.d(
+            "initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)"
+        )
     }
 
     public func onTimeChanged(_ event: TimeChangedEvent) {

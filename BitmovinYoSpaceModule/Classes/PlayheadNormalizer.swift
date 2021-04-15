@@ -26,7 +26,6 @@ struct JumpEntry {
     let delta: Double
 }
 
-// TODO: public for test purposes
 public class PlayheadNormalizer: NSObject {
     // MARK: - properties
 
@@ -142,14 +141,14 @@ public class PlayheadNormalizer: NSObject {
     }
 
     private func setExpectingJump(_ jump: Jump) {
-        if (jump == expectingJump) {
+        if jump == expectingJump {
             return
         }
 
         log("[setExpectingJump] updating from \(expectingJump) to \(jump)")
         expectingJump = jump
 
-        if (expectingJump != .none) {
+        if expectingJump != .none {
             eventDelegate?.normalizingStarted()
         } else {
             eventDelegate?.normalizingFinished()
@@ -256,7 +255,7 @@ public class PlayheadNormalizer: NSObject {
 
     public func notifyDateRangeMetadataReceived() {
         // If we're already in an ads mode, don't reset again until the end of the ad break
-        if (mode == .metadataReceived || mode == .adsPlaying) {
+        if mode == .metadataReceived || mode == .adsPlaying {
             return
         }
 
@@ -316,7 +315,7 @@ public class PlayheadNormalizer: NSObject {
         }
 
         var normalizedTime: Double = 0.0
-        if (mode == .metadataReceived || mode == .adsPlaying) {
+        if mode == .metadataReceived || mode == .adsPlaying {
             normalizedTime = normalizeAds(delta: delta, time: time)
         } else if normalizeByDefault {
             normalizedTime = normalizeDefault(delta: delta, time: time)
@@ -370,7 +369,9 @@ public class PlayheadNormalizer: NSObject {
 
         let initialDelta = normalized - rawTime
         let remainingDelta = deltaSince - initialDelta
+        // swiftlint:disable line_length
         logV("[normalizeToCurrent] initial: \(normalized), \(rawTime), \(initialDelta) | remaining: \(remainingDelta) | n: \(normalized - remainingDelta)")
+        // swiftlint:enable line_length
         return normalized - remainingDelta
     }
 

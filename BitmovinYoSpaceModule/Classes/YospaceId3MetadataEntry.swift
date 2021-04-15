@@ -27,6 +27,8 @@ public class YospaceId3MetadataEntry: NSObject, MetadataEntry {
     }
 
     public override var debugDescription: String {
+        // swiftlint:disable line_length
         return "mediaId=\(mediaId), type=\(type), segmentCount=\(segmentCount), segmentNumber=\(segmentNumber), offset=\(String(format: "%.1f", offset)), timestamp=\(timestamp)"
+        // swiftlint:enable line_length
     }
 }
