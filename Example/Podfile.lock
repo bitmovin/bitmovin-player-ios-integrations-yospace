@@ -3,7 +3,7 @@ PODS:
     - BitmovinPlayer (~> 2.51)
   - BitmovinAnalyticsCollector/Core (1.17.0)
   - BitmovinPlayer (2.60.0)
-  - BitmovinYospaceModule (1.22.0):
+  - BitmovinYospaceModule (1.22.2):
     - BitmovinAnalyticsCollector/BitmovinPlayer
     - BitmovinAnalyticsCollector/Core
     - BitmovinPlayer (= 2.60.0)
@@ -38,7 +38,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   BitmovinAnalyticsCollector: 8c1b5bf77059edda69de13747825834e6f0dedd1
   BitmovinPlayer: d2c5e77f5a1f7ed970fb6df96d29fe354c441a26
-  BitmovinYospaceModule: 53f450784baa8dc74f5f88243a9fc8049149121a
+  BitmovinYospaceModule: 102f7aa19d0c66c3ff094806b727a5334a5b090f
   TruexAdRenderer-iOS: ae88dfba906c2ec8ad6f4a6ad150e42f2bbc3726
 
 PODFILE CHECKSUM: 128d3d4a06618216832d6c1d621a1ab9e9747f17
