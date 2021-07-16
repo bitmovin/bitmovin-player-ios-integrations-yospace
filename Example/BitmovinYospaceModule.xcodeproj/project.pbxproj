@@ -403,7 +403,6 @@
 				"${PODS_ROOT}/../../lib/iOS/Yospace.framework",
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-iOS/BitmovinYospaceModule.framework",
 				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.1/TruexAdRenderer.framework",
-				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.1/TruexAdRenderer.framework.dSYM",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -411,7 +410,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Yospace.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinYospaceModule.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TruexAdRenderer.framework",
-				"${DWARF_DSYM_FOLDER_PATH}/TruexAdRenderer.framework.dSYM",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
