@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'BitmovinYospaceModule'
-  s.version          = '1.22.2'
+  s.version          = '1.22.3'
   s.summary          = 'A short description of BitmovinYoSpaceModule.' 
   s.description      = 'A short description of BitmovinYoSpaceModule.'
 
