@@ -17,9 +17,10 @@ Pod::Spec.new do |s|
   s.tvos.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.exclude_files = 'BitmovinYospaceModule/Classes/BitmovinTruexRenderer.swift'
 
-  s.ios.dependency 'BitmovinPlayer', '>=2.60.0', '<=2.64.1'
+  # >= 2.64.2 && < 2.66.1 are not supported but there is no good way to encode that in cocoapods
+  s.ios.dependency 'BitmovinPlayer', '~>2.60'
   s.ios.dependency 'TruexAdRenderer-iOS', '3.2.1'
-  s.tvos.dependency 'BitmovinPlayer', '>=2.60.0', '<=2.64.1'
+  s.tvos.dependency 'BitmovinPlayer', '~>2.60'
 
   s.ios.vendored_framework = 'lib/ios/Yospace.framework'
   s.tvos.vendored_framework = 'lib/tvOS/Yospace.framework'
