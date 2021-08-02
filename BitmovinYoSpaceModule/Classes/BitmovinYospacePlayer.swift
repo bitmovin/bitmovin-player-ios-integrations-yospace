@@ -463,18 +463,22 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 resource: resource
             )
         } ?? []
+        
+        if let ad = activeAd {
+            let adStartedEvent = YospaceAdStartedEvent(
+                clickThroughUrl: ad.clickThroughUrl,
+                duration: advert.advertDuration(),
+                timeOffset: advert.advertStart(),
+                ad: ad,
+                companionAds: companionAds
+            )
 
-        let adStartedEvent = YospaceAdStartedEvent(
-            clickThroughUrl: activeAd?.clickThroughUrl,
-            duration: advert.advertDuration(),
-            timeOffset: advert.advertStart(),
-            ad: activeAd,
-            companionAds: companionAds
-        )
-
-        BitLog.d("Emitting AdStartedEvent")
-        for listener: PlayerListener in listeners {
-            listener.onAdStarted?(adStartedEvent)
+            BitLog.d("Emitting AdStartedEvent")
+            for listener: PlayerListener in listeners {
+                listener.onAdStarted?(adStartedEvent)
+            }
+        } else {
+            BitLog.w("Advert did start but no active ad is available. Not emitting an AdStartedEvent.")
         }
 
         return []
