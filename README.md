@@ -6,7 +6,7 @@ tvOS 9.2+
 
 ## Example
 
-The following example creates a BitmovinYospacePlayer and loads a Yospace stream 
+The following example creates a BitmovinYospacePlayer and loads a Yospace stream.
 
 ```swift
 // Optionally create a yospace configuration
