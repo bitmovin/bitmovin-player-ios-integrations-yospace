@@ -4,6 +4,9 @@
 iOS 9.0+
 tvOS 9.2+
 
+Please note that Bitmovin Player iOS SDK versions 2.64.2 and above up until (excluding) 2.66.1 are not supported by this integration.
+
+
 ## Example
 
 The following example creates a BitmovinYospacePlayer and loads a Yospace stream.
@@ -110,8 +113,8 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 ```
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.22.2'
-  pod 'BitmovinPlayer', tag: '2.41.0'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.22.4'
+  pod 'BitmovinPlayer', tag: '2.67.3'
 
   use_frameworks!
 ```
@@ -124,7 +127,7 @@ pod install
 
 ## Author
 
-Cory Zachman, cory.zachman@bitmovin.com
+Bitmovin, Inc.
 
 ## License
 

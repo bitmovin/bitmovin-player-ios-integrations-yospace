@@ -21,7 +21,7 @@ public class YospaceAdStartedEvent: AdStartedEvent {
         skipOffset: TimeInterval = 1,
         position: String = "0",
         // swiftlint:disable identifier_name
-        ad: Ad?,
+        ad: Ad,
         // swiftlint:enable identifier_name
         companionAds: [CompanionAd] = []
     ) {
