@@ -425,7 +425,8 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
             handleAdBreakEvent(currentAdBreak)
         }
 
-        activeAd = createActiveAd(advert: advert)
+        let ad = createActiveAd(advert: advert)
+        activeAd = ad
 
         #if os(iOS)
         if let renderer = truexRenderer, advert.hasLinearInteractiveUnit() {
@@ -463,22 +464,18 @@ extension BitmovinYospacePlayer: YSAnalyticObserver {
                 resource: resource
             )
         } ?? []
-        
-        if let ad = activeAd {
-            let adStartedEvent = YospaceAdStartedEvent(
-                clickThroughUrl: ad.clickThroughUrl,
-                duration: advert.advertDuration(),
-                timeOffset: advert.advertStart(),
-                ad: ad,
-                companionAds: companionAds
-            )
 
-            BitLog.d("Emitting AdStartedEvent")
-            for listener: PlayerListener in listeners {
-                listener.onAdStarted?(adStartedEvent)
-            }
-        } else {
-            BitLog.w("Advert did start but no active ad is available. Not emitting an AdStartedEvent.")
+        let adStartedEvent = YospaceAdStartedEvent(
+            clickThroughUrl: ad.clickThroughUrl,
+            duration: advert.advertDuration(),
+            timeOffset: advert.advertStart(),
+            ad: ad,
+            companionAds: companionAds
+        )
+
+        BitLog.d("Emitting AdStartedEvent")
+        for listener: PlayerListener in listeners {
+            listener.onAdStarted?(adStartedEvent)
         }
 
         return []
