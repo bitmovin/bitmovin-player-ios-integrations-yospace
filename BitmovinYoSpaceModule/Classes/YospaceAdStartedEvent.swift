@@ -7,7 +7,7 @@
 
 import Foundation
 import BitmovinPlayer
-import Yospace
+import YOAdManagement
 
 public class YospaceAdStartedEvent: AdStartedEvent {
     public var companionAds: [CompanionAd]

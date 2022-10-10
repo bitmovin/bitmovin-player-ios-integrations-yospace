@@ -1,6 +1,6 @@
 import UIKit
 import BitmovinPlayer
-import Yospace
+import YOAdManagement
 
 enum SessionStatus: Int {
     case notInitialised

@@ -7,7 +7,7 @@
 
 import Foundation
 import BitmovinPlayer
-import Yospace
+import YOAdManagement
 
 public class YospaceAd: NSObject, Ad {
     public var identifier: String?
