@@ -7,7 +7,7 @@
 
 import Foundation
 import TruexAdRenderer
-import Yospace
+import YOAdManagement
 import BitmovinPlayer
 
 class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {

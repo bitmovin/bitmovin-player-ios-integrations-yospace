@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Yospace
+import YOAdManagement
 
 extension YSInteractiveUnit {
     func notifyAdStarted() {

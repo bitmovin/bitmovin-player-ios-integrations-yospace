@@ -7,7 +7,7 @@
 
 import Foundation
 import BitmovinPlayer
-import Yospace
+import YOAdManagement
 
 struct TimedMetadataEvent {
     let time: TimeInterval

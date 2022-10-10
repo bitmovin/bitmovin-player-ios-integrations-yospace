@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.ios.dependency 'TruexAdRenderer-iOS', '3.2.1'
   s.tvos.dependency 'BitmovinPlayer', '~>2.60'
 
-  s.ios.vendored_framework = 'lib/ios/Yospace.framework'
+  s.ios.vendored_framework = 'lib/ios/YOAdManagement.framework'
   s.tvos.vendored_framework = 'lib/tvOS/Yospace.framework'
   
 end

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Yospace
+import YOAdManagement
 
 class YospacePlayerPolicy: NSObject, YPPolicyHandling {
     weak var playerPolicy: BitmovinYospacePlayerPolicy?

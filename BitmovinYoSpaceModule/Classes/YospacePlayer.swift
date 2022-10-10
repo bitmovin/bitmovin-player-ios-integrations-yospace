@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Yospace
+import YOAdManagement
 import BitmovinPlayer
 
 class YospacePlayer: NSObject, YSVideoPlayer {

@@ -1,5 +1,5 @@
 import UIKit
-import Yospace
+import YOAdManagement
 import BitmovinPlayer
 
 extension YSTimedMetadata {

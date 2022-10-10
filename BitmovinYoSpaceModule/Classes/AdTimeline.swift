@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Yospace
+import YOAdManagement
 import BitmovinPlayer
 
 public class AdTimeline: CustomDebugStringConvertible {
