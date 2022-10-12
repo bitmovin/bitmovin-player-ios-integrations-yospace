@@ -9,7 +9,8 @@ import Foundation
 import YOAdManagement
 import BitmovinPlayer
 
-class YospacePlayer: NSObject, YSVideoPlayer {
+// TODO: remove this
+class YospacePlayer: NSObject {
 
     required init(streamSource source: URL) {
         super.init()

@@ -8,7 +8,7 @@
 import Foundation
 import BitmovinPlayer
 
-public protocol YospaceListener: class {
+public protocol YospaceListener: AnyObject {
     func onTimelineChanged(event: AdTimelineChangedEvent)
     func onTrueXAdFree()
 }

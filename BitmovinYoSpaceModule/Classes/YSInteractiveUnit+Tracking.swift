@@ -8,68 +8,69 @@
 import Foundation
 import YOAdManagement
 
-extension YSInteractiveUnit {
+extension YOInteractiveCreative {
     func notifyAdStarted() {
-        trackingEventDidOccur(.creativeViewEvent)
+//        trackingEventDidOccur(NSNotification.Name.YOTrackingEvent.rawValue)
+        trackingEventDidOccur("creativeViewEvent")
     }
 
     func notifyAdStopped() {
-        trackingEventDidOccur(.generalTrackingEvent)
+        trackingEventDidOccur("generalTrackingEvent")
     }
 
     func notifyAdSkipped() {
-        trackingEventDidOccur(.skipEvent)
+        trackingEventDidOccur("skip")
     }
 
     func notifyAdImpression() {
-        trackingEventDidOccur(.impressionEvent)
+//        trackingEventDidOccur(.impressionEvent)
     }
 
     func notifyAdVideoStarted() {
-        trackingEventDidOccur(.startEvent)
+        trackingEventDidOccur("start")
     }
 
     func notifyAdVideoFirstQuartile() {
-        trackingEventDidOccur(.firstQuartileEvent)
+        trackingEventDidOccur("firstQuartile")
     }
 
     func notifyAdVideoMidpoint() {
-        trackingEventDidOccur(.midpointEvent)
+//        trackingEventDidOccur(.midpointEvent)
     }
 
     func notifyAdVideoThirdQuartile() {
-        trackingEventDidOccur(.thirdQuartileEvent)
+//        trackingEventDidOccur(.thirdQuartileEvent)
     }
 
     func notifyAdVideoComplete() {
-        trackingEventDidOccur(.completeEvent)
+//        trackingEventDidOccur(.completeEvent)
     }
 
     func notifyAdUserAcceptInvitation() {
-        trackingEventDidOccur(.acceptInvitationLinearEvent)
+//        trackingEventDidOccur(.acceptInvitationLinearEvent)
     }
 
     func notifyAdUserMinimize() {
-        trackingEventDidOccur(.collapseEvent)
+//        trackingEventDidOccur(.collapseEvent)
     }
 
     func notifyAdUserClose() {
-        trackingEventDidOccur(.closeLinearEvent)
+//        trackingEventDidOccur(.closeLinearEvent)
     }
 
     func notifyAdPaused() {
-        trackingEventDidOccur(.pauseEvent)
+        trackingEventDidOccur("pause")
     }
 
     func notifyAdPlaying() {
-        trackingEventDidOccur(.resumeEvent)
+        trackingEventDidOccur("resume")
     }
 
     func notifyAdVolumeMuted() {
-        trackingEventDidOccur(.muteEvent)
+        trackingEventDidOccur("mute")
     }
 
     func notifyAdVolumeUnmuted() {
-        trackingEventDidOccur(.unmuteEvent)
+        trackingEventDidOccur("unmute")
     }
 }
