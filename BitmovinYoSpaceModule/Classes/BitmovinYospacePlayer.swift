@@ -10,8 +10,7 @@ enum SessionStatus: Int {
 
 open class BitmovinYospacePlayer: Player {
     // MARK: - Bitmovin Yospace Player attributes
-    var sessionManager: YOSession?
-    var yospaceStream: YOSession?
+    var yospacesession: YOSession?
     var sessionStatus: SessionStatus = .notInitialised
     var yospaceSourceConfiguration: YospaceSourceConfiguration?
     var yospaceConfiguration: YospaceConfiguration?
@@ -76,7 +75,7 @@ open class BitmovinYospacePlayer: Player {
 
     public var suppressAnalytics: Bool = false {
         didSet {
-            sessionManager?.suppressAnalytics(suppressAnalytics)
+            yospacesession?.suppressAnalytics(suppressAnalytics)
         }
     }
 
@@ -166,7 +165,7 @@ open class BitmovinYospacePlayer: Player {
 
         let yospaceProperties = YOSessionProperties()
 //        yospaceProperties.suppressAllAnalytics = true
-//        yospaceStream?.suppressAnalytics(true)
+        yospacesession?.suppressAnalytics(false)
 
         if let timeout = yospaceConfiguration?.timeout {
             yospaceProperties.timeout = timeout
@@ -181,8 +180,7 @@ open class BitmovinYospacePlayer: Player {
         }
 
         if yospaceConfiguration?.isDebugEnabled == true {
-            let combined = YODebugFlags(rawValue: YODebugFlags.DEBUG_ALL.rawValue)
-            YOSessionProperties.setDebugFlags(combined!)
+            YOSessionProperties.setDebugFlags(YODebugFlags.DEBUG_ALL)
         }
 
         guard let url: URL = self.sourceConfiguration?.firstSourceItem?.hlsSource?.url else {
@@ -212,8 +210,8 @@ open class BitmovinYospacePlayer: Player {
 
     // MARK: - playback methods
     open override func pause() {
-        if let manager = self.sessionManager {
-            if !manager.canPause() {
+        if let session = self.yospacesession {
+            if !session.canPause() {
                 return
             }
         }
@@ -221,8 +219,8 @@ open class BitmovinYospacePlayer: Player {
     }
 
     open override func seek(time: TimeInterval) {
-        if let manager = self.sessionManager {
-            let seekTime = manager.willSeek(to: time)
+        if let session = self.yospacesession {
+            let seekTime = session.willSeek(to: time)
             let absoluteSeekTime = timeline?.relativeToAbsolute(time: seekTime) ?? seekTime
             BitLog.d("Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
             super.seek(time: absoluteSeekTime)
@@ -275,9 +273,8 @@ open class BitmovinYospacePlayer: Player {
     }
 
     func resetYospaceSession() {
-        self.sessionManager?.shutdown()
-        self.sessionManager = nil
-        self.yospaceStream = nil
+        self.yospacesession?.shutdown()
+        self.yospacesession = nil
         self.adBreaks = []
         self.activeAd = nil
         self.activeAdBreak = nil
@@ -290,14 +287,16 @@ open class BitmovinYospacePlayer: Player {
     }
 
     func loadVOD(url: URL, yospaceProperties: YOSessionProperties) {
-        YOSessionFactory.create(url.absoluteString, mode: YOPlaybackMode.YOVODMode, properties: yospaceProperties, completionHandler: sessionDidInitialise)
+        YOSessionVOD.create(url.absoluteString, properties: yospaceProperties, completionHandler: sessionDidInitialise)
     }
 
     func loadLive(url: URL, yospaceProperties: YOSessionProperties) {
-        YOSessionFactory.create(url.absoluteString, mode: YOPlaybackMode.YOLiveMode, properties: yospaceProperties, completionHandler: sessionDidInitialise)
+        YOSessionLive.create(url.absoluteString, properties: yospaceProperties, completionHandler: sessionDidInitialise)
     }
 
     func loadNonLinearStartOver(url: URL, yospaceProperties: YOSessionProperties) {
+        // TODO: find SessionNLSO
+        YOSessionFactory.create(url.absoluteString, mode: YOPlaybackMode.YODVRLiveMode, properties: yospaceProperties, completionHandler: sessionDidInitialise)
 //        YOSessionFactory.create(forNonLinearStartOver: url.absoluteString, properties: yospaceProperties, delegate: self)
     }
 
@@ -315,7 +314,7 @@ open class BitmovinYospacePlayer: Player {
 
     open override func skipAd() {
         if sessionStatus != .notInitialised {
-            guard sessionManager != nil else {
+            guard yospacesession != nil else {
                 return
             }
 
@@ -373,7 +372,7 @@ extension BitmovinYospacePlayer: TruexAdRendererEventDelegate {
 
     func skipTruexAd() {
         BitLog.d("YoSpace analytics unsuppressed")
-        sessionManager?.suppressAnalytics(false)
+        yospacesession?.suppressAnalytics(false)
 
         // Seek to end of TrueX ad filler
         if let advert = activeAd {
@@ -387,7 +386,7 @@ extension BitmovinYospacePlayer: TruexAdRendererEventDelegate {
 
     func skipAdBreak() {
         BitLog.d("YoSpace analytics unsuppressed")
-        sessionManager?.suppressAnalytics(false)
+        yospacesession?.suppressAnalytics(false)
 
         // Seek to end of ad break
         if let adBreak = activeAdBreak {
@@ -421,7 +420,7 @@ extension BitmovinYospacePlayer {
     public func advertDidStart(_ advert: YOAdvert) -> [Any]? {
         BitLog.d("YoSpace advertDidStart")
 
-        if isLive, activeAdBreak == nil, let currentAdBreak = yospaceStream?.currentAdBreak() {
+        if isLive, activeAdBreak == nil, let currentAdBreak = yospacesession?.currentAdBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
 
@@ -435,7 +434,7 @@ extension BitmovinYospacePlayer {
 
             // Suppress analytics in order for YoSpace TrueX tracking to work
             BitLog.d("YoSpace analytics suppressed")
-            sessionManager?.suppressAnalytics(true)
+            yospacesession?.suppressAnalytics(true)
             BitLog.d("Pausing player")
             super.pause()
 
@@ -526,7 +525,7 @@ extension BitmovinYospacePlayer {
     }
 
     public func timelineUpdateReceived(_ vmap: String) {
-        if let timeline = self.yospaceStream?.adBreaks(YOAdBreakType.linearType) as? [YOAdBreak] {
+        if let timeline = self.yospacesession?.adBreaks(YOAdBreakType.linearType) as? [YOAdBreak] {
             BitLog.d("YoSpace timelineUpdateReceived: \(timeline.count)")
             self.adBreaks = timeline
         }
@@ -584,56 +583,54 @@ extension BitmovinYospacePlayer {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer {
     public func sessionDidInitialise(with stream: YOSession) {
-//        self.sessionManager = sessionManager
-//        self.yospaceStream = stream
-//        if let timeline = self.yospaceStream?.timeline() as? [YOAdBreak] {
-//            BitLog.d("Initial Ad Breaks Received: \(timeline.count)")
-//            self.adBreaks = timeline
-//        }
-//
-//        self.sessionManager?.subscribe(toAnalyticEvents: self)
-//        let policy = self.yospacePlayerPolicy ?? YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
-//        self.sessionManager?.setPlayerPolicyDelegate(policy)
-//
-//        do {
-//            let yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
-//            try self.sessionManager?.setVideoPlayer(yospacePlayer)
-//            self.yospacePlayer = yospacePlayer
-//        } catch {
-//            onError(ErrorEvent(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger"))
-//        }
-//
-//        switch sessionManager.initialisationState {
-//        case .notInitialised:
-//            BitLog.e("Not initialized url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-//            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-//                BitLog.w("Attempting to playback the stream url without Yospace")
-//                self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
-//                load(sourceConfiguration: sourceConfiguration)
-//            } else {
-//                onError(ErrorEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized"))
-//            }
-//        case .initialisedNoAnalytics:
-//            BitLog.d("No Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-//            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
-//                BitLog.w("Attempting to playback the stream url without Yospace")
-//                self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
-//                load(sourceConfiguration: sourceConfiguration)
-//            } else {
-//                onError(ErrorEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics"))
-//            }
-//
-//        case .initialisedWithAnalytics:
-//            BitLog.d("With Analytics url:\(stream.streamSource().absoluteString) itemId:\(stream.streamIdentifier()))")
-//            let sourceConfig = SourceConfiguration()
-//            sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: stream.streamSource())))
-//            if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
-//                sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
-//            }
-//            load(sourceConfiguration: sourceConfig)
-//        default:
-//            break
-//        }
+        self.yospacesession = stream
+        if let timeline = self.yospacesession?.adBreaks(YOAdBreakType.linearType) as? [YOAdBreak] {
+            BitLog.d("Initial Ad Breaks Received: \(timeline.count)")
+            self.adBreaks = timeline
+        }
+
+//        self.yospacesession?.subscribe(toAnalyticEvents: self)
+        let policy = self.yospacePlayerPolicy ?? YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
+        self.yospacesession?.setPlaybackPolicyHandler(policy)
+
+        do {
+            let yospacePlayer = YospacePlayer(bitmovinYospacePlayer: self)
+//            try self.yospacesession?.setVideoPlayer(yospacePlayer)
+            self.yospacePlayer = yospacePlayer
+        } catch {
+            onError(ErrorEvent(code: YospaceErrorCode.invalidPlayer.rawValue, message: "Invalid video player added to session manger"))
+        }
+        
+        switch yospacesession?.sessionResult {
+        case .notInitialised:
+            BitLog.e("Not initialized url:\(stream.playbackUrl) itemId:\(stream.identifier))")
+            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+                BitLog.w("Attempting to playback the stream url without Yospace")
+                self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
+                load(sourceConfiguration: sourceConfiguration)
+            } else {
+                onError(ErrorEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized"))
+            }
+        case .noAnalytics:
+            BitLog.d("No Analytics url:\(stream.playbackUrl) itemId:\(stream.identifier))")
+            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+                BitLog.w("Attempting to playback the stream url without Yospace")
+                self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
+                load(sourceConfiguration: sourceConfiguration)
+            } else {
+                onError(ErrorEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics"))
+            }
+        case .initialised:
+            BitLog.d("With Analytics url:\(stream.playbackUrl) itemId:\(stream.identifier))")
+            let sourceConfig = SourceConfiguration()
+            sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: URL(string: stream.playbackUrl!)!)))
+            if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
+                sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
+            }
+            load(sourceConfiguration: sourceConfig)
+        default:
+            break
+        }
     }
 
     public func operationDidFailWithError(_ error: Error) {
