@@ -12,11 +12,11 @@ import BitmovinPlayer
 public class AdTimeline: CustomDebugStringConvertible {
     public private(set) var adBreaks: [YospaceAdBreak] = []
 
-    public init(adBreaks: [YSAdBreak]) {
+    public init(adBreaks: [YOAdBreak]) {
         var relativeOffset = 0.0
-        adBreaks.sorted { $0.adBreakStart() < $1.adBreakStart() }
+        adBreaks.sorted { $0.start < $1.start }
             .forEach {
-                let adBreak = $0.toYospaceAdBreak(absoluteStart: $0.adBreakStart(), relativeStart: $0.adBreakStart() - relativeOffset)
+                let adBreak = $0.toYospaceAdBreak(absoluteStart: $0.start, relativeStart: $0.start - relativeOffset)
                 self.adBreaks.append(adBreak)
                 relativeOffset += adBreak.duration
             }
