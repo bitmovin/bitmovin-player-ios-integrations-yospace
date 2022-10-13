@@ -208,7 +208,7 @@ extension DateRangeEmitter: PlayerListener {
             // swiftlint:enable line_length
 
             // TODO: send out metadata events here!
-//            player?.notify(dictionary: [kYoMetadataKey: metadata], name: YoTimedMetadataKeyMetadataNotification)
+            player?.notify(dictionary: [YOSpaceEventNotificationKeys.kYoMetadataKey: metadata], name: YOSpaceEventNotificationKeys.YoTimedMetadataNotification)
             fireMetadataEvent(event: nextEvent)
         }
     }
