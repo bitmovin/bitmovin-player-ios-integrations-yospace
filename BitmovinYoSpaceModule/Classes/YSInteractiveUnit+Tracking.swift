@@ -10,7 +10,6 @@ import YOAdManagement
 
 extension YOInteractiveCreative {
     func notifyAdStarted() {
-//        trackingEventDidOccur(NSNotification.Name.YOTrackingEvent.rawValue)
         trackingEventDidOccur("creativeViewEvent")
     }
 
@@ -23,39 +22,39 @@ extension YOInteractiveCreative {
     }
 
     func notifyAdImpression() {
-//        trackingEventDidOccur(.impressionEvent)
+        trackingEventDidOccur("impression")
     }
 
     func notifyAdVideoStarted() {
         trackingEventDidOccur("start")
     }
-
+    
     func notifyAdVideoFirstQuartile() {
         trackingEventDidOccur("firstQuartile")
     }
 
     func notifyAdVideoMidpoint() {
-//        trackingEventDidOccur(.midpointEvent)
+        trackingEventDidOccur("midpoint")
     }
 
     func notifyAdVideoThirdQuartile() {
-//        trackingEventDidOccur(.thirdQuartileEvent)
+        trackingEventDidOccur("thirdQuartile")
     }
 
     func notifyAdVideoComplete() {
-//        trackingEventDidOccur(.completeEvent)
+        trackingEventDidOccur("complete")
     }
 
     func notifyAdUserAcceptInvitation() {
-//        trackingEventDidOccur(.acceptInvitationLinearEvent)
+        trackingEventDidOccur("acceptInvitation")
     }
 
     func notifyAdUserMinimize() {
-//        trackingEventDidOccur(.collapseEvent)
+        trackingEventDidOccur("playerCollapse")
     }
-
+    
     func notifyAdUserClose() {
-//        trackingEventDidOccur(.closeLinearEvent)
+        trackingEventDidOccur("closeLinear")
     }
 
     func notifyAdPaused() {

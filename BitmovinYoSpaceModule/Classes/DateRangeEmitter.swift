@@ -207,8 +207,7 @@ extension DateRangeEmitter: PlayerListener {
             BitLog.d("Sending metadata: currentDate=\(NSDate().timeIntervalSince1970), playerTime=\(currentTime), eventTime=\(nextEvent.time), metadataTime=\(metadata.playhead), id=\(metadata.mediaId), type=\(metadata.type), segment=\(metadata.segmentNumber), segmentCount=\(metadata.segmentCount), offset=\(metadata.offset)")
             // swiftlint:enable line_length
 
-            // TODO: send out metadata events here!
-            player?.notify(dictionary: [YOSpaceEventNotificationKeys.kYoMetadataKey: metadata], name: YOSpaceEventNotificationKeys.YoTimedMetadataNotification)
+            player?.yospacesession?.timedMetadataWasCollected(metadata)
             fireMetadataEvent(event: nextEvent)
         }
     }

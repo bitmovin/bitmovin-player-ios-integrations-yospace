@@ -9,9 +9,9 @@ Pod::Spec.new do |s|
   s.author           = { 'Cory Zachman' => 'cory.zachman@bitmovin.com' }
   s.source           = { :git => 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace.git', :tag => s.version.to_s }
 
-  s.swift_version = '5'
-  s.ios.deployment_target = '9.0'
-  s.tvos.deployment_target = '9.2'
+  s.swift_version = '5.7'
+  s.ios.deployment_target = '13.0'
+  s.tvos.deployment_target = '13.2'
 
   s.ios.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.source_files = 'BitmovinYospaceModule/Classes/**/*'

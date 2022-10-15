@@ -34,7 +34,6 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
             return
         }
 
-        // TODO: check this
         guard var adParams: Dictionary = YospaceUtil.convertToDictionary(text: unitAdParameters.description) else {
             return
         }
