@@ -163,8 +163,8 @@ open class BitmovinYospacePlayer: Player {
         self.sourceConfiguration = sourceConfiguration
 
         let yospaceProperties = YOSessionProperties()
-//        yospaceProperties.suppressAllAnalytics = true
-        yospacesession?.suppressAnalytics(false)
+        // No analytics by default
+        yospacesession?.suppressAnalytics(true)
 
         if let timeout = yospaceConfiguration?.timeout {
             yospaceProperties.timeout = timeout
