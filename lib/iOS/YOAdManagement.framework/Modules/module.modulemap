@@ -1,6 +1,0 @@
-framework module YOAdManagement {
-  umbrella header "YOAdManagement.h"
-
-  export *
-  module * { export * }
-}

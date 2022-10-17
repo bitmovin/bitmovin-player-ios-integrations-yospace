@@ -1,6 +1,0 @@
-framework module Yospace {
-  umbrella header "Yospace.h"
-
-  export *
-  module * { export * }
-}
