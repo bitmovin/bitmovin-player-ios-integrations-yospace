@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace.git', :tag => s.version.to_s }
 
   s.swift_version = '5.7'
-  s.ios.deployment_target = '13.0'
-  s.tvos.deployment_target = '13.2'
+  s.ios.deployment_target = '12.0'
+  s.tvos.deployment_target = '12.0'
 
   s.ios.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.source_files = 'BitmovinYospaceModule/Classes/**/*'
@@ -23,6 +23,6 @@ Pod::Spec.new do |s|
   s.tvos.dependency 'BitmovinPlayer', '~>2.60'
 
   s.ios.vendored_framework = 'lib/ios/YOAdManagement.framework'
-  s.tvos.vendored_framework = 'lib/tvOS/Yospace.framework'
+  s.tvos.vendored_framework = 'lib/tvOS/YOAdManagement.framework'
   
 end

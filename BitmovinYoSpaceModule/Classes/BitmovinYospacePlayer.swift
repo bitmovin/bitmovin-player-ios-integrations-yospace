@@ -750,9 +750,6 @@ extension BitmovinYospacePlayer: PlayerListener {
         if time.isInfinite || time.isNaN {
             time = 0
         }
-        // Error events are deprecated
-//        let dictionary = [kYoPlayheadKey: Int(time), kYoErrorKey: error] as [String: Any]
-//        self.notify(dictionary: dictionary, name: YoPlaybackErrorNotification)
     }
 
     public func onWarning(_ event: WarningEvent) {
@@ -764,9 +761,6 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onReady(_ event: ReadyEvent) {
         if sessionStatus == .notInitialised {
             sessionStatus = .ready
-
-            // "ready" event is deprecated
-//            self.notify(dictionary: Dictionary(), name: YoPlaybackReadyNotification)
         }
         for listener: PlayerListener in listeners {
             listener.onReady?(event)
@@ -828,7 +822,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     func trackId3(_ event: MetadataEvent) {
-        let meta = YOTimedMetadata.createFromMetadata(event: event)!
+        guard let meta = YOTimedMetadata.createFromMetadata(event: event) else { return }
         if (meta.segmentNumber > 0) && (meta.segmentCount > 0) && (!meta.type.isEmpty) {
             self.yospacesession?.timedMetadataWasCollected(meta)
         }
