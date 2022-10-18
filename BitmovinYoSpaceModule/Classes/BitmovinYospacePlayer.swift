@@ -836,13 +836,6 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    func notify(dictionary: [String: Any], name: String) {
-        BitLog.d("YoSpace sending \(name)")
-        DispatchQueue.main.async(execute: {() -> Void in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: name), object: self.yospacesession, userInfo: dictionary)
-        })
-    }
-
     public func onDurationChanged(_ event: DurationChangedEvent) {
         for listener: PlayerListener in listeners {
             listener.onDurationChanged?(DurationChangedEvent(duration: duration))
