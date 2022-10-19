@@ -19,7 +19,7 @@ extension YOTimedMetadata {
                 case "YPRG":
                     BitLog.d("Programme metadata - ignoring")
                 case "YTYP":
-                    if let type  = String(data: data, encoding: String.Encoding.utf8) {
+                    if let type = String(data: data, encoding: String.Encoding.utf8) {
                         ntype = String(type[type.index(type.startIndex, offsetBy: 1)...])
                     }
                 case "YSEQ":
@@ -41,7 +41,7 @@ extension YOTimedMetadata {
                     continue
             }
         }
-        var meta = YOTimedMetadata.create(withMediaId: nmediaId, sequence: nseq, type: ntype, offset: noffset.description, playhead: 0.0)
+        let meta = YOTimedMetadata.create(withMediaId: nmediaId, sequence: nseq, type: ntype, offset: noffset.description, playhead: event.timestamp)
 
         return meta
     }

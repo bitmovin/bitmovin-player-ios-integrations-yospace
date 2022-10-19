@@ -163,7 +163,6 @@ open class BitmovinYospacePlayer: Player {
         self.sourceConfiguration = sourceConfiguration
 
         let yospaceProperties = YOSessionProperties()
-        // No analytics by default
         yospacesession?.suppressAnalytics(true)
 
         if let timeout = yospaceConfiguration?.timeout {
@@ -444,12 +443,12 @@ extension BitmovinYospacePlayer {
                 advert = YOAd
             }
         }
-        guard let ad = advert else { return [] }
+        guard let yospaceAd = advert else { return [] }
+        guard let bitmovinAd = activeAd else { return [] }
         
         #if os(iOS)
-        // TODO: advert.hasLinearInteractiveUnit()
         if let renderer = truexRenderer {
-            BitLog.d("TrueX ad found: \(ad)")
+            BitLog.d("TrueX ad found: \(yospaceAd)")
 
             // Suppress analytics in order for YoSpace TrueX tracking to work
             BitLog.d("YoSpace analytics suppressed")
@@ -458,11 +457,11 @@ extension BitmovinYospacePlayer {
             super.pause()
 
             let adBreakPosition: YospaceAdBreakPosition = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
-            renderer.renderTruexAd(advert: ad, adBreakPosition: adBreakPosition)
+            renderer.renderTruexAd(advert: yospaceAd, adBreakPosition: adBreakPosition)
         }
         #endif
 
-        let staticCompanionAds = (ad.companionAds(YOResourceType.YOStaticResource) as? [YOCompanionCreative])?
+        let staticCompanionAds = (yospaceAd.companionAds(YOResourceType.YOStaticResource) as? [YOCompanionCreative])?
             .map { (creative: YOCompanionCreative) -> CompanionAd in
                 let resource = creative.resource(of: YOResourceType.YOStaticResource)
                 let url = resource?.stringData
@@ -470,14 +469,14 @@ extension BitmovinYospacePlayer {
                 return CompanionAd(
                     id: creative.creativeIdentifier,
                     adSlotId: creative.advertIdentifier,
-                    width: CGFloat(Double(creative.property("width")!.value)!),
-                    height: CGFloat(Double(creative.property("height")!.value)!),
+                    width:  CGFloat(Double(creative.property("width")?.value ?? "0.0")!),
+                    height: CGFloat(Double(creative.property("height")?.value ?? "0.0")!),
                     clickThroughUrl: creative.clickthroughUrl(),
                     resource: CompanionAdResource(source: url, type: CompanionAdType.static)
                 )
             } ?? []
         
-        let htmlCompanionAds = (ad.companionAds(YOResourceType.YOHTMLResource) as? [YOCompanionCreative])?
+        let htmlCompanionAds = (yospaceAd.companionAds(YOResourceType.YOHTMLResource) as? [YOCompanionCreative])?
             .map { (creative: YOCompanionCreative) -> CompanionAd in
                 let resource = creative.resource(of: YOResourceType.YOHTMLResource)
                 let html = resource?.stringData
@@ -485,8 +484,8 @@ extension BitmovinYospacePlayer {
                 return CompanionAd(
                     id: creative.creativeIdentifier,
                     adSlotId: creative.advertIdentifier,
-                    width: CGFloat(Double(creative.property("width")!.value)!),
-                    height: CGFloat(Double(creative.property("height")!.value)!),
+                    width:  CGFloat(Double(creative.property("width")?.value ?? "0.0")!),
+                    height: CGFloat(Double(creative.property("height")?.value ?? "0.0")!),
                     clickThroughUrl: creative.clickthroughUrl(),
                     resource: CompanionAdResource(source: html, type: CompanionAdType.html)
                 )
@@ -495,10 +494,10 @@ extension BitmovinYospacePlayer {
         let companionAds = [staticCompanionAds, htmlCompanionAds].flatMap { $0 }
 
         let adStartedEvent = YospaceAdStartedEvent(
-            clickThroughUrl: activeAd!.clickThroughUrl,
-            duration: ad.duration,
-            timeOffset: ad.start,
-            ad: activeAd!,
+            clickThroughUrl: bitmovinAd.clickThroughUrl,
+            duration: yospaceAd.duration,
+            timeOffset: yospaceAd.start,
+            ad: bitmovinAd,
             companionAds: companionAds
         )
 
@@ -519,7 +518,7 @@ extension BitmovinYospacePlayer {
                 
                 BitLog.d("Emitting AdFinishedEvent")
                 for listener: PlayerListener in listeners {
-                    listener.onAdFinished?(AdFinishedEvent(ad: activeAd!))
+                    listener.onAdFinished?(AdFinishedEvent(ad: ad))
                 }
             }
         }
@@ -554,7 +553,7 @@ extension BitmovinYospacePlayer {
                     onAdQuartile(AdQuartileEvent(quartile: .firstQuartile))
                 case "midpoint":
                     onAdQuartile(AdQuartileEvent(quartile: .midpoint))
-                case"thirdQuartile":
+                case "thirdQuartile":
                     onAdQuartile(AdQuartileEvent(quartile: .thirdQuartile))
                 default:
                     BitLog.d("Skip event: \(event)")
@@ -744,11 +743,6 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onError(_ event: ErrorEvent) {
         for listener: PlayerListener in listeners {
             listener.onError?(event)
-        }
-        _ = NSError(domain: "Bitmovin", code: Int(event.code), userInfo: [NSLocalizedDescriptionKey: event.message])
-        var time = currentTimeWithAds()
-        if time.isInfinite || time.isNaN {
-            time = 0
         }
     }
 
