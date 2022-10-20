@@ -7,7 +7,7 @@
 
 import Foundation
 import TruexAdRenderer
-import Yospace
+import YOAdManagement
 import BitmovinPlayer
 
 class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
@@ -15,7 +15,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     private let configuration: TruexConfiguration
     private weak var eventDelegate: TruexAdRendererEventDelegate?
     private var renderer: TruexAdRenderer?
-    private var interactiveUnit: YSInteractiveUnit?
+    private var interactiveUnit: YOInteractiveCreative?
     private var adBreakPosition: YospaceAdBreakPosition = .preroll
     private var adFree = false
     private var sessionAdFree = false
@@ -25,20 +25,20 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         self.eventDelegate = eventDelegate
     }
 
-    func renderTruexAd(advert: YSAdvert, adBreakPosition: YospaceAdBreakPosition) {
-        guard let interactiveUnit = advert.linearCreativeElement().interactiveUnit() else {
+    func renderTruexAd(advert: YOAdvert, adBreakPosition: YospaceAdBreakPosition) {
+        guard let interactiveUnit = advert.interactiveCreative else {
             return
         }
 
-        guard let unitAdParameters = interactiveUnit.unitAdParameters() else {
+        guard let unitAdParameters = interactiveUnit.adParameters else {
             return
         }
 
-        guard var adParams: Dictionary = YospaceUtil.convertToDictionary(text: unitAdParameters) else {
+        guard var adParams: Dictionary = YospaceUtil.convertToDictionary(text: unitAdParameters.description) else {
             return
         }
 
-        BitLog.d("Rendering TrueX ad: \(interactiveUnit.unitSource())")
+        BitLog.d("Rendering TrueX ad: \(interactiveUnit.source)")
 
         self.interactiveUnit = interactiveUnit
         self.adBreakPosition = adBreakPosition
@@ -52,7 +52,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         }
 
         renderer = TruexAdRenderer(
-            url: interactiveUnit.unitSource().absoluteString,
+            url: interactiveUnit.source,
             adParameters: adParams,
             slotType: adBreakPosition.rawValue
         )

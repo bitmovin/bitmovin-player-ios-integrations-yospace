@@ -7,7 +7,7 @@
 
 import Foundation
 import BitmovinPlayer
-import Yospace
+import YOAdManagement
 
 public class YospaceAd: NSObject, Ad {
     public var identifier: String?
@@ -21,8 +21,8 @@ public class YospaceAd: NSObject, Ad {
     public let title: String?
     public let advertiser: String?
     public let hasInteractiveUnit: Bool
-    public let lineage: YSAdvertWrapper?
-    public let extensions: [YSXmlNode]
+    public let lineage: YOAdvertWrapper?
+    public let extensions: [YOXmlNode]
     public let isFiller: Bool
     public let isLinear: Bool
     public var clickThroughUrl: URL?
@@ -31,7 +31,7 @@ public class YospaceAd: NSObject, Ad {
     public var height: Int = -1
     public var mediaFileUrl: URL?
 
-    required init(identifier: String?, creativeId: String?, sequence: String?, absoluteStart: TimeInterval, relativeStart: TimeInterval, duration: TimeInterval, absoluteEnd: TimeInterval, system: String?, title: String?, advertiser: String?, hasInteractiveUnit: Bool, lineage: YSAdvertWrapper?, extensions: [YSXmlNode], isFiller: Bool, isLinear: Bool, clickThroughUrl: URL?, mediaFileUrl: URL?) {
+    required init(identifier: String?, creativeId: String?, sequence: String?, absoluteStart: TimeInterval, relativeStart: TimeInterval, duration: TimeInterval, absoluteEnd: TimeInterval, system: String?, title: String?, advertiser: String?, hasInteractiveUnit: Bool, lineage: YOAdvertWrapper?, extensions: [YOXmlNode], isFiller: Bool, isLinear: Bool, clickThroughUrl: URL?, mediaFileUrl: URL?) {
         self.identifier = identifier
         self.creativeId = creativeId
         self.sequence = sequence
