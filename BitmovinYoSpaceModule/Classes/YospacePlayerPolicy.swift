@@ -6,17 +6,41 @@
 //
 
 import Foundation
-import Yospace
+import YOAdManagement
 
-class YospacePlayerPolicy: NSObject, YPPolicyHandling {
+class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
     weak var playerPolicy: BitmovinYospacePlayerPolicy?
 
     public convenience init(bitmovinYospacePlayerPolicy: BitmovinYospacePlayerPolicy) {
         self.init()
         self.playerPolicy = bitmovinYospacePlayerPolicy
     }
-
-    // MARK: YPPolicyHandling
+    
+    // MARK: YOPolicyHandling
+    public func willSeek(to position: TimeInterval, timeline: [Any], playhead: TimeInterval) -> TimeInterval {
+        return self.playerPolicy?.canSeekTo(seekTarget: position) ?? position
+    }
+    
+    public func canChangeVolume(_ mute: Bool, playhead: TimeInterval, timeline: [Any]) -> Bool {
+        true
+    }
+    
+    public func canResize(_ fullscreen: Bool, playhead: TimeInterval, timeline: [Any]) -> Bool {
+        true
+    }
+    
+    public func canResizeCreative(_ expand: Bool, playhead: TimeInterval, timeline: [Any]) -> Bool {
+        true
+    }
+    
+    public func didSkip(from previous: TimeInterval, to current: TimeInterval, timeline: [Any]) {
+        
+    }
+    
+    public func didSeek(from previous: TimeInterval, to current: TimeInterval, timeline: [Any]) {
+        
+    }
+    
     public func canStart(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
         return true
     }
@@ -39,10 +63,6 @@ class YospacePlayerPolicy: NSObject, YPPolicyHandling {
 
     public func canSeek(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
         return self.playerPolicy?.canSeek() ?? true
-    }
-
-    public func willSeek(to position: TimeInterval, timeline: [Any]) -> TimeInterval {
-        return self.playerPolicy?.canSeekTo(seekTarget: position) ?? position
     }
 
     public func canMute(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
@@ -81,7 +101,7 @@ class YospacePlayerPolicy: NSObject, YPPolicyHandling {
         return true
     }
 
-    public func setPlaybackMode(_ playbackMode: YSEPlaybackMode) {
+    public func setPlaybackMode(_ playbackMode: YOPlaybackMode) {
 
     }
 }

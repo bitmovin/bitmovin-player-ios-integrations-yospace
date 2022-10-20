@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol BitmovinYospacePlayerPolicy: class {
+public protocol BitmovinYospacePlayerPolicy: AnyObject {
     func canSeek() -> Bool
     func canSeekTo(seekTarget: TimeInterval) -> TimeInterval
     func canSkip() -> TimeInterval
