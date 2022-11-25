@@ -158,7 +158,7 @@ class ViewController: UIViewController {
                 drmConfig.licenseRequestHeaders = ["x-isp-token": drmHeader]
             }
             prepareDRM(config: drmConfig)
-//            sourceConfig.drmConfig = drmConfig
+//            sourceConfisEnabledig.drmConfig = drmConfig
         }
         
         player.load(
