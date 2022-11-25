@@ -39,28 +39,13 @@ public class YospaceAdBreak: NSObject, AdBreak {
         return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), scheduleTime=\(scheduleTime), replaceContentDuration=\(replaceContentDuration), position=\(position.rawValue), ads=\(ads.count)"
         // swiftlint:enable line_length
     }
-}
-
-// Implementation of protocol is required, but we do not need to support JSON mapping, so default values are used
-extension YospaceAdBreak: BMPJsonable {
-
-    public func toJsonString() throws -> String {
+    
+    // Implementation of protocol is required, but we do not need to support JSON mapping, so default values are used
+    public func _toJsonString() throws -> String {
         return ""
     }
-
-    public func toJsonData() -> [AnyHashable: Any] {
+    
+    public func _toJsonData() -> [AnyHashable : Any] {
         return [:]
-    }
-
-    public static func fromJsonData(_ jsonData: [AnyHashable: Any]) throws -> Self {
-        return Self.init(
-            identifier: "",
-            absoluteStart: 0,
-            absoluteEnd: 0,
-            duration: 0,
-            relativeStart: 0,
-            scheduleTime: 0,
-            replaceContentDuration: 0
-        )
     }
 }

@@ -8,7 +8,7 @@
 import BitmovinPlayer
 
 public class YospaceId3MetadataEntry: NSObject, MetadataEntry {
-    public var metadataType: BMPMetadataType
+    public var metadataType: MetadataType
     public let mediaId: String
     public let type: String
     public let segmentCount: Int
