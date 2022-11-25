@@ -97,7 +97,7 @@ open class BitmovinYospacePlayer : NSObject {
         sessionStatus = .notInitialised
         player.add(listener: self)
 
-        BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? true
+        BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? false
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
 
         // For the immediate, only utilizing the normalizer inside the DateEmitter, as that solves the most pressing problems
@@ -117,7 +117,7 @@ open class BitmovinYospacePlayer : NSObject {
         integrationListeners.removeAll()
         yospaceListeners.removeAll()
         listeners.removeAll()
-        player.destroy()
+        player?.destroy()
     }
 
     // MARK: loading a yospace source
@@ -644,11 +644,9 @@ extension BitmovinYospacePlayer {
             if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
                 onError(SourceErrorEvent(code: .general, message: "Yospace not initialized", data: nil), player: player)
-//                self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
                 player.load(sourceConfig: sourceConfiguration)
             } else {
                 onError(SourceErrorEvent(code: .general, message: "Yospace not initialized", data: nil), player: player)
-//                onError(ErrorEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized"))
             }
         case .noAnalytics:
             // store the session
@@ -658,11 +656,9 @@ extension BitmovinYospacePlayer {
             if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
                 onError(SourceErrorEvent(code: .general, message: "No analytics", data: nil), player: player)
-//                self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
                 player.load(sourceConfig: sourceConfiguration)
             } else {
                 onError(SourceErrorEvent(code: .general, message: "No analytics", data: nil), player: player)
-//                onError(ErrorEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics"))
             }
         case .initialised:
             // store the session
@@ -684,11 +680,11 @@ extension BitmovinYospacePlayer {
     public func operationDidFailWithError(_ error: Error) {
         if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
             BitLog.w("Attempting to playback the stream url without Yospace")
-            onError(SourceErrorEvent(code: .general, message: "Unknown Error. Initialize failed with Error", data: nil), player: player)
+            onError(PlayerErrorEvent(code: .networkGeneral, message: "Unknown Error. Initialize failed with Error", data: nil), player: player)
 //            self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
             player.load(sourceConfig: sourceConfiguration)
         } else {
-            onError(SourceErrorEvent(code: .general, message: "Unknown Error. Initialize failed with Error", data: nil), player: player)
+            onError(PlayerErrorEvent(code: .networkGeneral, message: "Unknown Error. Initialize failed with Error", data: nil), player: player)
 //            onError(ErrorEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
         }
     }
@@ -762,12 +758,6 @@ extension BitmovinYospacePlayer: PlayerListener {
             listener.onEvent?(event, player: player)
         }
     }
-
-//    public func onWarning(_ event: WarningEvent) {
-//        for listener: PlayerListener in listeners {
-//            listener.onWarning?(event, player: player)
-//        }
-//    }
 
     public func onReady(_ event: ReadyEvent, player: Player) {
         BitLog.d("onReady: \(event)")
@@ -884,7 +874,7 @@ extension BitmovinYospacePlayer: PlayerListener {
                 let position = timeline.absoluteToRelative(time: event.from.time)
                 let seekTarget = timeline.absoluteToRelative(time: event.to.time)
                 let from = SeekPosition(source: event.from.source, time: position)
-                let to = SeekPosition(source: event.to.source, time: position)
+                let to = SeekPosition(source: event.to.source, time: seekTarget)
                 event = SeekEvent(from: from, to: to)
             }
             listener.onSeek?(event, player: player)
