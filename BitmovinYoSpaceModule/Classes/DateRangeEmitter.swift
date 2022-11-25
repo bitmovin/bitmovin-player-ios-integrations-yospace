@@ -36,15 +36,15 @@ class DateRangeEmitter: NSObject {
         guard let player = player else {
             return TimeRange(start: 0, end: 0)
         }
-        if player.isLive {
+        if player.isLive() {
             let currentTime = player.currentTimeWithAds()
-            let timeShift = player.timeShift
-            let maxTimeShift = player.maxTimeShift
+            let timeShift = player.player.timeShift
+            let maxTimeShift = player.player.maxTimeShift
             let start = currentTime + maxTimeShift - timeShift
             let end = currentTime - timeShift
             return TimeRange(start: start, end: end)
         } else {
-            return TimeRange(start: 0, end: player.duration)
+            return TimeRange(start: 0, end: player.duration())
         }
     }
 
@@ -161,14 +161,14 @@ class DateRangeEmitter: NSObject {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataParsedEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach { $0.onMetadataParsed?(event) }
+        player?.listeners.forEach { $0.onMetadataParsed?(event, player: player!.player) }
     }
 
     func fireMetadataEvent(event: TimedMetadataEvent) {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach { $0.onMetadata?(event) }
+        player?.listeners.forEach { $0.onMetadata?(event, player: player!.player) }
     }
 }
 
@@ -230,7 +230,7 @@ extension DateRangeEmitter: PlayerListener {
         reset()
     }
 
-    func onError(_ event: ErrorEvent) {
+    func onError(_ event: Event) {
         reset()
     }
 }

@@ -424,7 +424,7 @@ extension PlayheadNormalizer: PlayerListener {
 
     public func onSeek(_ event: SeekEvent) {
         // VOD - Seek started
-        log("VOD Seek started - \(event.seekTarget)")
+        log("VOD Seek started - \(event.to)")
         isSeeking = true
     }
     public func onSeeked(_ event: SeekedEvent) {
