@@ -18,15 +18,15 @@ class ViewController: UIViewController {
     @IBOutlet var adLabel: UILabel!
     
     lazy var playerView: PlayerView = {
-        let playerView = PlayerView(player: player, frame: .zero)
+        let playerView = PlayerView(player: player.player, frame: .zero)
         playerView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         playerView.frame = playerContainer.bounds
         return playerView
     }()
     
     lazy var player: BitmovinYospacePlayer = {
-        let configuration = PlayerConfiguration()
-        configuration.playbackConfiguration.isAutoplayEnabled = true
+        let configuration = PlayerConfig()
+        configuration.playbackConfig.isAutoplayEnabled = true
 
         let player = BitmovinYospacePlayer(
             configuration: configuration,
@@ -52,8 +52,7 @@ class ViewController: UIViewController {
             return
         }
 
-        let sourceConfig = SourceConfiguration()
-        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
         let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
         player.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
@@ -64,8 +63,7 @@ class ViewController: UIViewController {
             return
         }
 
-        let sourceConfig = SourceConfiguration()
-        sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+        let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
         let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
 
         player.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
@@ -73,7 +71,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: PlayerListener {
-    func onTimeChanged(_ event: TimeChangedEvent) {
-        adLabel.text = "Ad: \(player.isAd) time=\(Double(round(10*player.currentTime)/10))"
+    func onTimeChanged(_ event: TimeChangedEvent, player: Player) {
+        adLabel.text = "Ad: \(self.player.isAd()) time=\(Double(round(10*self.player.currentTime())/10))"
     }
 }
