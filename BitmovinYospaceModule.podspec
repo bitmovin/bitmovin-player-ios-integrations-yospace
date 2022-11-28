@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'BitmovinYospaceModule'
-  s.version          = '1.22.4'
+  s.version          = '1.22.5'
   s.summary          = 'A short description of BitmovinYoSpaceModule.' 
   s.description      = 'A short description of BitmovinYoSpaceModule.'
 
@@ -17,9 +17,9 @@ Pod::Spec.new do |s|
   s.tvos.source_files = 'BitmovinYospaceModule/Classes/**/*'
   s.tvos.exclude_files = 'BitmovinYospaceModule/Classes/BitmovinTruexRenderer.swift'
 
-  s.ios.dependency 'BitmovinPlayer', '~>3.0'
+  s.ios.dependency 'BitmovinPlayer', '~>3.21.0'
   s.ios.dependency 'TruexAdRenderer-iOS', '3.2.1'
-  s.tvos.dependency 'BitmovinPlayer', '~>3.0'
+  s.tvos.dependency 'BitmovinPlayer', '~>3.21.0'
 
   s.ios.vendored_framework = 'lib/ios/YOAdManagement.framework'
   s.tvos.vendored_framework = 'lib/tvOS/YOAdManagement.framework'
