@@ -681,11 +681,9 @@ extension BitmovinYospacePlayer {
         if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
             BitLog.w("Attempting to playback the stream url without Yospace")
             onError(PlayerErrorEvent(code: .networkGeneral, message: "Unknown Error. Initialize failed with Error", data: nil), player: player)
-//            self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
             player.load(sourceConfig: sourceConfiguration)
         } else {
             onError(PlayerErrorEvent(code: .networkGeneral, message: "Unknown Error. Initialize failed with Error", data: nil), player: player)
-//            onError(ErrorEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
         }
     }
 
