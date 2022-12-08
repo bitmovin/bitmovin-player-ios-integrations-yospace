@@ -1,8 +1,8 @@
 # BitmovinYoSpaceModule
 
 ##### Platforms 
-iOS 13.0+
-tvOS 9.2+
+iOS 14+
+tvOS 14+
 
 
 ## Example
@@ -11,13 +11,13 @@ The following example creates a BitmovinYospacePlayer and loads a Yospace stream
 
 ```swift
 // Optionally create a yospace configuration
-let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+let yospaceConfig = YospaceConfig(debug: false, userAgent: "Custom User Agent", timeout: 5000)
 
 // Optionally create a PlayerConfiguration
-let configuration = PlayerConfig()
+let playerConfig = PlayerConfig()
 
 // Create a BitmovinYospacePlayer
-let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
 
 
 // Add it to your player view 
@@ -33,8 +33,8 @@ let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
 // Create a YospaceSourceConfiguration with your yospaceAssetType 
 let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
-// Load your sourceConfiguration and yospaceSourceConfiguration
-bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+// Load your sourceConfig and yospaceSourceConfig
+bitmovinYoSpacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
 
 #### Player Listener
@@ -110,7 +110,7 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 ```
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.22.5'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.0.0'
   pod 'BitmovinPlayer', tag: '3.21.0'
 
   use_frameworks!

@@ -1,7 +1,7 @@
 import UIKit
 import BitmovinPlayer
 
-public class YospaceSourceConfiguration {
+public class YospaceSourceConfig {
     public private(set) var yospaceAssetType: YospaceAssetType
     public private(set) var retryExcludingYospace: Bool
 

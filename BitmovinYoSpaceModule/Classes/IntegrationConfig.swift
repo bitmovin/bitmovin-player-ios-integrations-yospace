@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class IntegrationConfiguration: NSObject {
+public class IntegrationConfig: NSObject {
     let enablePlayheadNormalization: Bool
     
     public init(enablePlayheadNormalization: Bool) {

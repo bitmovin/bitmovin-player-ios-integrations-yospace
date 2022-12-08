@@ -16,7 +16,7 @@ struct Stream {
     var fairplayLicenseUrl: String?
     var fairplayCertUrl: String?
     var drmHeader: String?
-    var yospaceSourceConfig: YospaceSourceConfiguration?
+    var yospaceSourceConfig: YospaceSourceConfig?
 }
 
 class ViewController: UIViewController {
@@ -25,17 +25,17 @@ class ViewController: UIViewController {
     @IBOutlet weak var streamsTextField: UITextField!
     
     lazy var player: BitmovinYospacePlayer = {
-        let configuration = PlayerConfig()
-        configuration.playbackConfig.isAutoplayEnabled = true
-        configuration.tweaksConfig.isNativeHlsParsingEnabled = true
-        configuration.tweaksConfig.isNativeHlsParsingEnabled = true
+        let playConfig = PlayerConfig()
+        playConfig.playbackConfig.isAutoplayEnabled = true
+        playConfig.tweaksConfig.isNativeHlsParsingEnabled = true
+        playConfig.tweaksConfig.isNativeHlsParsingEnabled = true
 
-        let integrationConfig = IntegrationConfiguration(enablePlayheadNormalization: true)
+        let integrationConfig = IntegrationConfig(enablePlayheadNormalization: true)
         
         let player = BitmovinYospacePlayer(
-            configuration: configuration,
-            yospaceConfiguration: YospaceConfiguration(isDebugEnabled: true),
-            integrationConfiguration: integrationConfig
+            playerConfig: playConfig,
+            yospaceConfig: YospaceConfig(isDebugEnabled: true),
+            integrationConfig: integrationConfig
         )
         player.add(listener: self)
         player.add(integrationListener: self)
@@ -44,7 +44,7 @@ class ViewController: UIViewController {
     }()
     
     lazy var playerView: PlayerView = {
-        let playerView = PlayerView(player: player.player, frame: .zero)
+        let playerView = PlayerView(player: player.bitmovinPlayer(), frame: .zero)
         playerView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         playerView.frame = containerView.bounds
         return playerView
@@ -138,7 +138,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func loadUnloadPressed(_ sender: UIButton) {
-        if player.player.isPlaying {
+        if player.isPlaying() {
             player.unload()
         } else {
             loadStream(stream: streams[selectedStreamIndex])
@@ -165,8 +165,8 @@ class ViewController: UIViewController {
         }
         
         player.load(
-            sourceConfiguration: sourceConfig,
-            yospaceSourceConfiguration: stream.yospaceSourceConfig
+            sourceConfig: sourceConfig,
+            yospaceSourceConfig: stream.yospaceSourceConfig
         )
     }
     
@@ -273,7 +273,7 @@ extension ViewController: PlayerListener {
         loadUnloadButton.setTitle("Load", for: .normal)
     }
  
-    func onError(_ event: Event, player: Player) {
+    func onAdError(_ event: AdErrorEvent, player: Player) {
         print("[onError] \(event.description)")
     }
 }
