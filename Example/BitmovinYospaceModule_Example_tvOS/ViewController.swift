@@ -18,19 +18,19 @@ class ViewController: UIViewController {
     @IBOutlet var adLabel: UILabel!
     
     lazy var playerView: PlayerView = {
-        let playerView = PlayerView(player: player.player, frame: .zero)
+        let playerView = PlayerView(player: player.bitmovinPlayer(), frame: .zero)
         playerView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         playerView.frame = playerContainer.bounds
         return playerView
     }()
     
     lazy var player: BitmovinYospacePlayer = {
-        let configuration = PlayerConfig()
-        configuration.playbackConfig.isAutoplayEnabled = true
+        let playerConfig = PlayerConfig()
+        playerConfig.playbackConfig.isAutoplayEnabled = true
 
         let player = BitmovinYospacePlayer(
-            configuration: configuration,
-            yospaceConfiguration: .init()
+            playerConfig: playerConfig,
+            yospaceConfig: .init()
         )
 
         player.add(listener: self)
@@ -53,9 +53,9 @@ class ViewController: UIViewController {
         }
 
         let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
-        let config = YospaceSourceConfiguration(yospaceAssetType: .linear)
+        let yospaceSourceConfig = YospaceSourceConfig(yospaceAssetType: .linear)
 
-        player.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        player.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
     }
 
     @IBAction func vodButtonClicked(sender: UIButton) {
@@ -64,9 +64,9 @@ class ViewController: UIViewController {
         }
 
         let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
-        let config = YospaceSourceConfiguration(yospaceAssetType: .vod)
+        let yospaceSourceConfig = YospaceSourceConfig(yospaceAssetType: .vod)
 
-        player.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+        player.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
     }
 }
 

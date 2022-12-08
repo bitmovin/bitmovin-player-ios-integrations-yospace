@@ -38,8 +38,8 @@ class DateRangeEmitter: NSObject {
         }
         if player.isLive() {
             let currentTime = player.currentTimeWithAds()
-            let timeShift = player.player.timeShift
-            let maxTimeShift = player.player.maxTimeShift
+            let timeShift = player.bitmovinPlayer().timeShift
+            let maxTimeShift = player.bitmovinPlayer().maxTimeShift
             let start = currentTime + maxTimeShift - timeShift
             let end = currentTime - timeShift
             return TimeRange(start: start, end: end)
@@ -161,14 +161,22 @@ class DateRangeEmitter: NSObject {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataParsedEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach { $0.onMetadataParsed?(event, player: player!.player) }
+        player?.listeners.forEach {
+            if let bmPlayer = player?.bitmovinPlayer() {
+                $0.onMetadataParsed?(event, player: bmPlayer)
+            }
+        }
     }
 
     func fireMetadataEvent(event: TimedMetadataEvent) {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach { $0.onMetadata?(event, player: player!.player) }
+        player?.listeners.forEach {
+            if let bmPlayer = player?.bitmovinPlayer() {
+                $0.onMetadata?(event, player: bmPlayer)
+            }
+        }
     }
 }
 

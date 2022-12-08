@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class YospaceConfiguration {
+public class YospaceConfig {
     // MARK: - Yospace Configuration attributes
     let userAgent: String?
     let timeout: TimeInterval?
