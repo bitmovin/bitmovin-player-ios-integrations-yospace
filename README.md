@@ -21,7 +21,7 @@ let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerCo
 
 
 // Add it to your player view 
-let playerBoundary = PlayerView(player: bitmovinYoSpacePlayer.player, frame: frame)
+let playerBoundary = PlayerView(player: bitmovinYoSpacePlayer.bitmovinPlayer(), frame: frame)
 playerBoundary.autoresizingMask = [.flexibleHeight, .flexibleWidth]
 playerBoundary.frame = playerView.bounds
 playerView.addSubview(playerBoundary)
