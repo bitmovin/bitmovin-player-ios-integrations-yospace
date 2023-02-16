@@ -36,15 +36,15 @@ class DateRangeEmitter: NSObject {
         guard let player = player else {
             return TimeRange(start: 0, end: 0)
         }
-        if player.isLive {
+        if player.isLive() {
             let currentTime = player.currentTimeWithAds()
-            let timeShift = player.timeShift
-            let maxTimeShift = player.maxTimeShift
+            let timeShift = player.bitmovinPlayer().timeShift
+            let maxTimeShift = player.bitmovinPlayer().maxTimeShift
             let start = currentTime + maxTimeShift - timeShift
             let end = currentTime - timeShift
             return TimeRange(start: start, end: end)
         } else {
-            return TimeRange(start: 0, end: player.duration)
+            return TimeRange(start: 0, end: player.duration())
         }
     }
 
@@ -161,14 +161,22 @@ class DateRangeEmitter: NSObject {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataParsedEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach { $0.onMetadataParsed?(event) }
+        player?.listeners.forEach {
+            if let bmPlayer = player?.bitmovinPlayer() {
+                $0.onMetadataParsed?(event, player: bmPlayer)
+            }
+        }
     }
 
     func fireMetadataEvent(event: TimedMetadataEvent) {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach { $0.onMetadata?(event) }
+        player?.listeners.forEach {
+            if let bmPlayer = player?.bitmovinPlayer() {
+                $0.onMetadata?(event, player: bmPlayer)
+            }
+        }
     }
 }
 
@@ -230,7 +238,7 @@ extension DateRangeEmitter: PlayerListener {
         reset()
     }
 
-    func onError(_ event: ErrorEvent) {
+    func onError(_ event: Event) {
         reset()
     }
 }

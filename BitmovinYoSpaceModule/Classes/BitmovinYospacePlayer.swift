@@ -8,14 +8,14 @@ enum SessionStatus: Int {
     case playing
 }
 
-open class BitmovinYospacePlayer: Player {
+open class BitmovinYospacePlayer : NSObject {
     // MARK: - Bitmovin Yospace Player attributes
     var yospacesession: YOSession?
     var sessionStatus: SessionStatus = .notInitialised
-    var yospaceSourceConfiguration: YospaceSourceConfiguration?
-    var yospaceConfiguration: YospaceConfiguration?
-    var integrationConfiguration: IntegrationConfiguration?
-    var sourceConfiguration: SourceConfiguration?
+    var yospaceSourceConfig: YospaceSourceConfig?
+    var yospaceConfig: YospaceConfig?
+    var integrationConfig: IntegrationConfig?
+    var sourceConfig: SourceConfig?
     var listeners: [PlayerListener] = []
     var yospacePlayerPolicy: YospacePlayerPolicy?
     var yospaceListeners: [YospaceListener] = []
@@ -29,11 +29,16 @@ open class BitmovinYospacePlayer: Player {
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
     var liveAdPaused = false
+    var bmPlayer: Player
 
     #if os(iOS)
     private var truexRenderer: BitmovinTruexRenderer?
     #endif
 
+    public func bitmovinPlayer() -> Player {
+        return self.bmPlayer
+    }
+    
     var adBreaks: [YOAdBreak] {
         get {
             return realAdBreaks
@@ -55,20 +60,20 @@ open class BitmovinYospacePlayer: Player {
         }
     }
 
-    open override var duration: TimeInterval {
-        return super.duration - self.adBreaks.reduce(0) {$0 + $1.duration}
+    public func duration() -> TimeInterval {
+        return bmPlayer.duration - self.adBreaks.reduce(0) {$0 + $1.duration}
     }
 
-    open override var currentTime: TimeInterval {
-        if isAd {
+    public func currentTime() -> TimeInterval {
+        if isAd() {
             // Return ad time
-            return super.currentTime - (activeAd?.absoluteStart ?? 0.0)
-        } else if isLive {
+            return bmPlayer.currentTime - (activeAd?.absoluteStart ?? 0.0)
+        } else if isLive() {
             // Return absolute time
-            return super.currentTime
+            return bmPlayer.currentTime
         } else /* VOD */ {
             // Return relative time; fallback to absolute time
-            return timeline?.absoluteToRelative(time: super.currentTime) ?? super.currentTime
+            return timeline?.absoluteToRelative(time: bmPlayer.currentTime) ?? bmPlayer.currentTime
         }
     }
 
@@ -88,34 +93,35 @@ open class BitmovinYospacePlayer: Player {
      - configuration: Traditional PlayerConfiguration used by Bitmovin
      - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
      */
-    public init(configuration: PlayerConfiguration, yospaceConfiguration: YospaceConfiguration? = nil, integrationConfiguration: IntegrationConfiguration? = nil) {
-        self.yospaceConfiguration = yospaceConfiguration
-        self.integrationConfiguration = integrationConfiguration
-        super.init(configuration: configuration)
+    public init(playerConfig: PlayerConfig, yospaceConfig: YospaceConfig? = nil, integrationConfig: IntegrationConfig? = nil) {
+        self.bmPlayer = PlayerFactory.create(playerConfig: playerConfig)
+        super.init()
+        // We need to call 'super.init' before we use 'self'
+        self.bmPlayer.add(listener: self)
+        
         sessionStatus = .notInitialised
-        super.add(listener: self)
-
-        BitLog.isEnabled = yospaceConfiguration?.isDebugEnabled ?? false
+        self.yospaceConfig = yospaceConfig
+        self.integrationConfig = integrationConfig
         self.yospacePlayerPolicy = YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
 
         // For the immediate, only utilizing the normalizer inside the DateEmitter, as that solves the most pressing problems
         // We can potentially expand to normalizing all time values post-validation
         // Note - we may need to initialize the normalizer before adding listeners here, to give event handler precedence to the normalizer
-        if let integrationConfiguration = self.integrationConfiguration {
+        if let integrationConfig = self.integrationConfig {
             // Using playhead normalization is opt-in
-            if integrationConfiguration.enablePlayheadNormalization {
+            if integrationConfig.enablePlayheadNormalization {
                 self.playheadNormalizer = PlayheadNormalizer(player: self, eventDelegate: self)
             }
         }
         self.dateRangeEmitter = DateRangeEmitter(player: self, normalizer: playheadNormalizer)
     }
 
-    open override func destroy() {
+    public func destroy() {
         resetYospaceSession()
         integrationListeners.removeAll()
         yospaceListeners.removeAll()
         listeners.removeAll()
-        super.destroy()
+        bmPlayer.destroy()
     }
 
     // MARK: loading a yospace source
@@ -129,7 +135,7 @@ open class BitmovinYospacePlayer: Player {
      - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
      - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
      */
-    open func load(sourceConfiguration: SourceConfiguration, yospaceSourceConfiguration: YospaceSourceConfiguration? = nil, truexConfiguration: TruexConfiguration? = nil) {
+    open func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfiguration: TruexConfiguration? = nil) {
         #if os(iOS)
         if let truexConfiguration = truexConfiguration {
             self.truexConfiguration = truexConfiguration
@@ -141,12 +147,12 @@ open class BitmovinYospacePlayer: Player {
         #endif
 
         var logMessage = "Load: "
-        if let url = sourceConfiguration.firstSourceItem?.hlsSource?.url {
-            logMessage.append("Source=\(url.absoluteString)")
-        }
-        if let yospaceSourceConfiguration = yospaceSourceConfiguration {
-            logMessage.append(", YospaceAssetType=\(yospaceSourceConfiguration.yospaceAssetType.rawValue)")
-            logMessage.append(", YospaceRetry=\(yospaceSourceConfiguration.retryExcludingYospace)")
+        let url = sourceConfig.url
+        logMessage.append("Source=\(url.absoluteString)")
+        
+        if let yospaceSourceConfig = yospaceSourceConfig {
+            logMessage.append(", YospaceAssetType=\(yospaceSourceConfig.yospaceAssetType.rawValue)")
+            logMessage.append(", YospaceRetry=\(yospaceSourceConfig.retryExcludingYospace)")
         }
         if let truexConfiguration = truexConfiguration {
             if !truexConfiguration.userId.isEmpty {
@@ -159,39 +165,39 @@ open class BitmovinYospacePlayer: Player {
         BitLog.d(logMessage)
 
         resetYospaceSession()
-        self.yospaceSourceConfiguration = yospaceSourceConfiguration
-        self.sourceConfiguration = sourceConfiguration
+        self.yospaceSourceConfig = yospaceSourceConfig
+        self.sourceConfig = sourceConfig
 
         let yospaceProperties = YOSessionProperties()
         yospacesession?.suppressAnalytics(true)
 
-        if let timeout = yospaceConfiguration?.timeout {
+        if let timeout = yospaceConfig?.timeout {
             yospaceProperties.timeout = timeout
         }
 
-        if let pollingInterval = yospaceConfiguration?.pollingInterval {
+        if let pollingInterval = yospaceConfig?.pollingInterval {
             yospaceProperties.resourceTimeout = TimeInterval(pollingInterval)
         }
 
-        if let userAgent = yospaceConfiguration?.userAgent {
+        if let userAgent = yospaceConfig?.userAgent {
             yospaceProperties.userAgent = userAgent
         }
 
-        if yospaceConfiguration?.isDebugEnabled == true {
+        if yospaceConfig?.isDebugEnabled == true {
             YOSessionProperties.setDebugFlags(YODebugFlags.DEBUG_ALL)
         }
 
-        guard let url: URL = self.sourceConfiguration?.firstSourceItem?.hlsSource?.url else {
-            onError(ErrorEvent(code: YospaceErrorCode.invalidSource.rawValue, message: "Invalid source provided. Yospace URL must be HLS"))
+        if self.sourceConfig?.type != .hls {
+            onError(YospaceErrorEvent(errorCode: .invalidSource, message: "Invalid source provided. Yospace URL must be HLS"), player: bmPlayer)
             return
         }
 
-        guard let yospaceSourceConfiguration = yospaceSourceConfiguration else {
-            load(sourceConfiguration: sourceConfiguration)
+        guard let yospaceSourceConfig = yospaceSourceConfig else {
+            bmPlayer.load(sourceConfig: sourceConfig)
             return
         }
 
-        switch yospaceSourceConfiguration.yospaceAssetType {
+        switch yospaceSourceConfig.yospaceAssetType {
         case .linear:
             loadLive(url: url, yospaceProperties: yospaceProperties)
         case .vod:
@@ -199,44 +205,44 @@ open class BitmovinYospacePlayer: Player {
         }
     }
 
-    open override func unload() {
+    public func unload() {
         BitLog.d("Unload: ")
-        super.unload()
+        bmPlayer.unload()
     }
 
     // MARK: - playback methods
-    open override func pause() {
+    public func pause() {
         if let session = self.yospacesession {
             if !session.canPause() {
                 return
             }
         }
-        super.pause()
+        bmPlayer.pause()
     }
 
-    open override func seek(time: TimeInterval) {
+    public func seek(time: TimeInterval) {
         if let session = self.yospacesession {
             let seekTime = session.willSeek(to: time)
             let absoluteSeekTime = timeline?.relativeToAbsolute(time: seekTime) ?? seekTime
             BitLog.d("Seeking: Original: \(time) Manager: \(seekTime) Absolute \(absoluteSeekTime)")
-            super.seek(time: absoluteSeekTime)
+            bmPlayer.seek(time: absoluteSeekTime)
         } else {
             BitLog.d("Seeking to: \(time)")
-            super.seek(time: time)
+            bmPlayer.seek(time: time)
         }
     }
 
-    open func forceSeek(time: TimeInterval) {
+    public func forceSeek(time: TimeInterval) {
         BitLog.d("Seeking to: \(time)")
-        super.seek(time: time)
+        bmPlayer.seek(time: time)
     }
 
     // MARK: - event handling
-    open override func add(listener: PlayerListener) {
+    public func add(listener: PlayerListener) {
         listeners.append(listener)
     }
 
-    open override func remove(listener: PlayerListener) {
+    public func remove(listener: PlayerListener) {
         listeners = listeners.filter { $0 !== listener }
     }
 
@@ -290,7 +296,7 @@ open class BitmovinYospacePlayer: Player {
         }
     }
 
-    open override func skipAd() {
+    public func skipAd() {
         if sessionStatus != .notInitialised {
             guard yospacesession != nil else {
                 return
@@ -298,27 +304,35 @@ open class BitmovinYospacePlayer: Player {
 
             let adBreak: YospaceAdBreak? = getActiveAdBreak()
             if let currentBreak = adBreak {
-                super.seek(time: currentBreak.absoluteEnd)
+                bmPlayer.seek(time: currentBreak.absoluteEnd)
             }
         } else {
-            super.skipAd()
+            bmPlayer.skipAd()
         }
     }
 
-    open override var isAd: Bool {
+    public func isPlaying() -> Bool {
+        bmPlayer.isPlaying
+    }
+    
+    public func isAd() -> Bool {
         if sessionStatus != .notInitialised {
             return activeAd != nil
         } else {
-            return super.isAd
+            return bmPlayer.isAd
         }
     }
+    
+    public func isLive() -> Bool {
+        return bmPlayer.isLive
+    }
 
-    open func currentTimeWithAds() -> TimeInterval {
-        return super.currentTime
+    public func currentTimeWithAds() -> TimeInterval {
+        return bmPlayer.currentTime
     }
 
     public func durationWithAds() -> TimeInterval {
-        return super.duration
+        return bmPlayer.duration
     }
 
     public func getActiveAdBreak() -> YospaceAdBreak? {
@@ -359,7 +373,7 @@ extension BitmovinYospacePlayer: TruexAdRendererEventDelegate {
         }
 
         BitLog.d("Resuming player")
-        play()
+        bmPlayer.play()
     }
 
     func skipAdBreak() {
@@ -374,7 +388,7 @@ extension BitmovinYospacePlayer: TruexAdRendererEventDelegate {
         }
 
         BitLog.d("Resuming player")
-        play()
+        bmPlayer.play()
     }
 
     func sessionAdFree() {
@@ -422,7 +436,7 @@ extension BitmovinYospacePlayer {
     @objc public func advertBreakDidStart(notification: NSNotification) {
         BitLog.d("YoSpace advertBreakDidStart: \(notification)")
         if let dict = notification.userInfo as NSDictionary? {
-            if let adBreak = dict[YOAdBreakKey] as? YOAdBreak, !isLive {
+            if let adBreak = dict[YOAdBreakKey] as? YOAdBreak, !isLive() {
                 handleAdBreakEvent(adBreak)
             }
         }
@@ -431,7 +445,7 @@ extension BitmovinYospacePlayer {
     @objc public func advertDidStart(notification: NSNotification) -> [Any]? {
         BitLog.d("YoSpace advertDidStart: \(notification)")
         
-        if isLive, activeAdBreak == nil, let currentAdBreak = yospacesession?.currentAdBreak() {
+        if isLive(), activeAdBreak == nil, let currentAdBreak = yospacesession?.currentAdBreak() {
             handleAdBreakEvent(currentAdBreak)
         }
         
@@ -454,7 +468,7 @@ extension BitmovinYospacePlayer {
             BitLog.d("YoSpace analytics suppressed")
             yospacesession?.suppressAnalytics(true)
             BitLog.d("Pausing player")
-            super.pause()
+            bmPlayer.pause()
 
             let adBreakPosition: YospaceAdBreakPosition = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
             renderer.renderTruexAd(advert: yospaceAd, adBreakPosition: adBreakPosition)
@@ -503,7 +517,7 @@ extension BitmovinYospacePlayer {
 
         BitLog.d("Emitting AdStartedEvent")
         for listener: PlayerListener in listeners {
-            listener.onAdStarted?(adStartedEvent)
+            listener.onAdStarted?(adStartedEvent, player: bmPlayer)
         }
 
         return []
@@ -518,7 +532,7 @@ extension BitmovinYospacePlayer {
                 
                 BitLog.d("Emitting AdFinishedEvent")
                 for listener: PlayerListener in listeners {
-                    listener.onAdFinished?(AdFinishedEvent(ad: ad))
+                    listener.onAdFinished?(AdFinishedEvent(ad: ad), player: bmPlayer)
                 }
             }
         }
@@ -530,12 +544,12 @@ extension BitmovinYospacePlayer {
         BitLog.d("YoSpace advertBreakDidEnd")
 
         if let dict = notification.userInfo as NSDictionary? {
-            if let YOAdBreak = dict[YOAdBreakKey] as? YOAdBreak, !isLive {
+            if let YOAdBreak = dict[YOAdBreakKey] as? YOAdBreak, !isLive() {
                 let adBreak = createActiveAdBreak(adBreak: YOAdBreak)
                 
                 BitLog.d("Emitting AdBreakFinishedEvent")
                 for listener: PlayerListener in listeners {
-                    listener.onAdBreakFinished?(AdBreakFinishedEvent(adBreak: adBreak))
+                    listener.onAdBreakFinished?(AdBreakFinishedEvent(adBreak: adBreak), player: bmPlayer)
                 }
             }
         }
@@ -550,11 +564,11 @@ extension BitmovinYospacePlayer {
             if let event = dict[YOEventNameKey] as? String {
                 switch event {
                 case "firstQuartile":
-                    onAdQuartile(AdQuartileEvent(quartile: .firstQuartile))
+                    onAdQuartile(AdQuartileEvent(quartile: .firstQuartile), player: bmPlayer)
                 case "midpoint":
-                    onAdQuartile(AdQuartileEvent(quartile: .midpoint))
+                    onAdQuartile(AdQuartileEvent(quartile: .midpoint), player: bmPlayer)
                 case "thirdQuartile":
-                    onAdQuartile(AdQuartileEvent(quartile: .thirdQuartile))
+                    onAdQuartile(AdQuartileEvent(quartile: .thirdQuartile), player: bmPlayer)
                 default:
                     BitLog.d("Skip event: \(event)")
                 }
@@ -575,11 +589,11 @@ extension BitmovinYospacePlayer {
                 .first { $0.identifier == advert.identifier }) {
             return adBreakAd
         } else {
-            let absoluteTime = super.currentTime
+            let absoluteTime = bmPlayer.currentTime
             var adAbsoluteStart: Double
             var adRelativeStart: Double
 
-            if isLive {
+            if isLive() {
                 adAbsoluteStart = absoluteTime
                 adRelativeStart = activeAdBreak?.relativeStart ?? adAbsoluteStart
             } else /* VOD */ {
@@ -592,11 +606,11 @@ extension BitmovinYospacePlayer {
     }
 
     private func createActiveAdBreak(adBreak: YOAdBreak) -> YospaceAdBreak {
-        let absoluteTime = super.currentTime
+        let absoluteTime = bmPlayer.currentTime
         var adBreakAbsoluteStart: Double
         var adBreakRelativeStart: Double
 
-        if isLive {
+        if isLive() {
             adBreakAbsoluteStart = absoluteTime
             adBreakRelativeStart = absoluteTime
         } else /* VOD */ {
@@ -613,7 +627,7 @@ extension BitmovinYospacePlayer {
         BitLog.d("Emitting AdBreakStartedEvent: position=\(adBreak.position)")
         let adBreakStartEvent = AdBreakStartedEvent(adBreak: activeAdBreak!)
         for listener: PlayerListener in listeners {
-            listener.onAdBreakStarted?(adBreakStartEvent)
+            listener.onAdBreakStarted?(adBreakStartEvent, player: bmPlayer)
         }
     }
 }
@@ -621,6 +635,8 @@ extension BitmovinYospacePlayer {
 // MARK: - YSAnalyticsObserver
 extension BitmovinYospacePlayer {
     public func sessionDidInitialise(with stream: YOSession) {
+        BitLog.d("Session Did Initialise")
+
         if let timeline = stream.adBreaks(YOAdBreakType.linearType) as? [YOAdBreak] {
             BitLog.d("Initial Ad Breaks Received: \(timeline.count)")
             self.adBreaks = timeline
@@ -632,25 +648,25 @@ extension BitmovinYospacePlayer {
         
         switch stream.sessionResult {
         case .notInitialised:
-            BitLog.e("Not initialized url:\(stream.playbackUrl) itemId:\(stream.identifier))")
-            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+            BitLog.e("Not initialized url:\(stream.playbackUrl ?? "none") itemId:\(stream.identifier ?? "none")")
+            if let sourceConfiguration = self.sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
-                self.onWarning(WarningEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not initialized"))
-                load(sourceConfiguration: sourceConfiguration)
+                onWarning(YospaceWarningEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: bmPlayer)
+                bmPlayer.load(sourceConfig: sourceConfiguration)
             } else {
-                onError(ErrorEvent(code: YospaceErrorCode.notIntialised.rawValue, message: "Not Intialized"))
+                onError(YospaceErrorEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: bmPlayer)
             }
         case .noAnalytics:
             // store the session
             self.yospacesession = stream
             
-            BitLog.d("No Analytics url:\(stream.playbackUrl) itemId:\(stream.identifier))")
-            if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+            BitLog.d("No Analytics url:\(stream.playbackUrl ?? "none") itemId:\(stream.identifier ?? "none")")
+            if let sourceConfiguration = self.sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
-                self.onWarning(WarningEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No analytics"))
-                load(sourceConfiguration: sourceConfiguration)
+                onWarning(YospaceWarningEvent(errorCode: .noAnalytics, message: "No analytics"), player: bmPlayer)
+                bmPlayer.load(sourceConfig: sourceConfiguration)
             } else {
-                onError(ErrorEvent(code: YospaceErrorCode.noAnalytics.rawValue, message: "No Analytics"))
+                onError(YospaceErrorEvent(errorCode: .noAnalytics, message: "No analytics"), player: bmPlayer)
             }
         case .initialised:
             // store the session
@@ -658,25 +674,24 @@ extension BitmovinYospacePlayer {
             // start observing analytic events
             addYospaceAnalyticEventListener()
             
-            BitLog.d("With Analytics url:\(stream.playbackUrl) itemId:\(stream.identifier))")
-            let sourceConfig = SourceConfiguration()
-            sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: URL(string: stream.playbackUrl!)!)))
-            if let drmConfiguration: DRMConfiguration = self.sourceConfiguration?.firstSourceItem?.drmConfigurations?.first {
-                sourceConfig.firstSourceItem?.add(drmConfiguration: drmConfiguration)
+            BitLog.d("With Analytics url:\(stream.playbackUrl ?? "none") itemId:\(stream.identifier ?? "none")")
+            let sourceConfig = SourceConfig(url: URL(string: stream.playbackUrl!)!, type: .hls)
+            if let drmConfig: DrmConfig = self.sourceConfig?.drmConfig {
+                sourceConfig.drmConfig = drmConfig
             }
-            load(sourceConfiguration: sourceConfig)
+            bmPlayer.load(sourceConfig: sourceConfig)
         default:
             break
         }
     }
 
     public func operationDidFailWithError(_ error: Error) {
-        if let sourceConfiguration = self.sourceConfiguration, yospaceSourceConfiguration?.retryExcludingYospace == true {
+        if let sourceConfig = self.sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
             BitLog.w("Attempting to playback the stream url without Yospace")
-            self.onWarning(WarningEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
-            load(sourceConfiguration: sourceConfiguration)
+            onWarning(YospaceWarningEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription), player: bmPlayer)
+            bmPlayer.load(sourceConfig: sourceConfig)
         } else {
-            onError(ErrorEvent(code: YospaceErrorCode.unknownError.rawValue, message: "Unknown Error. Initialize failed with Error"))
+            onError(YospaceErrorEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription), player: bmPlayer)
         }
     }
 
@@ -685,13 +700,15 @@ extension BitmovinYospacePlayer {
 // MARK: - PlayerListener
 extension BitmovinYospacePlayer: PlayerListener {
 
-    public func onPlay(_ event: PlayEvent) {
+    public func onPlay(_ event: PlayerEvent, player: Player) {
+        BitLog.d("onPlayer: \(event)")
+
         for listener: PlayerListener in listeners {
-            listener.onPlay?(PlayEvent(time: currentTime))
+            listener.onPlay?(PlayEvent(time: currentTime()), player: player)
         }
     }
 
-    public func onPlaying(_ event: PlayingEvent) {
+    public func onPlaying(_ event: PlayingEvent, player: Player) {
         BitLog.d("onPlaying: \(event)")
         
         if sessionStatus == .notInitialised || sessionStatus == .ready {
@@ -701,81 +718,87 @@ extension BitmovinYospacePlayer: PlayerListener {
             self.yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackResumeEvent, playhead: currentTimeWithAds())
         }
         for listener: PlayerListener in listeners {
-            listener.onPlaying?(PlayingEvent(time: currentTime))
+            listener.onPlaying?(PlayingEvent(time: currentTime()), player: player)
         }
     }
 
-    public func onPaused(_ event: PausedEvent) {
-        liveAdPaused = isLive && isAd
+    public func onPaused(_ event: PausedEvent, player: Player) {
+        BitLog.d("onPaused: \(event)")
+
+        liveAdPaused = isLive() && isAd()
         self.yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackPauseEvent, playhead: currentTimeWithAds())
-        
+
         for listener: PlayerListener in listeners {
-            listener.onPaused?(PausedEvent(time: currentTime))
+            listener.onPaused?(PausedEvent(time: currentTime()), player: player)
         }
     }
 
-    public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
+    public func onSourceUnloaded(_ event: SourceUnloadedEvent, player: Player) {
         if sessionStatus != .notInitialised {
             // the yospace sessionManager.shutdown() call is asynchronous. If the user just calls `load()` on second playback without calling `unload()` we end up canceling both the old session and the new session. This if statement keeps track of that
             resetYospaceSession()
         }
         for listener: PlayerListener in listeners {
-            listener.onSourceUnloaded?(event)
+            listener.onSourceUnloaded?(event, player: player)
         }
     }
 
-    public func onStallStarted(_ event: StallStartedEvent) {
+    public func onStallStarted(_ event: StallStartedEvent, player: Player) {
         self.yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStallEvent, playhead: currentTimeWithAds())
-        
+
         for listener: PlayerListener in listeners {
-            listener.onStallStarted?(event)
+            listener.onStallStarted?(event, player: player)
         }
     }
 
-    public func onStallEnded(_ event: StallEndedEvent) {
+    public func onStallEnded(_ event: StallEndedEvent, player: Player) {
         self.yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackContinueEvent, playhead: currentTimeWithAds())
 
         for listener: PlayerListener in listeners {
-            listener.onStallEnded?(event)
+            listener.onStallEnded?(event, player: player)
         }
     }
-
-    public func onError(_ event: ErrorEvent) {
+    
+    public func onWarning(_ event: YospaceWarningEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onError?(event)
+            listener.onEvent?(event, player: player)
         }
     }
 
-    public func onWarning(_ event: WarningEvent) {
+    public func onError(_ event: YospaceErrorEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onWarning?(event)
+            listener.onEvent?(event, player: player)
         }
     }
 
-    public func onReady(_ event: ReadyEvent) {
+    public func onReady(_ event: ReadyEvent, player: Player) {
+        BitLog.d("onReady: \(event)")
+
         if sessionStatus == .notInitialised {
             sessionStatus = .ready
         }
         for listener: PlayerListener in listeners {
-            listener.onReady?(event)
+            listener.onReady?(event, player: player)
         }
     }
 
-    public func onMuted(_ event: MutedEvent) {
-        self.yospacesession?.volumeDidChange(self.isMuted)
+    public func onMuted(_ event: MutedEvent, player: Player) {
+        self.yospacesession?.volumeDidChange(player.isMuted)
         for listener: PlayerListener in listeners {
-            listener.onMuted?(event)
+            listener.onMuted?(event, player: player)
         }
     }
 
-    public func onUnmuted(_ event: UnmutedEvent) {
-        self.yospacesession?.volumeDidChange(self.isMuted)
+    public func onUnmuted(_ event: UnmutedEvent, player: Player) {
+        self.yospacesession?.volumeDidChange(player.isMuted)
         for listener: PlayerListener in listeners {
-            listener.onUnmuted?(event)
+            listener.onUnmuted?(event, player: player)
         }
     }
 
-    public func onMetadataParsed(_ event: MetadataParsedEvent) {
+    public func onMetadataParsed(_ event: MetadataParsedEvent, player: Player) {
+//        BitLog.d("onMetadataParsed: \(event)")
+
         // Note - this is a workaround for the intermittent missing iOS metadata issue,
         // where on start of the stream, date range metadata is not always being propagated to onMetadata
         // It is surfaced as parsed metadata, so we'll check here if it's the correct type and time, and if so,
@@ -783,27 +806,27 @@ extension BitmovinYospacePlayer: PlayerListener {
         //
         // If onMetadata does fire afterwards, it will be ignored by handling in DateRangeEmitter
         if receivedFirstPlayhead == false {
-            if yospaceSourceConfiguration?.yospaceAssetType == .linear {
+            if yospaceSourceConfig?.yospaceAssetType == .linear {
                 if let dateRangeMetadata = event.metadata as? DaterangeMetadata {
                     let metadataTime = String(format: "%.2f", dateRangeMetadata.startDate.timeIntervalSince1970)
                     let currentTime = String(format: "%.2f", self.currentTimeWithAds())
                     if metadataTime == currentTime {
                         BitLog.d("onMetadataParsed: tracking initial emsg")
-                        dateRangeEmitter?.trackEmsg(event)
+                        dateRangeEmitter?.trackEmsg(MetadataEvent(metadata: event.metadata, type: event.metadataType))
                     }
                 }
             }
         }
 
         for listener: PlayerListener in listeners {
-            listener.onMetadataParsed?(event)
+            listener.onMetadataParsed?(event, player: player)
         }
     }
 
-    public func onMetadata(_ event: MetadataEvent) {
-        BitLog.d("onMetadata: \(event)")
-        
-        if yospaceSourceConfiguration?.yospaceAssetType == .linear {
+    public func onMetadata(_ event: MetadataEvent, player: Player) {
+//        BitLog.d("onMetadata: \(event)")
+
+        if yospaceSourceConfig?.yospaceAssetType == .linear {
             if event.metadataType == .ID3 {
                 trackId3(event)
             } else if event.metadataType == .daterange {
@@ -811,7 +834,7 @@ extension BitmovinYospacePlayer: PlayerListener {
             }
         }
         for listener: PlayerListener in listeners {
-            listener.onMetadata?(event)
+            listener.onMetadata?(event, player: player)
         }
     }
 
@@ -822,28 +845,29 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    public func onPlaybackFinished(_ event: PlaybackFinishedEvent) {
+    public func onPlaybackFinished(_ event: PlaybackFinishedEvent, player: Player) {
         self.yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStopEvent, playhead: currentTimeWithAds())
 
         for listener: PlayerListener in listeners {
-            listener.onPlaybackFinished?(event)
+            listener.onPlaybackFinished?(event, player: player)
         }
     }
 
-    public func onDurationChanged(_ event: DurationChangedEvent) {
+    public func onDurationChanged(_ event: DurationChangedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onDurationChanged?(DurationChangedEvent(duration: duration))
+            listener.onDurationChanged?(DurationChangedEvent(duration: duration()), player: player)
         }
     }
 
-    public func onTimeChanged(_ event: TimeChangedEvent) {
+    public func onTimeChanged(_ event: TimeChangedEvent, player: Player) {
         receivedFirstPlayhead = true
+        self.yospacesession?.playheadDidChange(currentTimeWithAds())
 
         if liveAdPaused {
             if let adBreak = activeAdBreak, let advert = activeAd {
                 // Send skip event if live window has moved beyond paused ad
                 if event.currentTime > adBreak.absoluteEnd {
-                    onAdSkipped(AdSkippedEvent(ad: advert))
+                    onAdSkipped(AdSkippedEvent(ad: advert), player: player)
                 }
             }
             liveAdPaused = false
@@ -852,262 +876,252 @@ extension BitmovinYospacePlayer: PlayerListener {
         // Send to the normalizer so the date emitter can use the normalized value
         // Future use could propagate to the event as well, for media time
         _ = playheadNormalizer?.normalize(time: self.currentTimeWithAds())
-
+        
         for listener: PlayerListener in listeners {
-            listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime))
+            listener.onTimeChanged?(TimeChangedEvent(currentTime: currentTime()), player: player)
         }
     }
 
-    public func onSeek(_ event: SeekEvent) {
+    public func onSeek(_ event: SeekEvent, player: Player) {
+        var event = event
         for listener: PlayerListener in listeners {
-            let position = timeline?.absoluteToRelative(time: event.position) ?? event.position
-            let seekTarget = timeline?.absoluteToRelative(time: event.seekTarget) ?? event.seekTarget
-            listener.onSeek?(SeekEvent(position: position, seekTarget: seekTarget))
+            if let timeline = timeline {
+                let position = timeline.absoluteToRelative(time: event.from.time)
+                let seekTarget = timeline.absoluteToRelative(time: event.to.time)
+                let from = SeekPosition(source: event.from.source, time: position)
+                let to = SeekPosition(source: event.to.source, time: seekTarget)
+                event = SeekEvent(from: from, to: to)
+            }
+            listener.onSeek?(event, player: player)
         }
     }
 
     /**
      Unmodified eevents, passing thought to registered listeners
      */
-    public func onSeeked(_ event: SeekedEvent) {
+    public func onSeeked(_ event: SeekedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onSeeked?(event)
+            listener.onSeeked?(event, player: player)
         }
     }
 
-    public func onDestroy(_ event: DestroyEvent) {
+    public func onDestroy(_ event: DestroyEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onDestroy?(event)
+            listener.onDestroy?(event, player: player)
         }
     }
 
-    public func onEvent(_ event: PlayerEvent) {
+    public func onEvent(_ event: PlayerEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onEvent?(event)
+            listener.onEvent?(event, player: player)
         }
     }
 
-    public func onAdClicked(_ event: AdClickedEvent) {
+    public func onAdClicked(_ event: AdClickedEvent, player: Player) {
         BitLog.d("onAdClicked: ")
         for listener: PlayerListener in listeners {
-            listener.onAdClicked?(event)
+            listener.onAdClicked?(event, player: player)
         }
     }
 
-    public func onAdSkipped(_ event: AdSkippedEvent) {
+    public func onAdSkipped(_ event: AdSkippedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onAdSkipped?(event)
+            listener.onAdSkipped?(event, player: player)
         }
     }
 
-    public func onAdStarted(_ event: AdStartedEvent) {
+    public func onAdStarted(_ event: AdStartedEvent, player: Player) {
         BitLog.d("onAdStarted: ")
         for listener: PlayerListener in listeners {
-            listener.onAdStarted?(event)
+            listener.onAdStarted?(event, player: player)
         }
     }
 
-    public func onAdQuartile(_ event: AdQuartileEvent) {
+    public func onAdQuartile(_ event: AdQuartileEvent, player: Player) {
         BitLog.d("onAdQuartile: ")
         for listener: PlayerListener in listeners {
-            listener.onAdQuartile?(event)
+            listener.onAdQuartile?(event, player: player)
         }
     }
 
-    public func onCastStart(_ event: CastStartEvent) {
+    public func onCastStart(_ event: CastStartEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastStart?(event)
+            listener.onCastStart?(event, player: player)
         }
     }
 
-    public func onAdFinished(_ event: AdFinishedEvent) {
+    public func onAdFinished(_ event: AdFinishedEvent, player: Player) {
         BitLog.d("onAdFinished: ")
         for listener: PlayerListener in listeners {
-            listener.onAdFinished?(event)
+            listener.onAdFinished?(event, player: player)
         }
     }
 
-    public func onTimeShift(_ event: TimeShiftEvent) {
+    public func onTimeShift(_ event: TimeShiftEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onTimeShift?(event)
+            listener.onTimeShift?(event, player: player)
         }
     }
 
-    public func onAdScheduled(_ event: AdScheduledEvent) {
+    public func onAdScheduled(_ event: AdScheduledEvent, player: Player) {
         BitLog.d("onAdScheduled: ")
         for listener: PlayerListener in listeners {
-            listener.onAdScheduled?(event)
+            listener.onAdScheduled?(event, player: player)
         }
     }
 
-    public func onAudioAdded(_ event: AudioAddedEvent) {
+    public func onAudioAdded(_ event: AudioAddedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onAudioAdded?(event)
+            listener.onAudioAdded?(event, player: player)
         }
     }
 
-    public func onVideoDownloadQualityChanged(_ event: VideoDownloadQualityChangedEvent) {
+    public func onVideoDownloadQualityChanged(_ event: VideoDownloadQualityChangedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onVideoDownloadQualityChanged?(event)
+            listener.onVideoDownloadQualityChanged?(event, player: player)
         }
     }
 
-    public func onCastPlaying(_ event: CastPlayingEvent) {
+    public func onCastPlaying(_ event: CastPlayingEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastPlaying?(event)
+            listener.onCastPlaying?(event, player: player)
         }
     }
 
-    public func onCastStarted(_ event: CastStartedEvent) {
+    public func onCastStarted(_ event: CastStartedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastStarted?(event)
+            listener.onCastStarted?(event, player: player)
         }
     }
 
-    public func onCastStopped(_ event: CastStoppedEvent) {
+    public func onCastStopped(_ event: CastStoppedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastStopped?(event)
+            listener.onCastStopped?(event, player: player)
         }
     }
 
-    public func onCastAvailable(_ event: CastAvailableEvent) {
+    public func onCastAvailable(_ event: CastAvailableEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastAvailable?(event)
+            listener.onCastAvailable?(event, player: player)
         }
     }
 
-    public func onCastPlaybackFinished(_ event: CastPlaybackFinishedEvent) {
+    public func onCastPlaybackFinished(_ event: CastPlaybackFinishedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastPlaybackFinished?(event)
+            listener.onCastPlaybackFinished?(event, player: player)
         }
     }
 
-    public func onCastPaused(_ event: CastPausedEvent) {
+    public func onCastPaused(_ event: CastPausedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastPaused?(event)
+            listener.onCastPaused?(event, player: player)
         }
     }
 
-    public func onTimeShifted(_ event: TimeShiftedEvent) {
+    public func onTimeShifted(_ event: TimeShiftedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onTimeShifted?(event)
+            listener.onTimeShifted?(event, player: player)
         }
     }
 
-    public func onAudioChanged(_ event: AudioChangedEvent) {
+    public func onAudioChanged(_ event: AudioChangedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onAudioChanged?(event)
+            listener.onAudioChanged?(event, player: player)
         }
     }
 
-    public func onAudioRemoved(_ event: AudioRemovedEvent) {
+    public func onAudioRemoved(_ event: AudioRemovedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onAudioRemoved?(event)
+            listener.onAudioRemoved?(event, player: player)
         }
     }
 
-    public func onSourceLoaded(_ event: SourceLoadedEvent) {
+    public func onSourceLoaded(_ event: SourceLoadedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onSourceLoaded?(event)
+            listener.onSourceLoaded?(event, player: player)
         }
     }
 
-    public func onSubtitleAdded(_ event: SubtitleAddedEvent) {
+    public func onSubtitleAdded(_ event: SubtitleAddedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onSubtitleAdded?(event)
+            listener.onSubtitleAdded?(event, player: player)
         }
     }
 
-    public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
+    public func onAdBreakStarted(_ event: AdBreakStartedEvent, player: Player) {
         BitLog.d("onAdBreakStarted: ")
         for listener: PlayerListener in listeners {
-            listener.onAdBreakStarted?(event)
+            listener.onAdBreakStarted?(event, player: player)
         }
     }
 
-    public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
+    public func onAdBreakFinished(_ event: AdBreakFinishedEvent, player: Player) {
         BitLog.d("onAdBreakFinished: ")
         for listener: PlayerListener in listeners {
-            listener.onAdBreakFinished?(event)
+            listener.onAdBreakFinished?(event, player: player)
         }
     }
 
-    public func onAdManifestLoaded(_ event: AdManifestLoadedEvent) {
+    public func onAdManifestLoaded(_ event: AdManifestLoadedEvent, player: Player) {
         BitLog.d("onAdManifestLoaded: ")
         for listener: PlayerListener in listeners {
-            listener.onAdManifestLoaded?(event)
+            listener.onAdManifestLoaded?(event, player: player)
         }
     }
 
-    public func onCastTimeUpdated(_ event: CastTimeUpdatedEvent) {
+    public func onCastTimeUpdated(_ event: CastTimeUpdatedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCastTimeUpdated?(event)
+            listener.onCastTimeUpdated?(event, player: player)
         }
     }
 
-    public func onSubtitleRemoved(_ event: SubtitleRemovedEvent) {
+    public func onSubtitleRemoved(_ event: SubtitleRemovedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onSubtitleRemoved?(event)
+            listener.onSubtitleRemoved?(event, player: player)
         }
     }
 
-    public func onSubtitleChanged(_ event: SubtitleChangedEvent) {
+    public func onSubtitleChanged(_ event: SubtitleChangedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onSubtitleChanged?(event)
+            listener.onSubtitleChanged?(event, player: player)
         }
     }
 
-    public func onCueEnter(_ event: CueEnterEvent) {
+    public func onCueEnter(_ event: CueEnterEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCueEnter?(event)
+            listener.onCueEnter?(event, player: player)
         }
     }
 
-    public func onCueExit(_ event: CueExitEvent) {
+    public func onCueExit(_ event: CueExitEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onCueExit?(event)
+            listener.onCueExit?(event, player: player)
         }
     }
 
-    public func onDvrWindowExceeded(_ event: DvrWindowExceededEvent) {
+    public func onDvrWindowExceeded(_ event: DvrWindowExceededEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onDvrWindowExceeded?(event)
+            listener.onDvrWindowExceeded?(event, player: player)
         }
     }
 
-    public func onDownloadFinished(_ event: DownloadFinishedEvent) {
+    public func onDownloadFinished(_ event: DownloadFinishedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onDownloadFinished?(event)
+            listener.onDownloadFinished?(event, player: player)
         }
     }
 
-    public func onRenderFirstFrame(_ event: RenderFirstFrameEvent) {
+
+    public func onVideoSizeChanged(_ event: VideoSizeChangedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onRenderFirstFrame?(event)
+            listener.onVideoSizeChanged?(event, player: player)
         }
     }
 
-    public func onSourceWillUnload(_ event: SourceWillUnloadEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onSourceWillUnload?(event)
-        }
-    }
 
-    public func onVideoSizeChanged(_ event: VideoSizeChangedEvent) {
+    public func onDrmDataParsed(_ event: DrmDataParsedEvent, player: Player) {
         for listener: PlayerListener in listeners {
-            listener.onVideoSizeChanged?(event)
-        }
-    }
-
-    public func onConfigurationUpdated(_ event: ConfigurationUpdatedEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onConfigurationUpdated?(event)
-        }
-    }
-
-    public func onDrmDataParsed(_ event: DrmDataParsedEvent) {
-        for listener: PlayerListener in listeners {
-            listener.onDrmDataParsed?(event)
+            listener.onDrmDataParsed?(event, player: player)
         }
     }
 }
