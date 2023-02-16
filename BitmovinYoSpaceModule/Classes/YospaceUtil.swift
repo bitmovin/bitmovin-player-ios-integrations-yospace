@@ -6,7 +6,7 @@ extension YOTimedMetadata {
     public static func createFromMetadata (event: MetadataEvent) -> YOTimedMetadata? {
         var (ntype, nseq, nmediaId) = ("", "", "")
         var noffset: Double = 0.0
-        for entry: MetadataEntry in event.metadata.entries where entry.metadataType == BMPMetadataType.ID3 {
+        for entry: MetadataEntry in event.metadata.entries where entry.metadataType == MetadataType.ID3 {
                 guard let metadata = entry as? AVMetadataItem else {
                     continue
                 }

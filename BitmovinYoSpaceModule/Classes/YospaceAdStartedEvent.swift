@@ -14,7 +14,7 @@ public class YospaceAdStartedEvent: AdStartedEvent {
 
     init(
         clickThroughUrl: URL?,
-        clientType: BMPAdSourceType = .IMA,
+        clientType: AdSourceType = .ima,
         indexInQueue: UInt = 0,
         duration: TimeInterval,
         timeOffset: TimeInterval,

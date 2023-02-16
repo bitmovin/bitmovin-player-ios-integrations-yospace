@@ -16,7 +16,7 @@ struct Stream {
     var fairplayLicenseUrl: String?
     var fairplayCertUrl: String?
     var drmHeader: String?
-    var yospaceSourceConfig: YospaceSourceConfiguration?
+    var yospaceSourceConfig: YospaceSourceConfig?
 }
 
 class ViewController: UIViewController {
@@ -25,17 +25,17 @@ class ViewController: UIViewController {
     @IBOutlet weak var streamsTextField: UITextField!
     
     lazy var player: BitmovinYospacePlayer = {
-        let configuration = PlayerConfiguration()
-        configuration.playbackConfiguration.isAutoplayEnabled = true
-        configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
-        configuration.tweaksConfiguration.isNativeHlsParsingEnabled = true
+        let playConfig = PlayerConfig()
+        playConfig.playbackConfig.isAutoplayEnabled = true
+        playConfig.tweaksConfig.isNativeHlsParsingEnabled = true
+        playConfig.tweaksConfig.isNativeHlsParsingEnabled = true
 
-        let integrationConfig = IntegrationConfiguration(enablePlayheadNormalization: true)
+        let integrationConfig = IntegrationConfig(enablePlayheadNormalization: true)
         
         let player = BitmovinYospacePlayer(
-            configuration: configuration,
-            yospaceConfiguration: YospaceConfiguration(isDebugEnabled: true),
-            integrationConfiguration: integrationConfig
+            playerConfig: playConfig,
+            yospaceConfig: YospaceConfig(isDebugEnabled: true),
+            integrationConfig: integrationConfig
         )
         player.add(listener: self)
         player.add(integrationListener: self)
@@ -44,7 +44,7 @@ class ViewController: UIViewController {
     }()
     
     lazy var playerView: PlayerView = {
-        let playerView = BMPBitmovinPlayerView(player: player, frame: .zero)
+        let playerView = PlayerView(player: player.bitmovinPlayer(), frame: .zero)
         playerView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         playerView.frame = containerView.bounds
         return playerView
@@ -69,6 +69,7 @@ class ViewController: UIViewController {
         ),
         Stream(
             title: "MML live - Safari",
+//            contentUrl: "https://csm-e-sdk-validation.bln1.yospace.com/csm/extlive/yospace02,hlssample42.m3u8?yo.br=true&yo.av=4",
             contentUrl: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2018448/mml000-cbcs/master_fp_de.m3u8?_fw_ae=&_fw_ar=&_fw_did=&_fw_is_lat=&_fw_nielsen_app_id=P923E8EA9-9B1B-4F15-A180-F5A4FD01FE38&_fw_us_privacy=&_fw_vcid2=&afid=180494037&caid=hylda_beta_test_asset&conf_csid=ncaa.com_mml_iphone&nw=42448&playername=top-2.1.2&prct=text%2Fhtml_doc_lit_mobile%2Ctext%2Fhtml_doc_ref&prof=48804:mml_ios_live&yo.asd=true&yo.dnt=false&yo.pst=true&yo.dr=true&yo.ad=true",
             fairplayLicenseUrl: "https://fairplay.license.istreamplanet.com/api/license/e892c6cc-2f78-4a9f-beae-556a36167bb1",
             fairplayCertUrl: "https://fairplay.license.istreamplanet.com/api/AppCert/e892c6cc-2f78-4a9f-beae-556a36167bb1",
@@ -137,7 +138,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func loadUnloadPressed(_ sender: UIButton) {
-        if player.isPlaying {
+        if player.isPlaying() {
             player.unload()
         } else {
             loadStream(stream: streams[selectedStreamIndex])
@@ -148,32 +149,28 @@ class ViewController: UIViewController {
         guard let streamUrl = URL(string: stream.contentUrl) else { return }
         print("Loading \(streamUrl)")
         
-        let sourceConfig = SourceConfiguration()
-        let sourceItem = SourceItem(hlsSource: HLSSource(url: streamUrl))
-        sourceConfig.addSourceItem(item: sourceItem)
+        let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
         
         if let fairplayLicense = stream.fairplayLicenseUrl, let fairplayCert = stream.fairplayCertUrl {
-            let drmConfig = FairplayConfiguration(
-                license: URL(string: fairplayLicense),
-                certificateURL: URL(string: fairplayCert)!
-            )
+            let drmConfig = FairplayConfig.init(license: URL(string: fairplayLicense), certificateURL:URL(string: fairplayCert)!)
             
             if let drmHeader = stream.drmHeader {
                 print("Setting DRM header")
                 drmConfig.licenseRequestHeaders = ["x-isp-token": drmHeader]
             }
-
             prepareDRM(config: drmConfig)
-            sourceItem.add(drmConfiguration: drmConfig)
+            // This needs to be commented out when running simulation
+            // As simulator does not support fairplay
+            sourceConfig.drmConfig = drmConfig
         }
         
         player.load(
-            sourceConfiguration: sourceConfig,
-            yospaceSourceConfiguration: stream.yospaceSourceConfig
+            sourceConfig: sourceConfig,
+            yospaceSourceConfig: stream.yospaceSourceConfig
         )
     }
     
-    func prepareDRM(config: FairplayConfiguration) {
+    func prepareDRM(config: FairplayConfig) {
         config.prepareCertificate = { (data: Data) -> Data in
             guard let certString = String(data: data, encoding: .utf8),
                 let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: "")) else {
@@ -254,31 +251,29 @@ extension ViewController: IntegrationListener {
 }
 
 extension ViewController: PlayerListener {
-    func onSourceLoaded(_ event: SourceLoadedEvent) {
+    func onSourceLoaded(_ event: SourceLoadedEvent, player: Player) {
         loadUnloadButton.setTitle("Unload", for: .normal)
     }
 
-    func onTimeChanged(_ event: TimeChangedEvent) {
-        
-        
+    func onTimeChanged(_ event: TimeChangedEvent, player: Player) {
         // If it's not a yospace stream, use the external normalizer
         if streams[selectedStreamIndex].yospaceSourceConfig == nil {
             detectTimeJump(time: event.currentTime)
             testNormalizeTime(time: event.currentTime)
         } else {
-            detectTimeJump(time: player.currentTimeWithAds())
+            detectTimeJump(time: self.player.currentTimeWithAds())
         }
     }
     
-    func onMetadataParsed(_ event: MetadataParsedEvent) {
+    func onMetadataParsed(_ event: MetadataParsedEvent, player: Player) {
         print("c.extra - metadataParsed - \(event.metadataType), \(event.metadata.entries)")
     }
     
-    func onSourceUnloaded(_ event: SourceUnloadedEvent) {
+    func onSourceUnloaded(_ event: SourceUnloadedEvent, player: Player) {
         loadUnloadButton.setTitle("Load", for: .normal)
     }
  
-    func onError(_ event: ErrorEvent) {
-        print("[onError] \(event.message)")
+    func onError(_ event: Event, player: Player) {
+        print("[onError] \(event.description)")
     }
 }

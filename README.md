@@ -1,10 +1,8 @@
 # BitmovinYoSpaceModule
 
 ##### Platforms 
-iOS 9.0+
-tvOS 9.2+
-
-Please note that Bitmovin Player iOS SDK versions 2.64.2 and above up until (excluding) 2.66.1 are not supported by this integration.
+iOS 14+
+tvOS 14+
 
 
 ## Example
@@ -13,54 +11,53 @@ The following example creates a BitmovinYospacePlayer and loads a Yospace stream
 
 ```swift
 // Optionally create a yospace configuration
-let yospaceConfiguration = YospaceConfiguration(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+let yospaceConfig = YospaceConfig(debug: false, userAgent: "Custom User Agent", timeout: 5000)
 
 // Optionally create a PlayerConfiguration
-let configuration = PlayerConfiguration()
+let playerConfig = PlayerConfig()
 
 // Create a BitmovinYospacePlayer
-let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(configuration: configuration, yospaceConfiguration: yospaceConfiguration)
+let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
 
 
 // Add it to your player view 
-let playerBoundary = BMPBitmovinPlayerView(player: bitmovinYoSpacePlayer, frame: frame)
+let playerBoundary = PlayerView(player: bitmovinYoSpacePlayer.bitmovinPlayer(), frame: frame)
 playerBoundary.autoresizingMask = [.flexibleHeight, .flexibleWidth]
 playerBoundary.frame = playerView.bounds
 playerView.addSubview(playerBoundary)
 playerView.bringSubviewToFront(playerBoundary)
 
 // Create a SourceConfiguration
-let sourceConfig = SourceConfiguration()
-sourceConfig.addSourceItem(item: SourceItem(hlsSource: HLSSource(url: streamUrl)))
+let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
 
 // Create a YospaceSourceConfiguration with your yospaceAssetType 
 let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
-// Load your sourceConfiguration and yospaceSourceConfiguration
-bitmovinYoSpacePlayer?.load(sourceConfiguration: sourceConfig, yospaceSourceConfiguration: config)
+// Load your sourceConfig and yospaceSourceConfig
+bitmovinYoSpacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
 
 #### Player Listener
 ```swift
 // Implement the Player Listener Protocol
 extension ViewController : PlayerListener {
-    public func onAdStarted(_ event: AdStartedEvent) {
+    public func onAdStarted(_ event: AdStartedEvent, player: Player) {
         print("Ad Started")
     }
 
-    public func onAdFinished(_ event: AdFinishedEvent) {
+    public func onAdFinished(_ event: AdFinishedEvent, player: Player) {
         print("Ad Finished")
     }
 
-    public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
+    public func onAdBreakStarted(_ event: AdBreakStartedEvent, player: Player) {
         print("Ad Break Started")
     }
 
-    public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
+    public func onAdBreakFinished(_ event: AdBreakFinishedEvent, player: Player) {
         print("Ad Break Finished")
     }
     
-    public func onAdClicked(_ event: AdClickedEvent) {
+    public func onAdClicked(_ event: AdClickedEvent, player: Player) {
         print("Ad Clicked")
     }
 }
@@ -113,8 +110,8 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 ```
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'1.22.4'
-  pod 'BitmovinPlayer', tag: '2.67.3'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.0.0'
+  pod 'BitmovinPlayer', tag: '3.21.0'
 
   use_frameworks!
 ```
