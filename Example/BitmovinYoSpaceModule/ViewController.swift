@@ -6,9 +6,9 @@
 //  Copyright (c) 2018 Cory Zachman. All rights reserved.
 //
 
-import UIKit
-import BitmovinYospaceModule
 import BitmovinPlayer
+import BitmovinYospaceModule
+import UIKit
 
 struct Stream {
     var title: String
@@ -20,10 +20,10 @@ struct Stream {
 }
 
 class ViewController: UIViewController {
-    @IBOutlet weak var containerView: UIView!
-    @IBOutlet weak var loadUnloadButton: UIButton!
-    @IBOutlet weak var streamsTextField: UITextField!
-    
+    @IBOutlet var containerView: UIView!
+    @IBOutlet var loadUnloadButton: UIButton!
+    @IBOutlet var streamsTextField: UITextField!
+
     lazy var player: BitmovinYospacePlayer = {
         let playConfig = PlayerConfig()
         playConfig.playbackConfig.isAutoplayEnabled = true
@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         playConfig.tweaksConfig.isNativeHlsParsingEnabled = true
 
         let integrationConfig = IntegrationConfig(enablePlayheadNormalization: true)
-        
+
         let player = BitmovinYospacePlayer(
             playerConfig: playConfig,
             yospaceConfig: YospaceConfig(isDebugEnabled: true),
@@ -42,14 +42,14 @@ class ViewController: UIViewController {
 
         return player
     }()
-    
+
     lazy var playerView: PlayerView = {
-        let playerView = PlayerView(player: player.bitmovinPlayer(), frame: .zero)
+        let playerView = PlayerView(player: player, frame: .zero)
         playerView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         playerView.frame = containerView.bounds
         return playerView
     }()
-        
+
     lazy var streams = [
         Stream(
             title: "Metadata fix",
@@ -91,6 +91,7 @@ class ViewController: UIViewController {
         ),
         Stream(
             title: "Bones",
+//            contentUrl: "https://csm-e-sdk-validation.bln1.yospace.com/csm/access/207411697/c2FtcGxlL21hc3Rlci5tM3U4?yo.av=3",
             contentUrl: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_iphone&context=182883174&nw=42448&prof=48804%3Aturner_ssai&vdur=1800&yo.vp=true&yo.av=2",
             yospaceSourceConfig: .init(yospaceAssetType: .vod)
         )
@@ -115,7 +116,7 @@ class ViewController: UIViewController {
             title: "Done",
             style: .done,
             target: self,
-            action: #selector(self.closePicker)
+            action: #selector(closePicker)
         )
         
         let toolBar = UIToolbar()
@@ -137,8 +138,8 @@ class ViewController: UIViewController {
         player.destroy()
     }
 
-    @IBAction func loadUnloadPressed(_ sender: UIButton) {
-        if player.isPlaying() {
+    @IBAction func loadUnloadPressed(_: UIButton) {
+        if player.isPlaying {
             player.unload()
         } else {
             loadStream(stream: streams[selectedStreamIndex])
@@ -152,7 +153,7 @@ class ViewController: UIViewController {
         let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
         
         if let fairplayLicense = stream.fairplayLicenseUrl, let fairplayCert = stream.fairplayCertUrl {
-            let drmConfig = FairplayConfig.init(license: URL(string: fairplayLicense), certificateURL:URL(string: fairplayCert)!)
+            let drmConfig = FairplayConfig(license: URL(string: fairplayLicense), certificateURL: URL(string: fairplayCert)!)
             
             if let drmHeader = stream.drmHeader {
                 print("Setting DRM header")
@@ -173,8 +174,9 @@ class ViewController: UIViewController {
     func prepareDRM(config: FairplayConfig) {
         config.prepareCertificate = { (data: Data) -> Data in
             guard let certString = String(data: data, encoding: .utf8),
-                let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: "")) else {
-                    return data
+                  let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: ""))
+            else {
+                return data
             }
             return certResult
         }
@@ -183,13 +185,14 @@ class ViewController: UIViewController {
             let components: [String] = prepared.components(separatedBy: "/")
             return components[2]
         }
-        config.prepareMessage = { (spcData: Data, assetID: String) -> Data in
-            return spcData
+        config.prepareMessage = { (spcData: Data, _: String) -> Data in
+            spcData
         }
         config.prepareLicense = { (ckcData: Data) -> Data in
             guard let ckcString = String(data: ckcData, encoding: .utf8),
-                let ckcResult = Data(base64Encoded: ckcString.replacingOccurrences(of: "\"", with: "")) else {
-                    return ckcData
+                  let ckcResult = Data(base64Encoded: ckcString.replacingOccurrences(of: "\"", with: ""))
+            else {
+                return ckcData
             }
             return ckcResult
         }
@@ -198,7 +201,7 @@ class ViewController: UIViewController {
     var timeChangedFired = false
     var prevTimeChanged = 0.0
     func detectTimeJump(time: Double) {
-        if (!timeChangedFired) {
+        if !timeChangedFired {
             prevTimeChanged = time
             timeChangedFired = true
             return
@@ -214,27 +217,26 @@ class ViewController: UIViewController {
     }
     
 //    let playheadNormalizer: PlayheadNormalizer = PlayheadNormalizer()
-    func testNormalizeTime(time: Double) {
+    func testNormalizeTime(time _: Double) {
 //        let newTime = playheadNormalizer.normalize(time: time)
 //        print("[normalized] Time update: \(time) | \(newTime)")
     }
-
 }
 
 extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in _: UIPickerView) -> Int {
         return 1
     }
 
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_: UIPickerView, numberOfRowsInComponent _: Int) -> Int {
         return streams.count
     }
 
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    func pickerView(_: UIPickerView, titleForRow row: Int, forComponent _: Int) -> String? {
         return streams[row].title
     }
 
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func pickerView(_: UIPickerView, didSelectRow row: Int, inComponent _: Int) {
         selectedStreamIndex = row
         streamsTextField.text = streams[row].title
     }
@@ -244,36 +246,36 @@ extension ViewController: IntegrationListener {
     func onPlayheadNormalizingStarted() {
         print("cdg - onPlayheadNormalizingStarted")
     }
-    
+
     func onPlayheadNormalizingFinished() {
         print("cdg - onPlayheadNormalizingFinished")
     }
 }
 
 extension ViewController: PlayerListener {
-    func onSourceLoaded(_ event: SourceLoadedEvent, player: Player) {
+    func onSourceLoaded(_: SourceLoadedEvent, player _: Player) {
         loadUnloadButton.setTitle("Unload", for: .normal)
     }
 
-    func onTimeChanged(_ event: TimeChangedEvent, player: Player) {
+    func onTimeChanged(_ event: TimeChangedEvent, player _: Player) {
         // If it's not a yospace stream, use the external normalizer
         if streams[selectedStreamIndex].yospaceSourceConfig == nil {
             detectTimeJump(time: event.currentTime)
             testNormalizeTime(time: event.currentTime)
         } else {
-            detectTimeJump(time: self.player.currentTimeWithAds())
+            detectTimeJump(time: player.currentTimeWithAds())
         }
     }
-    
-    func onMetadataParsed(_ event: MetadataParsedEvent, player: Player) {
+
+    func onMetadataParsed(_ event: MetadataParsedEvent, player _: Player) {
         print("c.extra - metadataParsed - \(event.metadataType), \(event.metadata.entries)")
     }
-    
-    func onSourceUnloaded(_ event: SourceUnloadedEvent, player: Player) {
+
+    func onSourceUnloaded(_: SourceUnloadedEvent, player _: Player) {
         loadUnloadButton.setTitle("Load", for: .normal)
     }
- 
-    func onError(_ event: Event, player: Player) {
+
+    func onError(_ event: Event, player _: Player) {
         print("[onError] \(event.description)")
     }
 }

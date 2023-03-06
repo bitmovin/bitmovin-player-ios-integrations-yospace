@@ -6,9 +6,9 @@
 //  Copyright © 2018 CocoaPods. All rights reserved.
 //
 
-import UIKit
 import BitmovinPlayer
 import BitmovinYospaceModule
+import UIKit
 
 class ViewController: UIViewController {
     @IBOutlet var playerContainer: UIView!
@@ -16,14 +16,14 @@ class ViewController: UIViewController {
     @IBOutlet var liveButton: UIButton!
     @IBOutlet var vodButton: UIButton!
     @IBOutlet var adLabel: UILabel!
-    
+
     lazy var playerView: PlayerView = {
-        let playerView = PlayerView(player: player.bitmovinPlayer(), frame: .zero)
+        let playerView = PlayerView(player: player, frame: .zero)
         playerView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         playerView.frame = playerContainer.bounds
         return playerView
     }()
-    
+
     lazy var player: BitmovinYospacePlayer = {
         let playerConfig = PlayerConfig()
         playerConfig.playbackConfig.isAutoplayEnabled = true
@@ -34,7 +34,7 @@ class ViewController: UIViewController {
         )
 
         player.add(listener: self)
-        
+
         return player
     }()
 
@@ -42,12 +42,12 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         playerContainer.addSubview(playerView)
     }
-    
-    @IBAction func unloadButtonClicked(sender: UIButton) {
+
+    @IBAction func unloadButtonClicked(sender _: UIButton) {
         player.unload()
     }
 
-    @IBAction func liveButtonClicked(sender: UIButton) {
+    @IBAction func liveButtonClicked(sender _: UIButton) {
         guard let streamUrl = URL(string: "https://live-manifests-aka-qa.warnermediacdn.com/csmp/cmaf/live/2000073/cnn-clear-novpaid/master.m3u8") else {
             return
         }
@@ -58,7 +58,7 @@ class ViewController: UIViewController {
         player.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
     }
 
-    @IBAction func vodButtonClicked(sender: UIButton) {
+    @IBAction func vodButtonClicked(sender _: UIButton) {
         guard let streamUrl = URL(string: "https://vod-manifests-aka-qa.warnermediacdn.com/csm/tcm/clear/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c/master_cl.m3u8?afid=222591187&caid=2100555&conf_csid=tbs.com_mobile_iphone&context=182883174&nw=42448&prof=48804%3Aturner_ssai&vdur=1800&yo.vp=true&yo.av=2") else {
             return
         }
@@ -71,7 +71,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: PlayerListener {
-    func onTimeChanged(_ event: TimeChangedEvent, player: Player) {
-        adLabel.text = "Ad: \(self.player.isAd()) time=\(Double(round(10*self.player.currentTime())/10))"
+    func onTimeChanged(_: TimeChangedEvent, player _: Player) {
+        adLabel.text = "Ad: \(player.isAd) time=\(Double(round(10 * player.currentTime) / 10))"
     }
 }

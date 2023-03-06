@@ -5,46 +5,45 @@
 //  Created by Cory Zachman on 8/28/19.
 //
 
-import Foundation
 import BitmovinPlayer
+import Foundation
 import YOAdManagement
 
 struct TimedMetadataEvent {
     let time: TimeInterval
     let metadata: YOTimedMetadata
-    
+
     // Part of the iOS time jump workaround, to account for jumps that could've occurred between generation and firing
     let rawTime: Double
     let normalizedTime: Double
 }
 
-class DateRangeEmitter: NSObject {
-
+public class DateRangeEmitter: NSObject {
     // MARK: - Properties
 
     weak var player: BitmovinYospacePlayer?
     var timedMetadataEvents: [TimedMetadataEvent] = []
     var processedDaterangeMetadata: [String: Date] = [:]
-    var initialPDT: Date = Date()
+    var initialPDT: Date = .init()
     var deviceOffsetFromPDT: TimeInterval = 0
     let adEventOffset = 0.1 // Offset from the start and end of the ad that we will send the S and E event
     let mEventInterval = 2.0 // Interval at which we will send M event
-    
+
     weak var playheadNormalizer: PlayheadNormalizer?
-    
+
     var seekableRange: TimeRange {
         guard let player = player else {
             return TimeRange(start: 0, end: 0)
         }
-        if player.isLive() {
+        if player.isLive {
             let currentTime = player.currentTimeWithAds()
-            let timeShift = player.bitmovinPlayer().timeShift
-            let maxTimeShift = player.bitmovinPlayer().maxTimeShift
+            let timeShift = player.timeShift
+            let maxTimeShift = player.maxTimeShift
             let start = currentTime + maxTimeShift - timeShift
             let end = currentTime - timeShift
             return TimeRange(start: start, end: end)
         } else {
-            return TimeRange(start: 0, end: player.duration())
+            return TimeRange(start: 0, end: player.duration)
         }
     }
 
@@ -53,8 +52,8 @@ class DateRangeEmitter: NSObject {
     init(player: BitmovinYospacePlayer, normalizer: PlayheadNormalizer? = nil) {
         super.init()
         self.player = player
-        self.playheadNormalizer = normalizer
-        
+        playheadNormalizer = normalizer
+
         self.player?.add(listener: self)
     }
 
@@ -83,7 +82,7 @@ class DateRangeEmitter: NSObject {
 
         processedDaterangeMetadata[mediaId] = dateRangeMetadata.startDate
 
-        guard let endDate = dateRangeMetadata.endDate, let player = self.player else {
+        guard let endDate = dateRangeMetadata.endDate, let player = player else {
             return
         }
 
@@ -98,11 +97,11 @@ class DateRangeEmitter: NSObject {
 
     private func generateEventsForDateRange(mediaId: String, startDate: Date, endDate: Date, player: BitmovinYospacePlayer) {
         let duration = Double(endDate - startDate)
-        
+
         // Upon receipt of timed metadata, inform the normalizer (if instantiated)
         // This will reset any active normalization, and switch modes to attempting to ensure all the following generated metadata is always fired at the proper intervals
         playheadNormalizer?.notifyDateRangeMetadataReceived()
-        
+
         var currentTime: Double = {
             if let playheadNormalizer = playheadNormalizer {
                 return playheadNormalizer.currentNormalizedTime()
@@ -112,7 +111,7 @@ class DateRangeEmitter: NSObject {
         }()
         let currentTimeAtStart = currentTime
         let rawTime = player.currentTimeWithAds()
-        
+
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
         BitLog.d("Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)")
@@ -162,7 +161,7 @@ class DateRangeEmitter: NSObject {
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataParsedEvent(metadata: metadata, type: .ID3)
         player?.listeners.forEach {
-            if let bmPlayer = player?.bitmovinPlayer() {
+            if let bmPlayer = player {
                 $0.onMetadataParsed?(event, player: bmPlayer)
             }
         }
@@ -173,7 +172,7 @@ class DateRangeEmitter: NSObject {
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataEvent(metadata: metadata, type: .ID3)
         player?.listeners.forEach {
-            if let bmPlayer = player?.bitmovinPlayer() {
+            if let bmPlayer = player {
                 $0.onMetadata?(event, player: bmPlayer)
             }
         }
@@ -183,8 +182,7 @@ class DateRangeEmitter: NSObject {
 // MARK: - PlayerListener
 
 extension DateRangeEmitter: PlayerListener {
-
-    public func onReady(_ event: ReadyEvent) {
+    public func onReady(_: ReadyEvent) {
         guard let player = player else {
             return
         }
@@ -201,7 +199,7 @@ extension DateRangeEmitter: PlayerListener {
         guard let nextEvent = timedMetadataEvents.first else {
             return
         }
-        
+
         let currentTime: Double = {
             if let playheadNormalizer = playheadNormalizer {
                 return playheadNormalizer.currentNormalizedTime()
@@ -209,18 +207,18 @@ extension DateRangeEmitter: PlayerListener {
                 return player?.currentTimeWithAds() ?? event.currentTime
             }
         }()
-        
+
         // Note - it's possible that there was a time jump between when the metadata was generated, and when it was activated here
         // If a jump does happen, the normalizer will be in ads mode and will move into normalizing for the remainder of the break
         // That should ensure that between date range metadata receipt -> ad break finished time will increase monotonically
         let nextEventTime = nextEvent.time
-        
+
         // Send metadata event if playhead is within 1 second of metadata time
         if currentTime - nextEventTime >= -1 {
             timedMetadataEvents.removeFirst(1)
             let metadata = nextEvent.metadata
             BitLog.d("[onTimeChanged] - firing ID3: \(metadata.playhead)")
-            
+
             // swiftlint:disable line_length
             BitLog.d("Sending metadata: currentDate=\(NSDate().timeIntervalSince1970), playerTime=\(currentTime), eventTime=\(nextEvent.time), metadataTime=\(metadata.playhead), id=\(metadata.mediaId), type=\(metadata.type), segment=\(metadata.segmentNumber), segmentCount=\(metadata.segmentCount), offset=\(metadata.offset)")
             // swiftlint:enable line_length
@@ -230,15 +228,15 @@ extension DateRangeEmitter: PlayerListener {
         }
     }
 
-    public func onSourceLoaded(_ event: SourceLoadedEvent) {
+    public func onSourceLoaded(_: SourceLoadedEvent) {
         reset()
     }
 
-    public func onSourceUnloaded(_ event: SourceUnloadedEvent) {
+    public func onSourceUnloaded(_: SourceUnloadedEvent) {
         reset()
     }
 
-    func onError(_ event: Event) {
+    func onError(_: Event) {
         reset()
     }
 }
