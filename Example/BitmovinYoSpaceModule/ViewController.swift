@@ -96,34 +96,34 @@ class ViewController: UIViewController {
             yospaceSourceConfig: .init(yospaceAssetType: .vod)
         )
     ]
-    
+
 //    lazy var playheadNormalizer = PlayheadNormalizer(player: player)
-    
+
     var selectedStreamIndex = 2
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         containerView.addSubview(playerView)
         createStreamPicker()
     }
-    
+
     func createStreamPicker() {
         let streamPicker = UIPickerView()
         streamPicker.delegate = self
-        
+
         let doneButton = UIBarButtonItem(
             title: "Done",
             style: .done,
             target: self,
             action: #selector(closePicker)
         )
-        
+
         let toolBar = UIToolbar()
         toolBar.sizeToFit()
         toolBar.setItems([doneButton], animated: false)
         toolBar.isUserInteractionEnabled = true
-        
+
         streamsTextField.inputView = streamPicker
         streamsTextField.inputAccessoryView = toolBar
         streamsTextField.text = streams[selectedStreamIndex].title
@@ -149,12 +149,12 @@ class ViewController: UIViewController {
     func loadStream(stream: Stream) {
         guard let streamUrl = URL(string: stream.contentUrl) else { return }
         print("Loading \(streamUrl)")
-        
+
         let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
-        
+
         if let fairplayLicense = stream.fairplayLicenseUrl, let fairplayCert = stream.fairplayCertUrl {
             let drmConfig = FairplayConfig(license: URL(string: fairplayLicense), certificateURL: URL(string: fairplayCert)!)
-            
+
             if let drmHeader = stream.drmHeader {
                 print("Setting DRM header")
                 drmConfig.licenseRequestHeaders = ["x-isp-token": drmHeader]
@@ -164,13 +164,13 @@ class ViewController: UIViewController {
             // As simulator does not support fairplay
             sourceConfig.drmConfig = drmConfig
         }
-        
+
         player.load(
             sourceConfig: sourceConfig,
             yospaceSourceConfig: stream.yospaceSourceConfig
         )
     }
-    
+
     func prepareDRM(config: FairplayConfig) {
         config.prepareCertificate = { (data: Data) -> Data in
             guard let certString = String(data: data, encoding: .utf8),
@@ -197,7 +197,7 @@ class ViewController: UIViewController {
             return ckcResult
         }
     }
-    
+
     var timeChangedFired = false
     var prevTimeChanged = 0.0
     func detectTimeJump(time: Double) {
@@ -206,16 +206,16 @@ class ViewController: UIViewController {
             timeChangedFired = true
             return
         }
-        
+
         let delta = time - prevTimeChanged
-        if (delta > 2.0 || delta < -0.5) {
+        if delta > 2.0 || delta < -0.5 {
             print("[raw] Time jump detected: \(delta) [\(time), \(prevTimeChanged)] ❌")
         } else {
 //            print("[raw] Time update: \(time) | \(delta)")
         }
         prevTimeChanged = time
     }
-    
+
 //    let playheadNormalizer: PlayheadNormalizer = PlayheadNormalizer()
     func testNormalizeTime(time _: Double) {
 //        let newTime = playheadNormalizer.normalize(time: time)

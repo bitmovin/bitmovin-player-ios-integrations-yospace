@@ -91,13 +91,13 @@ public class BitmovinYospacePlayer: NSObject, Player {
     public var buffer: BufferApi { return player.buffer }
 
     public var playlist: BitmovinPlayer.PlaylistApi { return player.playlist }
-    
+
     public var isCasting: Bool { return player.isCasting }
 
     public var isWaitingForDevice: Bool { return player.isWaitingForDevice }
 
     public var isCastAvailable: Bool { return player.isCastAvailable }
-    
+
     // MARK: - Bitmovin Player methods
 
     public func load(sourceConfig: SourceConfig) {
@@ -183,6 +183,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     public func canPlay(atPlaybackSpeed playbackSpeed: Float) -> Bool {
         player.canPlay(atPlaybackSpeed: playbackSpeed)
     }
+
     public func castStop() {
         player.castStop()
     }
