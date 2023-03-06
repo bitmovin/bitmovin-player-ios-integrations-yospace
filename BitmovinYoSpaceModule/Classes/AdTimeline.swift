@@ -5,9 +5,9 @@
 //  Created by Cory Zachman on 11/20/18.
 //
 
+import BitmovinPlayer
 import Foundation
 import YOAdManagement
-import BitmovinPlayer
 
 public class AdTimeline: CustomDebugStringConvertible {
     public private(set) var adBreaks: [YospaceAdBreak] = []
@@ -31,7 +31,7 @@ public class AdTimeline: CustomDebugStringConvertible {
     }
 
     public func relativeToAbsolute(time: TimeInterval) -> TimeInterval {
-        let passedAdBreakDurations = adBreaks.filter {$0.relativeStart < time}.reduce(0) { $0 + $1.duration }
+        let passedAdBreakDurations = adBreaks.filter { $0.relativeStart < time }.reduce(0) { $0 + $1.duration }
         let absoluteTime: TimeInterval = time + passedAdBreakDurations
         return absoluteTime
     }
@@ -45,19 +45,18 @@ public class AdTimeline: CustomDebugStringConvertible {
     }
 
     public func absoluteToRelative(time: TimeInterval) -> TimeInterval {
-        let passedAdBreakDurations = adBreaks.filter {$0.absoluteEnd < time}.reduce(0) { $0 + $1.duration}
+        let passedAdBreakDurations = adBreaks.filter { $0.absoluteEnd < time }.reduce(0) { $0 + $1.duration }
 
-        //Check if we are in an ad break, the relative time if you are in an ad break is equal to the ad breaks start time
+        // Check if we are in an ad break, the relative time if you are in an ad break is equal to the ad breaks start time
         guard let currentAdBreak = currentAdBreak(time: time) else {
             return time - passedAdBreakDurations
         }
 
         return currentAdBreak.absoluteStart - passedAdBreakDurations
-
     }
 
     func currentAdBreak(time: TimeInterval) -> YospaceAdBreak? {
-        return adBreaks.filter {$0.absoluteStart < time}.filter {$0.absoluteEnd > time}.first
+        return adBreaks.filter { $0.absoluteStart < time }.filter { $0.absoluteEnd > time }.first
     }
 
     func currentAd(time: TimeInterval) -> YospaceAd? {
@@ -66,10 +65,9 @@ public class AdTimeline: CustomDebugStringConvertible {
         }
 
         return currentAdBreak.ads
-            .compactMap {$0 as? YospaceAd}
-            .filter {$0.absoluteStart < time}
-            .filter {$0.absoluteEnd > time}
+            .compactMap { $0 as? YospaceAd }
+            .filter { $0.absoluteStart < time }
+            .filter { $0.absoluteEnd > time }
             .first
     }
-
 }

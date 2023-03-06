@@ -17,7 +17,7 @@ public class YospaceId3MetadataEntry: NSObject, MetadataEntry {
     public let timestamp: Date
 
     public init(mediaId: String, type: String, segmentCount: Int, segmentNumber: Int, offset: Double, timestamp: Date) {
-        self.metadataType = .ID3
+        metadataType = .ID3
         self.mediaId = mediaId
         self.type = type
         self.segmentCount = segmentCount
@@ -26,7 +26,7 @@ public class YospaceId3MetadataEntry: NSObject, MetadataEntry {
         self.timestamp = timestamp
     }
 
-    public override var debugDescription: String {
+    override public var debugDescription: String {
         return "mediaId=\(mediaId), type=\(type), segmentCount=\(segmentCount), segmentNumber=\(segmentNumber), offset=\(String(format: "%.1f", offset)), timestamp=\(timestamp)"
     }
 }

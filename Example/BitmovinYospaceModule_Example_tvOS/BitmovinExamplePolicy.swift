@@ -6,12 +6,11 @@
 //  Copyright © 2018 CocoaPods. All rights reserved.
 //
 
-import Foundation
 import BitmovinYospaceModule
+import Foundation
 
 class BitmovinExamplePolicy: BitmovinYospacePlayerPolicy {
-
-    //TODO provide a better example
+    // TODO: provide a better example
     func canSeek() -> Bool {
         return true
     }

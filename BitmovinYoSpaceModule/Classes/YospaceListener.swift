@@ -5,8 +5,8 @@
 //  Created by Bitmovin on 11/13/18.
 //
 
-import Foundation
 import BitmovinPlayer
+import Foundation
 
 public protocol YospaceListener: AnyObject {
     func onTimelineChanged(event: AdTimelineChangedEvent)

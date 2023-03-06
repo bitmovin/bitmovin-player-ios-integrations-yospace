@@ -5,8 +5,8 @@
 //  Created by Cory Zachman on 9/20/19.
 //
 
-import Foundation
 import BitmovinPlayer
+import Foundation
 import YOAdManagement
 
 public class YospaceAdStartedEvent: AdStartedEvent {

@@ -10,8 +10,8 @@ import Foundation
 public class DefaultBitmovinYospacePlayerPolicy: BitmovinYospacePlayerPolicy {
     weak var player: BitmovinYospacePlayer?
 
-    public init(_ bitmovinYospacePlayer: BitmovinYospacePlayer) {
-        self.player = bitmovinYospacePlayer
+    init(_ bitmovinYospacePlayer: BitmovinYospacePlayer) {
+        player = bitmovinYospacePlayer
     }
 
     public func canMute() -> Bool {
@@ -33,5 +33,4 @@ public class DefaultBitmovinYospacePlayerPolicy: BitmovinYospacePlayerPolicy {
     public func canPause() -> Bool {
         return true
     }
-
 }

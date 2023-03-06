@@ -8,7 +8,6 @@
 import Foundation
 
 class BitLog {
-
     static var dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
     static var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -44,13 +43,14 @@ class BitLog {
         log(tag: "S", message: message, filename: filename, line: line, column: column, funcName: funcName)
     }
 
-    //swiftlint:disable line_length
-    private class func log(tag: String, message: String, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+    // swiftlint:disable line_length
+    private class func log(tag: String, message: String, filename: String = #file, line: Int = #line, column _: Int = #column, funcName: String = #function) {
         if isEnabled {
             print("\(Date().toString()) \(tag)/\(String(describing: self)): [\(extractFileFromPath(filePath: filename)):\(trimFunctionName(funcName: funcName)):\(line)] -> \(message)")
         }
     }
-    //swiftlint:enable line_length
+
+    // swiftlint:enable line_length
 
     private class func extractFileFromPath(filePath: String) -> String {
         let components = filePath.components(separatedBy: "/")

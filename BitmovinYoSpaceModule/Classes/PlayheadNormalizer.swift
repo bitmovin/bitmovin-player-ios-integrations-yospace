@@ -5,8 +5,8 @@
 //  Created by cdg on 2/4/21.
 //
 
-import Foundation
 import BitmovinPlayer
+import Foundation
 
 enum Mode: String {
     case unknown
@@ -33,18 +33,18 @@ public class PlayheadNormalizer: NSObject {
     // Note - using two sets to allow for different sensitivities
     let maxAdsUnexpectedJumpForward = 1.5
     let maxAdsUnexpectedJumpBack = -0.5
-    
+
     let maxDefaultUnexpectedJumpForward = 2.0
     let maxDefaultUnexpectedJumpBack = -0.5
 
     private weak var player: BitmovinYospacePlayer?
     private weak var eventDelegate: PlayheadNormalizerEventDelegate?
-    
+
     // What mode we're in drives how any normalization is done
     private var mode: Mode = .unknown
     // For this pass, only normalize when we think we're in an ad-like mode
     private let normalizeByDefault = false
-    
+
     private var processedFirstValue: Bool = false
     // Determines whether to normalize a passed time value
     private var active = false
@@ -70,22 +70,22 @@ public class PlayheadNormalizer: NSObject {
 
     // MARK: - initializer
 
-    init (player: BitmovinYospacePlayer, eventDelegate: PlayheadNormalizerEventDelegate) {
+    init(player: BitmovinYospacePlayer, eventDelegate: PlayheadNormalizerEventDelegate) {
         super.init()
         self.player = player
         self.eventDelegate = eventDelegate
-        
+
         self.player?.add(listener: self)
-        self.log("Initialized")
+        log("Initialized")
     }
 
     // MARK: - private instance methods, general
-    
+
     private func reset() {
         active = true
-        
+
         setMode(.unknown)
-        
+
         lastRawPlayhead = 0.0
         lastNormalizedPlayhead = 0.0
         lastGoodDelta = 0.0
@@ -94,7 +94,7 @@ public class PlayheadNormalizer: NSObject {
         isSeeking = false
         resetInTimeChangedUpdateCount = -1
     }
-    
+
     private func log(_ msg: String) {
         BitLog.d("\(msg)")
     }
@@ -104,6 +104,7 @@ public class PlayheadNormalizer: NSObject {
             log(msg)
         }
     }
+
     /**
            Given an unexpected jump, bump the previous known good playhead by an appropriate increment
      */
@@ -122,9 +123,10 @@ public class PlayheadNormalizer: NSObject {
             jumpEntries.remove(at: 0)
         }
     }
+
     /**
             Reset all playhead values - should only be called when an external signal tells us to reset:
-     
+
                 - on seeking / timeshifting
                 - on either a time validation clamp (PDT, ad end)
      */
@@ -132,41 +134,40 @@ public class PlayheadNormalizer: NSObject {
         log("Resetting playhead to: \(time) from \(lastRawPlayhead) | \(lastNormalizedPlayhead)")
         lastRawPlayhead = time
         lastNormalizedPlayhead = time
-        
+
         setExpectingJump(.none)
     }
-    
+
     private func setMode(_ newMode: Mode) {
         log("[setMode] updating from \(mode) to \(newMode)")
         mode = newMode
     }
-    
+
     private func setExpectingJump(_ jump: Jump) {
-        if (jump == expectingJump) {
+        if jump == expectingJump {
             return
         }
-        
+
         log("[setExpectingJump] updating from \(expectingJump) to \(jump)")
         expectingJump = jump
-        
-        if (expectingJump != .none) {
+
+        if expectingJump != .none {
             eventDelegate?.normalizingStarted()
         } else {
             eventDelegate?.normalizingFinished()
         }
-        
     }
-    
+
     // MARK: - private instance methods, default / media playing modes
-    
+
     /**
             By default, we normalize more aggressively, actively looking for a reciprocal jump. That's to limit the possibility of normalized drift, as there's currently no facility in the iOS BM player to surface the current fragment / PDT data from the manifest.
-     
+
             Without a reciprocal jump, the only clamp will be an ad break, as we'll reset and use the curren playhead as the source of record at that point.
      */
     private func normalizeDefault(delta: Double, time: Double) -> Double {
-        var normalizedTime: Double = 0.0
-        
+        var normalizedTime = 0.0
+
         if delta > maxDefaultUnexpectedJumpForward {
             if expectingJump == .forwards {
                 // We jumped forward, and were expecting it
@@ -207,10 +208,10 @@ public class PlayheadNormalizer: NSObject {
             normalizedTime = time
             lastGoodDelta = delta
         }
-        
+
         return normalizedTime
     }
-    
+
     // MARK: - private instance methods, metadata / ads playing modes
 
     /**
@@ -219,12 +220,12 @@ public class PlayheadNormalizer: NSObject {
             - once ad break processing has begun, do standard normalization unless a jump of any kind is detected
             - if a single jump is detected, normalize for the remainder of the ad break
             - once ad break finished has fired, reset and use the current playhead as the source of record
-     
+
             Note that there could be an edge case here, where date range timed metadata can be received but no ad break events are fired. For that case, we should have a fallback timer upon metadata receipt that will flip to an unknown mode after a given threshold.
      */
     private func normalizeAds(delta: Double, time: Double) -> Double {
-        var normalizedTime: Double = 0.0
-        
+        var normalizedTime = 0.0
+
         // When in an ads mode, once we've received an unexpected jump, wait until the break has completed to reset
         if expectingJump != .none {
             // We're expecting a reverse jump, but haven't received it yet
@@ -248,25 +249,25 @@ public class PlayheadNormalizer: NSObject {
             normalizedTime = time
             lastGoodDelta = delta
         }
-        
+
         return normalizedTime
     }
-    
+
     // MARK: - public instance methods
 
     public func notifyDateRangeMetadataReceived() {
         // If we're already in an ads mode, don't reset again until the end of the ad break
-        if (mode == .metadataReceived || mode == .adsPlaying) {
+        if mode == .metadataReceived || mode == .adsPlaying {
             return
         }
-        
+
         log("[notifyDateRangeMetadataReceived] Resetting normalization and jump status - currently: \(expectingJump)")
         resetPlayheadAndJumpStatus(time: lastRawPlayhead)
         setMode(.metadataReceived)
-        
+
         // TODO: we should likely start a timer here, and if no ad break started event has been received after a given threshold, switch to a status of unknown. Protects against an edge case were we have date range metadata, but an ad break does not start.
     }
-    
+
     public func normalize(time: Double) -> Double {
 //        log("normalizing \(time); previous \(prevPlayhead)")
         if !processedFirstValue {
@@ -315,8 +316,8 @@ public class PlayheadNormalizer: NSObject {
             }
         }
 
-        var normalizedTime: Double = 0.0
-        if (mode == .metadataReceived || mode == .adsPlaying) {
+        var normalizedTime = 0.0
+        if mode == .metadataReceived || mode == .adsPlaying {
             normalizedTime = normalizeAds(delta: delta, time: time)
         } else if normalizeByDefault {
             normalizedTime = normalizeDefault(delta: delta, time: time)
@@ -340,7 +341,7 @@ public class PlayheadNormalizer: NSObject {
         if jumpEntries.isEmpty {
             return delta
         }
-        
+
         // Start at the most recent, and work back
         var index = jumpEntries.count - 1
         while index >= 0 && jumpEntries[index].rawTime > rawTime {
@@ -354,7 +355,7 @@ public class PlayheadNormalizer: NSObject {
 
     /**
             Given a raw base time, and the normalization that was done initially, this method will check for additional time jumps that apply and update the normalized time w/ the delta
-     
+
             Given the following sequence:
             - have an initial playhead of 1000
             - have a jump back of -5 - raw: 995, normalized: 1001 (delta: 6)
@@ -381,10 +382,10 @@ public class PlayheadNormalizer: NSObject {
 }
 
 extension PlayheadNormalizer: PlayerListener {
-    public func onReady(_ event: ReadyEvent) {
+    public func onReady(_: ReadyEvent) {
         // On source loaded, ensure all state is reset
         reset()
-        
+
         guard let player = player else {
             return
         }
@@ -395,17 +396,17 @@ extension PlayheadNormalizer: PlayerListener {
         log("initial playhead: \(initialPlayhead)")
     }
 
-    public func onAdBreakStarted(_ event: AdBreakStartedEvent) {
+    public func onAdBreakStarted(_: AdBreakStartedEvent) {
         // There's a potential optimization here, assuming the problem only happens inside an ad break, after it's already started
         // As long as we're normalizing inside an ad break, we should be able to guarantee that an ad break end will be hit (baseline scenario)
 
-        //active = true
+        // active = true
         log("Ad break started")
         setMode(.adsPlaying)
     }
 
-    public func onAdBreakFinished(_ event: AdBreakFinishedEvent) {
-        //active = false
+    public func onAdBreakFinished(_: AdBreakFinishedEvent) {
+        // active = false
 
         // Note - given we the player doesn't raise enough events for us to use PDT as a clamp,
         // using this instead
@@ -427,7 +428,8 @@ extension PlayheadNormalizer: PlayerListener {
         log("VOD Seek started - \(event.to)")
         isSeeking = true
     }
-    public func onSeeked(_ event: SeekedEvent) {
+
+    public func onSeeked(_: SeekedEvent) {
         guard let player = player else {
             return
         }
@@ -445,7 +447,7 @@ extension PlayheadNormalizer: PlayerListener {
         isSeeking = true
     }
 
-    public func onTimeShifted(_ event: TimeShiftedEvent) {
+    public func onTimeShifted(_: TimeShiftedEvent) {
         // Live - Seek ended
         guard let player = player else {
             return
