@@ -28,7 +28,7 @@ extension YOInteractiveCreative {
     func notifyAdVideoStarted() {
         trackingEventDidOccur("start")
     }
-    
+
     func notifyAdVideoFirstQuartile() {
         trackingEventDidOccur("firstQuartile")
     }
@@ -52,7 +52,7 @@ extension YOInteractiveCreative {
     func notifyAdUserMinimize() {
         trackingEventDidOccur("playerCollapse")
     }
-    
+
     func notifyAdUserClose() {
         trackingEventDidOccur("closeLinear")
     }

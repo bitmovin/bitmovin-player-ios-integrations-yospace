@@ -9,7 +9,7 @@ import Foundation
 
 public class IntegrationConfig: NSObject {
     let enablePlayheadNormalization: Bool
-    
+
     public init(enablePlayheadNormalization: Bool) {
         self.enablePlayheadNormalization = enablePlayheadNormalization
     }

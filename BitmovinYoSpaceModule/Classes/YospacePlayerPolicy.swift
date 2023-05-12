@@ -8,84 +8,81 @@
 import Foundation
 import YOAdManagement
 
-class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
+public class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
     weak var playerPolicy: BitmovinYospacePlayerPolicy?
 
     public convenience init(bitmovinYospacePlayerPolicy: BitmovinYospacePlayerPolicy) {
         self.init()
-        self.playerPolicy = bitmovinYospacePlayerPolicy
+        playerPolicy = bitmovinYospacePlayerPolicy
     }
-    
+
     // MARK: YOPolicyHandling
-    public func willSeek(to position: TimeInterval, timeline: [Any], playhead: TimeInterval) -> TimeInterval {
-        return self.playerPolicy?.canSeekTo(seekTarget: position) ?? position
+
+    public func willSeek(to position: TimeInterval, timeline _: [Any], playhead _: TimeInterval) -> TimeInterval {
+        return playerPolicy?.canSeekTo(seekTarget: position) ?? position
     }
-    
-    public func canChangeVolume(_ mute: Bool, playhead: TimeInterval, timeline: [Any]) -> Bool {
+
+    public func canChangeVolume(_: Bool, playhead _: TimeInterval, timeline _: [Any]) -> Bool {
         true
     }
-    
-    public func canResize(_ fullscreen: Bool, playhead: TimeInterval, timeline: [Any]) -> Bool {
+
+    public func canResize(_: Bool, playhead _: TimeInterval, timeline _: [Any]) -> Bool {
         true
     }
-    
-    public func canResizeCreative(_ expand: Bool, playhead: TimeInterval, timeline: [Any]) -> Bool {
+
+    public func canResizeCreative(_: Bool, playhead _: TimeInterval, timeline _: [Any]) -> Bool {
         true
     }
-    
-    public func didSkip(from previous: TimeInterval, to current: TimeInterval, timeline: [Any]) {
-        
-    }
-    
-    public func didSeek(from previous: TimeInterval, to current: TimeInterval, timeline: [Any]) {
-        
-    }
-    
-    public func canStart(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+
+    public func didSkip(from _: TimeInterval, to _: TimeInterval, timeline _: [Any]) {}
+
+    public func didSeek(from _: TimeInterval, to _: TimeInterval, timeline _: [Any]) {}
+
+    public func canStart(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canStop(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canStop(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canPause(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        return self.playerPolicy?.canPause() ?? true
+    public func canPause(_: TimeInterval, timeline _: [Any]) -> Bool {
+        return playerPolicy?.canPause() ?? true
     }
 
-    public func canRewind(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canRewind(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canSkip(_ playhead: TimeInterval, timeline: [Any], duration: TimeInterval) -> TimeInterval {
-        return self.playerPolicy?.canSkip() ?? -1
+    public func canSkip(_: TimeInterval, timeline _: [Any], duration _: TimeInterval) -> TimeInterval {
+        return playerPolicy?.canSkip() ?? -1
     }
 
-    public func canSeek(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
-        return self.playerPolicy?.canSeek() ?? true
+    public func canSeek(_: TimeInterval, timeline _: [Any]) -> Bool {
+        return playerPolicy?.canSeek() ?? true
     }
 
-    public func canMute(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canMute(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canGoFullScreen(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canGoFullScreen(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canExitFullScreen(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canExitFullScreen(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canExpandCreative(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canExpandCreative(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canCollapseCreative(_ playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canCollapseCreative(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
-    public func canClickThrough(_ url: URL, playhead: TimeInterval, timeline: [Any]) -> Bool {
+    public func canClickThrough(_: URL, playhead _: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
 
@@ -101,7 +98,5 @@ class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
         return true
     }
 
-    public func setPlaybackMode(_ playbackMode: YOPlaybackMode) {
-
-    }
+    public func setPlaybackMode(_: YOPlaybackMode) {}
 }
