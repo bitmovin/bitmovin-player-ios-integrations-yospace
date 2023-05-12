@@ -4,6 +4,43 @@
 iOS 14+
 tvOS 14+
 
+## Installation
+
+BitmovinYospacePlayer is available through [CocoaPods](http://cocoapods.org).
+To install the Yospace SDK please follow https://developer.yospace.com/sdk-documentation/apple/userguide/latest/en/prerequisites.html but the relevant steps are also outlined here. You will need to install the `cocoapods-art` plugin first:
+
+```bash
+gem install cocoapods-art
+```
+
+Then add the Yospace private repository:
+```bash
+pod repo-art add apple-sdk-release https://yospacerepo.jfrog.io/artifactory/api/pods/apple-sdk-release
+```
+
+Please make sure you have a `.netrc` file in your home directory containing your Yospace credentials!
+
+In your `Podfile`, add the `BitmovinPlayer` repository as source:
+
+```ruby
+source 'https://github.com/bitmovin/cocoapod-specs.git'
+```
+
+And finally add the relevant pods:
+
+```ruby
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.0.0'
+  pod 'BitmovinPlayer', tag: '3.37.0'
+  pod 'YOAdManagement-Release'
+
+  use_frameworks!
+```
+
+Then, in your command line run
+
+```ruby
+pod install
+```
 
 ## Example
 
@@ -96,46 +133,6 @@ Click through URLs will be delivered via each `AdStartedEvent`.
 
 ```swift 
 bitmovinYospacePlayer?.clickThroughPressed()
-```
-
-## Requirements
-
-## Installation
-
-BitmovinYospacePlayer is available through [CocoaPods](http://cocoapods.org).
-To install the Yospace SDK please follow https://developer.yospace.com/sdk-documentation/apple/userguide/latest/en/prerequisites.html but the relevant steps are also outlined here. You will need to install the `cocoapods-art` plugin first:
-
-```bash
-gem install cocoapods-art
-```
-
-Then add the Yospace private repository:
-```bash
-pod repo-art add apple-sdk-release https://yospacerepo.jfrog.io/artifactory/api/pods/apple-sdk-release
-```
-
-Please make sure you have a `.netrc` file in your home directory containing your Yospace credentials!
-
-In your `Podfile`, add the `BitmovinPlayer` repository as source:
-
-```ruby
-source 'https://github.com/bitmovin/cocoapod-specs.git'
-```
-
-And finally add the relevant pods:
-
-```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.0.0'
-  pod 'BitmovinPlayer', tag: '3.37.0'
-  pod 'YOAdManagement-Release'
-
-  use_frameworks!
-```
-
-Then, in your command line run
-
-```ruby
-pod install
 ```
 
 ## Author
