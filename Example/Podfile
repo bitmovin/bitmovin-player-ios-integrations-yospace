@@ -1,9 +1,14 @@
 source 'https://www.github.com/socialvibe/cocoapod-specs'
 source 'https://github.com/bitmovin/cocoapod-specs.git'
 
+plugin 'cocoapods-art', :sources => [
+    'apple-sdk-release'
+]
+
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
     pod 'BitmovinPlayer', '3.21.0'
+    pod 'YOAdManagement-Release'
 end
 
 target 'BitmovinYospaceModule_Example' do
