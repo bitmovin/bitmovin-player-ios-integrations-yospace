@@ -98,6 +98,11 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var isCastAvailable: Bool { return player.isCastAvailable }
 
+    public var isOutputObscured: Bool { return player.isOutputObscured }
+
+    @available(iOS 15.0, *)
+    public var sharePlay: BitmovinPlayer.SharePlayApi { return player.sharePlay }
+
     // MARK: - Bitmovin Player methods
 
     public func load(sourceConfig: SourceConfig) {

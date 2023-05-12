@@ -18,6 +18,7 @@ public class YospaceAdBreak: NSObject, AdBreak {
     public var scheduleTime: TimeInterval
     public var replaceContentDuration: TimeInterval
     public let position: YospaceAdBreakPosition
+    public var totalNumberOfAds: UInt
 
     required init(identifier: String, absoluteStart: TimeInterval, absoluteEnd: TimeInterval, duration: TimeInterval, relativeStart: TimeInterval, scheduleTime: TimeInterval, replaceContentDuration: TimeInterval, position: YospaceAdBreakPosition = .unknown) {
         self.identifier = identifier
@@ -28,10 +29,12 @@ public class YospaceAdBreak: NSObject, AdBreak {
         self.scheduleTime = scheduleTime
         self.replaceContentDuration = replaceContentDuration
         self.position = position
+        self.totalNumberOfAds = UInt(ads.count)
     }
 
     public func register(_ adItem: Ad) {
         ads.append(adItem)
+        totalNumberOfAds = UInt(ads.count)
     }
 
     override public var debugDescription: String {

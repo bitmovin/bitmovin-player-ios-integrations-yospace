@@ -7,7 +7,7 @@ plugin 'cocoapods-art', :sources => [
 
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
-    pod 'BitmovinPlayer', '3.21.0'
+    pod 'BitmovinPlayer', '3.37.0'
     pod 'YOAdManagement-Release'
 end
 
