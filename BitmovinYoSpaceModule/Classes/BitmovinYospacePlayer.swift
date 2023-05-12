@@ -213,7 +213,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     var activeAdBreak: YospaceAdBreak?
     var activeAd: YospaceAd?
     var liveAdPaused = false
-    public var player: Player
+    var player: Player
 
     #if os(iOS)
         private var truexRenderer: BitmovinTruexRenderer?
