@@ -41,10 +41,13 @@ public class YospaceAdBreak: NSObject, AdBreak {
     }
 
     // Implementation of protocol is required, but we do not need to support JSON mapping, so default values are used
+
+    // swiftlint:disable:next identifier_name
     public func _toJsonString() throws -> String {
         return ""
     }
 
+    // swiftlint:disable:next identifier_name
     public func _toJsonData() -> [AnyHashable: Any] {
         return [:]
     }
