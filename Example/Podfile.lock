@@ -1,30 +1,36 @@
 PODS:
-  - BitmovinPlayer (3.21.0)
+  - BitmovinPlayer (3.37.0)
   - BitmovinYospaceModule (2.0.0):
-    - BitmovinPlayer (~> 3.21.0)
+    - BitmovinPlayer (~> 3.37.0)
     - TruexAdRenderer-iOS (= 3.2.1)
+    - YOAdManagement-Release (~> 3.5.2)
   - TruexAdRenderer-iOS (3.2.1)
+  - YOAdManagement-Release (3.5.2)
 
 DEPENDENCIES:
-  - BitmovinPlayer (= 3.21.0)
+  - BitmovinPlayer (= 3.37.0)
   - BitmovinYospaceModule (from `../`)
   - TruexAdRenderer-iOS (= 3.2.1)
+  - YOAdManagement-Release
 
 SPEC REPOS:
   https://github.com/bitmovin/cocoapod-specs.git:
     - BitmovinPlayer
   https://www.github.com/socialvibe/cocoapod-specs:
     - TruexAdRenderer-iOS
+  https://yospacerepo.jfrog.io/artifactory/api/pods/apple-sdk-release:
+    - YOAdManagement-Release
 
 EXTERNAL SOURCES:
   BitmovinYospaceModule:
     :path: "../"
 
 SPEC CHECKSUMS:
-  BitmovinPlayer: 7271eadcc9e506082a43a663571fef39241c1bc8
-  BitmovinYospaceModule: bb1f122d4a6b9e19a3ae8760aa2c23982e37ac5e
+  BitmovinPlayer: c0211be8e974f67c7afa11e02964ee21e8ea8bea
+  BitmovinYospaceModule: 01d8c25f2359c6db2e9fe6c135e881af73d9297e
   TruexAdRenderer-iOS: ae88dfba906c2ec8ad6f4a6ad150e42f2bbc3726
+  YOAdManagement-Release: 4bcff4ff8e44b699d726936a4d17d73c2a00c6f6
 
-PODFILE CHECKSUM: 42eca51233646701e012b91c485a5460a036bdb6
+PODFILE CHECKSUM: ad86dd9c5d6a15d599634a61d0a1ac9d77ac8f15
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
