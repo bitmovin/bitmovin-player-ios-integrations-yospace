@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol TruexAdRendererEventDelegate: AnyObject {
+@objc public protocol TruexAdRendererEventDelegate: AnyObject {
     func skipAdBreak()
     func skipTruexAd()
     func sessionAdFree()

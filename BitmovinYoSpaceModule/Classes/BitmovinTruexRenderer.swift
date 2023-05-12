@@ -5,13 +5,12 @@
 //  Created by Cory Zachman on 2/14/19.
 //
 
+import BitmovinPlayer
 import Foundation
 import TruexAdRenderer
 import YOAdManagement
-import BitmovinPlayer
 
-class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
-
+public class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     private let configuration: TruexConfiguration
     private weak var eventDelegate: TruexAdRendererEventDelegate?
     private var renderer: TruexAdRenderer?
@@ -71,7 +70,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         sessionAdFree = false
     }
 
-    func onAdStarted(_ campaignName: String?) {
+    public func onAdStarted(_ campaignName: String?) {
         BitLog.d("TrueX ad started: \(campaignName ?? "")")
 
         // Reset ad free
@@ -83,7 +82,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         interactiveUnit?.notifyAdImpression()
     }
 
-    func onAdCompleted(_ timeSpent: Int) {
+    public func onAdCompleted(_ timeSpent: Int) {
         BitLog.d("TrueX ad completed with \(timeSpent) seconds spent on engagement")
 
         // Notify YoSpace for ad tracking
@@ -104,7 +103,7 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         finishRendering()
     }
 
-    func onAdFreePod() {
+    public func onAdFreePod() {
         BitLog.d("TrueX ad free")
 
         adFree = true
@@ -118,32 +117,32 @@ class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         }
     }
 
-    func onOpt(in campaignName: String!, adId: Int) {
+    public func onOpt(in campaignName: String!, adId: Int) {
         BitLog.d("TrueX user opt in: \(campaignName ?? ""), creativeId=\(adId)")
     }
 
-    func onOptOut(_ userInitiated: Bool) {
+    public func onOptOut(_: Bool) {
         BitLog.d("TrueX user opt out")
     }
 
-    func onSkipCardShown() {
+    public func onSkipCardShown() {
         BitLog.d("TrueX skip card shown")
     }
 
-    func onUserCancel() {
+    public func onUserCancel() {
         BitLog.d("TrueX user cancelled")
     }
 
-    func onAdError(_ errorMessage: String?) {
+    public func onAdError(_ errorMessage: String?) {
         BitLog.e("TrueX ad error: \(errorMessage ?? "")")
         handleError()
     }
 
-    func onPopupWebsite(_ url: String!) {
+    public func onPopupWebsite(_: String!) {
         BitLog.d("TrueX popup website")
     }
 
-    func onNoAdsAvailable() {
+    public func onNoAdsAvailable() {
         BitLog.d("TrueX no ads available")
         handleError()
     }

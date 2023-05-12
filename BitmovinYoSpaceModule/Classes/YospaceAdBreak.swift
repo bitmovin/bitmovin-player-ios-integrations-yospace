@@ -5,8 +5,8 @@
 //  Created by aneurinc on 2/14/20.
 //
 
-import Foundation
 import BitmovinPlayer
+import Foundation
 
 public class YospaceAdBreak: NSObject, AdBreak {
     public let identifier: String
@@ -39,13 +39,13 @@ public class YospaceAdBreak: NSObject, AdBreak {
         return "id=\(identifier), relativeStart=\(relativeStart), absoluteStart=\(absoluteStart), duration=\(duration), absoluteEnd=\(absoluteEnd), scheduleTime=\(scheduleTime), replaceContentDuration=\(replaceContentDuration), position=\(position.rawValue), ads=\(ads.count)"
         // swiftlint:enable line_length
     }
-    
+
     // Implementation of protocol is required, but we do not need to support JSON mapping, so default values are used
     public func _toJsonString() throws -> String {
         return ""
     }
-    
-    public func _toJsonData() -> [AnyHashable : Any] {
+
+    public func _toJsonData() -> [AnyHashable: Any] {
         return [:]
     }
 }

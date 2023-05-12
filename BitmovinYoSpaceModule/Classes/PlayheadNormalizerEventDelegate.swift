@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PlayheadNormalizerEventDelegate: AnyObject {
+@objc public protocol PlayheadNormalizerEventDelegate: AnyObject {
     func normalizingStarted()
     func normalizingFinished()
 }
