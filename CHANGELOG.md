@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Changed
-- Bitmovin player to `>= 3.21.0`
+- Bitmovin player to `>= 3.37.0`
+- Raised minimum deployment targets to iOS 14.0 and tvOS 14.0
+- Including Yospace SDK using Cocoapods (YOAdManagement-Release)
 
 ## [1.22.4]
 
