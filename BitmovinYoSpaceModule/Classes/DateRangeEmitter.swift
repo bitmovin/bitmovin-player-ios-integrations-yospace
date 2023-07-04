@@ -1,10 +1,3 @@
-//
-//  DateRangeEmitter.swift
-//  Pods
-//
-//  Created by Cory Zachman on 8/28/19.
-//
-
 import BitmovinPlayer
 import Foundation
 import YOAdManagement
