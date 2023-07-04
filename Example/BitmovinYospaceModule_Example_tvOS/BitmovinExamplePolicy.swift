@@ -1,11 +1,3 @@
-//
-//  BitmovinExamplePolicy.swift
-//  BitmovinYospaceModule_Example_tvOS
-//
-//  Created by Cory Zachman on 11/19/18.
-//  Copyright © 2018 CocoaPods. All rights reserved.
-//
-
 import BitmovinYospaceModule
 import Foundation
 

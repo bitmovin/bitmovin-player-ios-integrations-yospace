@@ -1,10 +1,3 @@
-//
-//  TrueXAdStartedEvent.swift
-//  Pods
-//
-//  Created by Cory Zachman on 9/20/19.
-//
-
 import BitmovinPlayer
 import Foundation
 import YOAdManagement

@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  BitmovinYoSpaceModule
-//
-//  Created by Bitmovin on 10/16/2018.
-//  Copyright (c) 2018 Cory Zachman. All rights reserved.
-//
-
 import UIKit
 
 @UIApplicationMain
