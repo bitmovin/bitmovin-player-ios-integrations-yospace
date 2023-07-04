@@ -1,10 +1,3 @@
-//
-//  TruexConfiguration.swift
-//  BitmovinYospaceModule-iOS
-//
-//  Created by Cory Zachman on 2/14/19.
-//
-
 import Foundation
 import UIKit
 

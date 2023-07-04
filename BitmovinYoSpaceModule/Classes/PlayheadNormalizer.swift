@@ -371,7 +371,10 @@ public class PlayheadNormalizer: NSObject {
 
         let initialDelta = normalized - rawTime
         let remainingDelta = deltaSince - initialDelta
-        logV("[normalizeToCurrent] initial: \(normalized), \(rawTime), \(initialDelta) | remaining: \(remainingDelta) | n: \(normalized - remainingDelta)")
+        logV(
+            "[normalizeToCurrent] initial: \(normalized), \(rawTime), \(initialDelta) | "
+            + "remaining: \(remainingDelta) | n: \(normalized - remainingDelta)"
+        )
         return normalized - remainingDelta
     }
 

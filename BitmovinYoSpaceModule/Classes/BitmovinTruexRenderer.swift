@@ -1,10 +1,3 @@
-//
-//  BitmovinTruexRenderer.swift
-//  BitmovinYospaceModule-iOS
-//
-//  Created by Cory Zachman on 2/14/19.
-//
-
 import BitmovinPlayer
 import Foundation
 import TruexAdRenderer

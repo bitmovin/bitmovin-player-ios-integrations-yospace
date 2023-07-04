@@ -1,10 +1,3 @@
-//
-//  TimelineChangedEvent.swift
-//  Pods
-//
-//  Created by Cory Zachman on 12/20/18.
-//
-
 import Foundation
 
 public class AdTimelineChangedEvent {

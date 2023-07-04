@@ -1,10 +1,3 @@
-//
-//  TimeRange.swift
-//  Pods
-//
-//  Created by Cory Zachman on 8/30/19.
-//
-
 import Foundation
 
 public class TimeRange {

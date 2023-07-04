@@ -129,6 +129,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
         player.unmute()
     }
 
+    @available(*, deprecated, message: "Use SourceConfig#add(subtitleTrack:) instead.")
     public func addSubtitle(track subtitleTrack: BitmovinPlayer.SubtitleTrack) {
         player.addSubtitle(track: subtitleTrack)
     }
@@ -182,7 +183,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     }
 
     public func setSubtitleStyles(_ subtitleStyles: [AVTextStyleRule]?) {
-        setSubtitleStyles(subtitleStyles)
+        player.setSubtitleStyles(subtitleStyles)
     }
 
     public func canPlay(atPlaybackSpeed playbackSpeed: Float) -> Bool {
@@ -736,10 +737,7 @@ public extension BitmovinYospacePlayer {
     }
 
     private func createActiveAd(advert: YOAdvert) -> YospaceAd {
-        if let adBreakAd = (activeAdBreak?.ads
-            .compactMap { $0 as? YospaceAd }
-            .first { $0.identifier == advert.identifier })
-        {
+        if let adBreakAd = (activeAdBreak?.ads.compactMap { $0 as? YospaceAd }.first { $0.identifier == advert.identifier }) {
             return adBreakAd
         } else {
             let absoluteTime = currentTime
@@ -842,10 +840,16 @@ public extension BitmovinYospacePlayer {
     func operationDidFailWithError(_ error: Error) {
         if let sourceConfig = sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
             BitLog.w("Attempting to playback the stream url without Yospace")
-            onWarning(YospaceWarningEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription), player: self)
+            onWarning(
+                YospaceWarningEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription),
+                player: self
+            )
             load(sourceConfig: sourceConfig)
         } else {
-            onError(YospaceErrorEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription), player: self)
+            onError(
+                YospaceErrorEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription),
+                player: self
+            )
         }
     }
 }
@@ -1041,9 +1045,9 @@ extension BitmovinYospacePlayer: PlayerListener {
             if let timeline = timeline {
                 let position = timeline.absoluteToRelative(time: event.from.time)
                 let seekTarget = timeline.absoluteToRelative(time: event.to.time)
-                let from = SeekPosition(source: event.from.source, time: position)
-                let to = SeekPosition(source: event.to.source, time: seekTarget)
-                event = SeekEvent(from: from, to: to)
+                let seekFrom = SeekPosition(source: event.from.source, time: position)
+                let seekTo = SeekPosition(source: event.to.source, time: seekTarget)
+                event = SeekEvent(from: seekFrom, to: seekTo)
             }
             listener.onSeek?(event, player: player)
         }

@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
 
   s.homepage         = 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Cory Zachman' => 'cory.zachman@bitmovin.com' }
+  s.author           = 'Bitmovin, Inc.'
   s.source           = { :git => 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace.git', :tag => s.version.to_s }
 
   s.swift_version = '5.7'

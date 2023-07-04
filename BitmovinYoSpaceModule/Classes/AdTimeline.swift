@@ -1,10 +1,3 @@
-//
-//  YopsaceTimeline.swift
-//  Pods
-//
-//  Created by Cory Zachman on 11/20/18.
-//
-
 import BitmovinPlayer
 import Foundation
 import YOAdManagement
