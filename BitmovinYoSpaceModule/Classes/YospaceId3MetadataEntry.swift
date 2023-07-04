@@ -27,6 +27,7 @@ public class YospaceId3MetadataEntry: NSObject, MetadataEntry {
     }
 
     override public var debugDescription: String {
-        return "mediaId=\(mediaId), type=\(type), segmentCount=\(segmentCount), segmentNumber=\(segmentNumber), offset=\(String(format: "%.1f", offset)), timestamp=\(timestamp)"
+        return "mediaId=\(mediaId), type=\(type), segmentCount=\(segmentCount), segmentNumber=\(segmentNumber), "
+        + "offset=\(String(format: "%.1f", offset)), timestamp=\(timestamp)"
     }
 }

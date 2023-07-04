@@ -107,10 +107,18 @@ public class DateRangeEmitter: NSObject {
 
         let startWallclock = startDate.timeIntervalSince1970 + deviceOffsetFromPDT + adEventOffset
 
-        BitLog.d("Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)")
+        BitLog.d(
+            "Generating Yospace TimedMetadataEvents: mediaId=\(mediaId), duration=\(duration), currentTime=\(currentTime), startDate=\(startDate)"
+        )
 
         // Generate S event
-        guard let sEvent = YOTimedMetadata.create(withMediaId: mediaId, sequence: "1:1", type: "S", offset: adEventOffset.description, playhead: startWallclock) else {
+        guard let sEvent = YOTimedMetadata.create(
+            withMediaId: mediaId,
+            sequence: "1:1",
+            type: "S",
+            offset: adEventOffset.description,
+            playhead: startWallclock
+        ) else {
             BitLog.w("Failed to create TimedMetadataEvent: mediaId=\(mediaId), offset=\(adEventOffset), playhead=\(startWallclock)")
             return
         }
@@ -123,12 +131,23 @@ public class DateRangeEmitter: NSObject {
         // Generate M events
         var offset = adEventOffset + mEventInterval
         while offset < duration {
-            guard let mEvent = YOTimedMetadata.create(withMediaId: mediaId, sequence: "1:1", type: "M", offset: offset.description, playhead: startWallclock + offset) else {
+            guard let mEvent = YOTimedMetadata.create(
+                withMediaId: mediaId,
+                sequence: "1:1",
+                type: "M",
+                offset: offset.description,
+                playhead: startWallclock + offset
+            ) else {
                 BitLog.w("Failed to create TimedMetadataEvent: mediaId=\(mediaId), offset=\(offset), playhead=\(startWallclock + offset)")
                 continue
             }
 
-            let mTimedMetadataEvent = TimedMetadataEvent(time: currentTime + offset, metadata: mEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart)
+            let mTimedMetadataEvent = TimedMetadataEvent(
+                time: currentTime + offset,
+                metadata: mEvent,
+                rawTime: rawTime,
+                normalizedTime: currentTimeAtStart
+            )
             fireMetadataParsedEvent(event: mTimedMetadataEvent)
             timedMetadataEvents.append(mTimedMetadataEvent)
 
@@ -137,12 +156,23 @@ public class DateRangeEmitter: NSObject {
 
         // Generate E event
         let eEventDate = endDate.timeIntervalSince1970 + deviceOffsetFromPDT - adEventOffset
-        guard let eEvent = YOTimedMetadata.create(withMediaId: mediaId, sequence: "1:1", type: "E", offset: (duration - adEventOffset).description, playhead: eEventDate) else {
+        guard let eEvent = YOTimedMetadata.create(
+            withMediaId: mediaId,
+            sequence: "1:1",
+            type: "E",
+            offset: (duration - adEventOffset).description,
+            playhead: eEventDate
+        ) else {
             BitLog.w("Failed to create TimedMetadataEvent: mediaId=\(mediaId), offset=\(duration - adEventOffset), playhead=\(eEventDate)")
             return
         }
 
-        let eTimedMetadataEvent = TimedMetadataEvent(time: currentTime + duration - adEventOffset, metadata: eEvent, rawTime: rawTime, normalizedTime: currentTimeAtStart)
+        let eTimedMetadataEvent = TimedMetadataEvent(
+            time: currentTime + duration - adEventOffset,
+            metadata: eEvent,
+            rawTime: rawTime,
+            normalizedTime: currentTimeAtStart
+        )
         fireMetadataParsedEvent(event: eTimedMetadataEvent)
         timedMetadataEvents.append(eTimedMetadataEvent)
 
@@ -185,7 +215,9 @@ extension DateRangeEmitter: PlayerListener {
         initialPDT = Date(timeIntervalSince1970: player.currentTimeWithAds())
         deviceOffsetFromPDT = Date().timeIntervalSince(initialPDT)
         let relativePlayheadTime = player.currentTimeWithAds() - seekableRange.start
-        BitLog.d("initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)")
+        BitLog.d(
+            "initialPDT=\(dateFormatter.string(from: initialPDT)) deviceOffsetPDT=\(deviceOffsetFromPDT) relativeCurrentTime=\(relativePlayheadTime)"
+        )
     }
 
     public func onTimeChanged(_ event: TimeChangedEvent) {
