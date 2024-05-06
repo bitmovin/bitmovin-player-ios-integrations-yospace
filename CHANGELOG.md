@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Missing `PlayEvent`, `PlayerErrorEvent` and `PlayerSourceEvent`` from `BitmovinYospacePlayer`
+- `PlayerListener.onEvent` not receiving events through `BitmovinYospacePlayer`
+
 ## 2.0.0 - 2023-07-04
 
 ### Changed
@@ -34,7 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.22.0
 
 ### Changed
-- Bitmovin player to `2.60.0` 
+- Bitmovin player to `2.60.0`
 
 ## 1.21.0
 
@@ -52,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `creativeId`, `sequence`, `title`, `avertiser`, `system`, `lineage` and `isFiller` properties to `YospaceAd`
 
 ### Changed
-- Bitmovin player to `2.59.0` 
+- Bitmovin player to `2.59.0`
 - `id` property from `YospaceAd` now returns shortened identifier
 - `mediaFileUrl` property from `YospaceAd` now returns the interactive unit source
 - `AdBreakPosition` to `YospaceAdBreakPosition`
@@ -60,7 +64,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.19.0
 
 ### Changed
-- Bitmovin player to `2.57.1` 
+- Bitmovin player to `2.57.1`
 
 ## 1.18.0
 
@@ -88,7 +92,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.16.0
 
 ### Changed
-- Bitmovin player to `2.55.0` 
+- Bitmovin player to `2.55.0`
 
 ## 1.15.0
 
@@ -98,7 +102,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.14.0
 
 ### Added
-- `suppressAnalytics()` to `BitmovinYospacePlayer`, which suppresses creative tracking beacons 
+- `suppressAnalytics()` to `BitmovinYospacePlayer`, which suppresses creative tracking beacons
 
 ### Changed
 - Yospace SDK to `1.12.0`
@@ -111,7 +115,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.13.0
 
 ### Changed
-- Bitmovin Player to `2.53.0` 
+- Bitmovin Player to `2.53.0`
 
 ## 1.12.0
 
@@ -122,7 +126,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.11.0
 
 ### Changed
-- Bitmovin player to `2.51.0` 
+- Bitmovin player to `2.51.0`
 
 ## 1.10.1
 
@@ -132,12 +136,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.10.0
 
 ### Changed
-- Bitmovin player to `2.50.0` 
+- Bitmovin player to `2.50.0`
 
 ## 1.9.0
 
 ### Changed
-- Bitmovin player to `2.49.0` 
+- Bitmovin player to `2.49.0`
 
 ## 1.8.0
 
@@ -150,7 +154,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.7.0
 
 ### Changed
-- Bitmovin player to `2.48.0` 
+- Bitmovin player to `2.48.0`
 
 ## 1.6.1
 
@@ -173,7 +177,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `position` (pre/mid/post roll or unknown) to `AdBreak`
 
 ### Changed
-- Bitmovin player to `2.45.0` 
+- Bitmovin player to `2.45.0`
 - Yospace errors to be emitted in the `PlayerListener`
 
 ### Removed
@@ -193,7 +197,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.2.11
 
 ### Fixed
-- tvOS TruexRenderer build issues 
+- tvOS TruexRenderer build issues
 - `truexAd` in `YospaceAdStartedEvent` not being respected
 
 ## 1.2.10
@@ -216,7 +220,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.2.8
 
 ### Changed
-- Bitmovin player to `2.41.0` 
+- Bitmovin player to `2.41.0`
 - Yospace SDK to `1.10.0`
 
 ### Added
