@@ -53,7 +53,7 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 And finally add the relevant pods:
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.0.0'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.0.1'
   pod 'BitmovinPlayer', tag: '3.37.0'
   pod 'YOAdManagement-Release'
 

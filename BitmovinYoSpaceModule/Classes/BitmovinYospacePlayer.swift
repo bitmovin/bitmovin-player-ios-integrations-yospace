@@ -356,7 +356,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
         }
 
         if self.sourceConfig?.type != .hls {
-            onError(YospaceErrorEvent(errorCode: .invalidSource, message: "Invalid source provided. Yospace URL must be HLS"), player: self)
+            emitYoSpaceError(YospaceErrorEvent(errorCode: .invalidSource, message: "Invalid source provided. Yospace URL must be HLS"), player: self)
             return
         }
 
@@ -781,6 +781,14 @@ public extension BitmovinYospacePlayer {
             listener.onAdBreakStarted?(adBreakStartEvent, player: self)
         }
     }
+
+    private func emitYoSpaceError(_ event: YospaceErrorEvent, player: Player) {
+        listeners.forEach { $0.onEvent?(event, player: player) }
+    }
+
+    private func emitYoSpaceWarning(_ event: YospaceWarningEvent, player: Player) {
+        listeners.forEach { $0.onEvent?(event, player: player) }
+    }
 }
 
 // MARK: - YSAnalyticsObserver
@@ -803,10 +811,10 @@ public extension BitmovinYospacePlayer {
             BitLog.e("Not initialized url:\(stream.playbackUrl ?? "none") itemId:\(stream.identifier ?? "none")")
             if let sourceConfiguration = sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
-                onWarning(YospaceWarningEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: self)
+                emitYoSpaceWarning(YospaceWarningEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: self)
                 load(sourceConfig: sourceConfiguration)
             } else {
-                onError(YospaceErrorEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: self)
+                emitYoSpaceError(YospaceErrorEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: self)
             }
         case .noAnalytics:
             // store the session
@@ -815,10 +823,10 @@ public extension BitmovinYospacePlayer {
             BitLog.d("No Analytics url:\(stream.playbackUrl ?? "none") itemId:\(stream.identifier ?? "none")")
             if let sourceConfiguration = sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
                 BitLog.w("Attempting to playback the stream url without Yospace")
-                onWarning(YospaceWarningEvent(errorCode: .noAnalytics, message: "No analytics"), player: self)
+                emitYoSpaceWarning(YospaceWarningEvent(errorCode: .noAnalytics, message: "No analytics"), player: self)
                 load(sourceConfig: sourceConfiguration)
             } else {
-                onError(YospaceErrorEvent(errorCode: .noAnalytics, message: "No analytics"), player: self)
+                emitYoSpaceError(YospaceErrorEvent(errorCode: .noAnalytics, message: "No analytics"), player: self)
             }
         case .initialised:
             // store the session
@@ -840,13 +848,13 @@ public extension BitmovinYospacePlayer {
     func operationDidFailWithError(_ error: Error) {
         if let sourceConfig = sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
             BitLog.w("Attempting to playback the stream url without Yospace")
-            onWarning(
+            emitYoSpaceWarning(
                 YospaceWarningEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription),
                 player: self
             )
             load(sourceConfig: sourceConfig)
         } else {
-            onError(
+            emitYoSpaceError(
                 YospaceErrorEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription),
                 player: self
             )
@@ -857,7 +865,7 @@ public extension BitmovinYospacePlayer {
 // MARK: - PlayerListener
 
 extension BitmovinYospacePlayer: PlayerListener {
-    public func onPlay(_ event: PlayerEvent, player: Player) {
+    public func onPlay(_ event: PlayEvent, player: Player) {
         BitLog.d("onPlayer: \(event)")
 
         for listener: PlayerListener in listeners {
@@ -916,16 +924,12 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    public func onWarning(_ event: YospaceWarningEvent, player: Player) {
-        for listener: PlayerListener in listeners {
-            listener.onEvent?(event, player: player)
-        }
+    public func onPlayerError(_ event: PlayerErrorEvent, player: Player) {
+        listeners.forEach { $0.onPlayerError?(event, player: player) }
     }
 
-    public func onError(_ event: YospaceErrorEvent, player: Player) {
-        for listener: PlayerListener in listeners {
-            listener.onEvent?(event, player: player)
-        }
+    public func onSourceError(_ event: SourceErrorEvent, player: Player) {
+        listeners.forEach { $0.onSourceError?(event, player: player) }
     }
 
     public func onReady(_ event: ReadyEvent, player: Player) {
@@ -1068,7 +1072,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    public func onEvent(_ event: PlayerEvent, player: Player) {
+    public func onEvent(_ event: Event, player: Player) {
         for listener: PlayerListener in listeners {
             listener.onEvent?(event, player: player)
         }

@@ -233,7 +233,15 @@ extension ViewController: PlayerListener {
         loadUnloadButton.setTitle("Load", for: .normal)
     }
 
-    func onError(_ event: Event, player _: Player) {
-        print("[onError] \(event.description)")
+    func onPlayerError(_ event: PlayerErrorEvent, player: Player) {
+        print("[PlayerError] \(event.message)")
+    }
+
+    func onSourceError(_ event: SourceErrorEvent, player: Player) {
+        print("[SourceError] \(event.message)")
+    }
+
+    func onEvent(_ event: Event, player: Player) {
+        print("[Event] \(event.name)")
     }
 }
