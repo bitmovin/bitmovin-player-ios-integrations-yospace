@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Fixed
-- Missing `PlayEvent`, `PlayerErrorEvent` and `PlayerSourceEvent`` from `BitmovinYospacePlayer`
+- Missing `PlayEvent`, `PlayerErrorEvent` and `PlayerSourceEvent` from `BitmovinYospacePlayer`
 - `PlayerListener.onEvent` not receiving events through `BitmovinYospacePlayer`
 
 ## 2.0.0 - 2023-07-04
