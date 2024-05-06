@@ -857,7 +857,7 @@ public extension BitmovinYospacePlayer {
 // MARK: - PlayerListener
 
 extension BitmovinYospacePlayer: PlayerListener {
-    public func onPlay(_ event: PlayerEvent, player: Player) {
+    public func onPlay(_ event: PlayEvent, player: Player) {
         BitLog.d("onPlayer: \(event)")
 
         for listener: PlayerListener in listeners {
@@ -1068,7 +1068,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         }
     }
 
-    public func onEvent(_ event: PlayerEvent, player: Player) {
+    public func onEvent(_ event: Event, player: Player) {
         for listener: PlayerListener in listeners {
             listener.onEvent?(event, player: player)
         }
