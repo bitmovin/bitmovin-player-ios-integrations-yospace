@@ -242,6 +242,6 @@ extension ViewController: PlayerListener {
     }
 
     func onEvent(_ event: Event, player: Player) {
-        print("[Event]: \(event.name)")
+        print("[Event] \(event.name)")
     }
 }
