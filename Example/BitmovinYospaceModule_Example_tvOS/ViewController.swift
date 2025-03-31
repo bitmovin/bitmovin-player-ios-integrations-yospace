@@ -26,6 +26,7 @@ class ViewController: UIViewController {
 
     lazy var player: BitmovinYospacePlayer = {
         let playerConfig = PlayerConfig()
+        playerConfig.key = "Your License Key"
         playerConfig.playbackConfig.isAutoplayEnabled = true
 
         let player = BitmovinYospacePlayer(

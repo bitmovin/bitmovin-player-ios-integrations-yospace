@@ -18,6 +18,7 @@ class ViewController: UIViewController {
 
     lazy var player: BitmovinYospacePlayer = {
         let playConfig = PlayerConfig()
+        playConfig.key = "Your License Key"
         playConfig.playbackConfig.isAutoplayEnabled = true
         playConfig.tweaksConfig.isNativeHlsParsingEnabled = true
         playConfig.tweaksConfig.isNativeHlsParsingEnabled = true
