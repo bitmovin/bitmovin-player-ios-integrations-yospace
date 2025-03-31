@@ -1,4 +1,4 @@
-import BitmovinPlayer
+import BitmovinPlayerCore
 import UIKit
 import YOAdManagement
 
@@ -43,7 +43,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var config: PlayerConfig { return player.config }
 
-    public var source: BitmovinPlayer.Source? { return player.source }
+    public var source: Source? { return player.source }
 
     public var maxTimeShift: TimeInterval { return player.maxTimeShift }
 
@@ -52,13 +52,13 @@ public class BitmovinYospacePlayer: NSObject, Player {
         set { player.timeShift = newValue }
     }
 
-    public var availableSubtitles: [BitmovinPlayer.SubtitleTrack] { return player.availableSubtitles }
+    public var availableSubtitles: [SubtitleTrack] { return player.availableSubtitles }
 
-    public var subtitle: BitmovinPlayer.SubtitleTrack { return player.subtitle }
+    public var subtitle: SubtitleTrack { return player.subtitle }
 
-    public var availableAudio: [BitmovinPlayer.AudioTrack] { return player.availableAudio }
+    public var availableAudio: [AudioTrack] { return player.availableAudio }
 
-    public var audio: BitmovinPlayer.AudioTrack? { return player.audio }
+    public var audio: AudioTrack? { return player.audio }
 
     public var isAd: Bool {
         if sessionStatus != .notInitialised {
@@ -72,9 +72,9 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var isAirPlayAvailable: Bool { return player.isAirPlayAvailable }
 
-    public var availableVideoQualities: [BitmovinPlayer.VideoQuality] { return player.availableVideoQualities }
+    public var availableVideoQualities: [VideoQuality] { return player.availableVideoQualities }
 
-    public var videoQuality: BitmovinPlayer.VideoQuality? { return player.videoQuality }
+    public var videoQuality: VideoQuality? { return player.videoQuality }
 
     public var playbackSpeed: Float {
         get { return player.playbackSpeed }
@@ -90,7 +90,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var buffer: BufferApi { return player.buffer }
 
-    public var playlist: BitmovinPlayer.PlaylistApi { return player.playlist }
+    public var playlist: PlaylistApi { return player.playlist }
 
     public var isCasting: Bool { return player.isCasting }
 
@@ -101,7 +101,20 @@ public class BitmovinYospacePlayer: NSObject, Player {
     public var isOutputObscured: Bool { return player.isOutputObscured }
 
     @available(iOS 15.0, *)
-    public var sharePlay: BitmovinPlayer.SharePlayApi { return player.sharePlay }
+    public var sharePlay: SharePlayApi { return player.sharePlay }
+
+    public var _modules: _PlayerModulesApi { player._modules }
+
+    public var events: PlayerEventsApi {
+        BitLog.w(
+            """
+            Using `Player.events` is discouraged in combination with the Yospace Integration. \
+            Events will not contain Yospace related data. Use `Player.add(listener:)` instead.
+            """
+        )
+        return player.events
+    }
+
 
     // MARK: - Bitmovin Player methods
 
@@ -109,11 +122,11 @@ public class BitmovinYospacePlayer: NSObject, Player {
         player.load(sourceConfig: sourceConfig)
     }
 
-    public func load(source: BitmovinPlayer.Source) {
+    public func load(source: Source) {
         player.load(source: source)
     }
 
-    public func load(playlistConfig: BitmovinPlayer.PlaylistConfig) {
+    public func load(playlistConfig: PlaylistConfig) {
         player.load(playlistConfig: playlistConfig)
     }
 
@@ -130,7 +143,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     }
 
     @available(*, deprecated, message: "Use SourceConfig#add(subtitleTrack:) instead.")
-    public func addSubtitle(track subtitleTrack: BitmovinPlayer.SubtitleTrack) {
+    public func addSubtitle(track subtitleTrack: SubtitleTrack) {
         player.addSubtitle(track: subtitleTrack)
     }
 

@@ -1,4 +1,4 @@
-import BitmovinPlayer
+import BitmovinPlayerCore
 import BitmovinYospaceModule
 import UIKit
 

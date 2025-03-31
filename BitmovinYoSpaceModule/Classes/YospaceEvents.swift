@@ -1,4 +1,4 @@
-import BitmovinPlayer
+import BitmovinPlayerCore
 import Foundation
 
 public class YospaceWarningEvent: NSObject, Event {
