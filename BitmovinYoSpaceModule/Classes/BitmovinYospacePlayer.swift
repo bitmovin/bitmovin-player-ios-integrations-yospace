@@ -806,16 +806,7 @@ public extension BitmovinYospacePlayer {
         let policy = yospacePlayerPolicy ?? YospacePlayerPolicy(bitmovinYospacePlayerPolicy: DefaultBitmovinYospacePlayerPolicy(self))
         stream.setPlaybackPolicyHandler(policy)
 
-        switch stream.sessionResult {
-        case .notInitialised:
-            BitLog.e("Not initialized url:\(stream.playbackUrl ?? "none") itemId:\(stream.identifier ?? "none")")
-            if let sourceConfiguration = sourceConfig, yospaceSourceConfig?.retryExcludingYospace == true {
-                BitLog.w("Attempting to playback the stream url without Yospace")
-                emitYoSpaceWarning(YospaceWarningEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: self)
-                load(sourceConfig: sourceConfiguration)
-            } else {
-                emitYoSpaceError(YospaceErrorEvent(errorCode: .notIntialised, message: "Yospace not initialized"), player: self)
-            }
+        switch stream.sessionState {
         case .noAnalytics:
             // store the session
             yospacesession = stream
