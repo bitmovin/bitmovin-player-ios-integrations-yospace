@@ -72,6 +72,15 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var isAirPlayAvailable: Bool { return player.isAirPlayAvailable }
 
+    public var allowsAirPlay: Bool {
+        get {
+            player.allowsAirPlay
+        }
+        set {
+            player.allowsAirPlay = newValue
+        }
+    }
+
     public var availableVideoQualities: [VideoQuality] { return player.availableVideoQualities }
 
     public var videoQuality: VideoQuality? { return player.videoQuality }
@@ -104,6 +113,10 @@ public class BitmovinYospacePlayer: NSObject, Player {
     public var sharePlay: SharePlayApi { return player.sharePlay }
 
     public var _modules: _PlayerModulesApi { player._modules }
+
+    public var latency: BitmovinPlayerCore.LatencyApi { player.latency }
+
+    public var thumbnails: BitmovinPlayerCore.ThumbnailsApi { player.thumbnails }
 
     public var events: PlayerEventsApi {
         BitLog.w(
@@ -1363,7 +1376,8 @@ extension YOAdvert {
             isFiller: isFiller,
             isLinear: interactiveCreative == nil,
             clickThroughUrl: URL(string: linearCreative.clickthroughUrl() ?? ""),
-            mediaFileUrl: URL(string: interactiveCreative?.source ?? "")
+            mediaFileUrl: URL(string: interactiveCreative?.source ?? ""),
+            clickThroughUrlOpened: { }
         )
     }
 }
