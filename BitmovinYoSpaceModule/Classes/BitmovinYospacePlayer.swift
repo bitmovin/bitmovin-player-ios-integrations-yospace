@@ -100,7 +100,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var isOutputObscured: Bool { return player.isOutputObscured }
 
-    @available(iOS 15.0, *)
+    @available(iOS 15, tvOS 15, *)
     public var sharePlay: SharePlayApi { return player.sharePlay }
 
     public var _modules: _PlayerModulesApi { player._modules }
