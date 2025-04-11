@@ -378,13 +378,13 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BitmovinYospaceModule_Example_tvOS/Pods-BitmovinYospaceModule_Example_tvOS-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-tvOS/BitmovinYospaceModule.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/BitmovinPlayer/BitmovinPlayer.framework/BitmovinPlayer",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/BitmovinPlayerCore/BitmovinPlayerCore.framework/BitmovinPlayerCore",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/YOAdManagement-Release/YOAdManagement.framework/YOAdManagement",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinYospaceModule.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayerCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YOAdManagement.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -401,14 +401,14 @@
 				"${PODS_ROOT}/Target Support Files/Pods-BitmovinYospaceModule_Example/Pods-BitmovinYospaceModule_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/BitmovinYospaceModule-iOS/BitmovinYospaceModule.framework",
 				"${PODS_ROOT}/TruexAdRenderer-iOS/TruexAdRenderer-iOS-v3.2.1/TruexAdRenderer.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/BitmovinPlayer/BitmovinPlayer.framework/BitmovinPlayer",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/BitmovinPlayerCore/BitmovinPlayerCore.framework/BitmovinPlayerCore",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/YOAdManagement-Release/YOAdManagement.framework/YOAdManagement",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinYospaceModule.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TruexAdRenderer.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BitmovinPlayerCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YOAdManagement.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -479,7 +479,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/BitmovinYospaceModule-tvOS\"",
-					"\"${PODS_ROOT}/BitmovinPlayer/tvOS\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BitmovinYospaceModule_Example_tvOS/Info.plist;
@@ -671,8 +670,6 @@
 					"-framework",
 					"\"AVKit\"",
 					"-framework",
-					"\"BitmovinPlayer\"",
-					"-framework",
 					"\"Foundation\"",
 					"-framework",
 					"\"UIKit\"",
@@ -713,8 +710,6 @@
 					"\"AVFoundation\"",
 					"-framework",
 					"\"AVKit\"",
-					"-framework",
-					"\"BitmovinPlayer\"",
 					"-framework",
 					"\"Foundation\"",
 					"-framework",

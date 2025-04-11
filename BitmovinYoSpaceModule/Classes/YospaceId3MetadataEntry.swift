@@ -5,7 +5,7 @@
 //  Created by aneurinc on 11/23/20.
 //
 
-import BitmovinPlayer
+import BitmovinPlayerCore
 
 public class YospaceId3MetadataEntry: NSObject, MetadataEntry {
     public var metadataType: MetadataType

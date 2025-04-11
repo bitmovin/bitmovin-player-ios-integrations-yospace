@@ -5,7 +5,7 @@
 //  Created by cdg on 2/4/21.
 //
 
-import BitmovinPlayer
+import BitmovinPlayerCore
 import Foundation
 
 enum Mode: String {

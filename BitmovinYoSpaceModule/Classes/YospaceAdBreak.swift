@@ -5,7 +5,7 @@
 //  Created by aneurinc on 2/14/20.
 //
 
-import BitmovinPlayer
+import BitmovinPlayerCore
 import Foundation
 
 public class YospaceAdBreak: NSObject, AdBreak {
