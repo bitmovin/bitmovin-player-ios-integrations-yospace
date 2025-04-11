@@ -7,7 +7,7 @@ public class YospaceWarningEvent: NSObject, Event {
     public var timestamp: TimeInterval
 
     public init(errorCode: YospaceErrorCode, message: String) {
-        name = String(format: "Yospace Warning %s", errorCode.rawValue.description)
+        name = "Yospace Warning \(errorCode.rawValue.description)"
         self.message = message
         timestamp = NSDate().timeIntervalSince1970
     }
@@ -19,7 +19,7 @@ public class YospaceErrorEvent: NSObject, Event {
     public var timestamp: TimeInterval
 
     public init(errorCode: YospaceErrorCode, message: String) {
-        name = String(format: "Yospace Error %s", errorCode.rawValue.description)
+        name = "Yospace Error \(errorCode.rawValue.description)"
         self.message = message
         timestamp = NSDate().timeIntervalSince1970
     }
