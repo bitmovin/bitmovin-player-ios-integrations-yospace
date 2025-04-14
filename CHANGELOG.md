@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Build errors, including for tvOS targets
-- 
 
 ## 2.0.1 - 2024-05-06
 
