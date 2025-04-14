@@ -53,9 +53,9 @@ source 'https://github.com/bitmovin/cocoapod-specs.git'
 And finally add the relevant pods:
 
 ```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.0.1'
-  pod 'BitmovinPlayer', tag: '3.37.0'
-  pod 'YOAdManagement-Release'
+  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.1.0'
+  pod 'BitmovinPlayerCore', '3.86.0'
+  pod 'YOAdManagement-Release', '3.8.0'
 
   use_frameworks!
 ```
@@ -64,6 +64,11 @@ Then, in your command line run
 
 ```ruby
 pod install
+```
+
+You might need to first update the Yospace SDK Artifactory repo explicitely, if the version isn't found by the above command: 
+```ruby
+pod repo-art update apple-sdk-release
 ```
 
 ## Example
