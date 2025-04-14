@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.1.0 - 2025-04-14
+
+### Changed
+- `BitmovinPlayer` dependency to `BitmovinPlayerCore`
+- `BitmovinPlayerCore` to `>= 3.86.0`
+- Yospace SDK to `>= 3.8.0`
+- Bitmovin Player license key definition in Example app from `Info.plist` to `PlayerConfig`
+- Events that the Yospace Integration doesn't modify are delegated automatically to the Bitmovin Player. This reduces the maintenance effort for Bitmovin Player updates in the integration.
+
+### Fixed
+- Build errors, including for tvOS targets
+- 
+
 ## 2.0.1 - 2024-05-06
 
 ### Fixed
