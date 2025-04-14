@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
   s.tvos.exclude_files = 'BitmovinYospaceModule/Classes/BitmovinTruexRenderer.swift'
 
   s.ios.dependency 'BitmovinPlayerCore', '~>3.86'
-  s.ios.dependency 'YOAdManagement-Release', '~>3.5.2'
+  s.ios.dependency 'YOAdManagement-Release', '~>3.8'
   s.ios.dependency 'TruexAdRenderer-iOS', '3.2.1'
   s.tvos.dependency 'BitmovinPlayerCore', '~>3.86'
-  s.tvos.dependency 'YOAdManagement-Release', '~>3.5.2'
+  s.tvos.dependency 'YOAdManagement-Release', '~>3.8'
 end

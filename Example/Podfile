@@ -9,7 +9,7 @@ plugin 'cocoapods-art', :sources => [
 def shared_pods
     pod 'BitmovinYospaceModule', :path => '../'
     pod 'BitmovinPlayerCore', '3.86.0'
-    pod 'YOAdManagement-Release'
+    pod 'YOAdManagement-Release', '3.8.0'
 end
 
 target 'BitmovinYospaceModule_Example' do
@@ -22,7 +22,7 @@ end
 target 'BitmovinYospaceModule_Example_tvOS' do
     use_frameworks!
     platform :tvos, '14.0'
-    shared_pods    
+    shared_pods
 end
 
 post_install do |installer|
