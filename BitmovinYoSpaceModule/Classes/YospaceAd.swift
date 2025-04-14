@@ -5,7 +5,7 @@
 //  Created by aneurinc on 2/14/20.
 //
 
-import BitmovinPlayer
+import BitmovinPlayerCore
 import Foundation
 import YOAdManagement
 
@@ -30,8 +30,28 @@ public class YospaceAd: NSObject, Ad {
     public var width: Int = -1
     public var height: Int = -1
     public var mediaFileUrl: URL?
+    public var clickThroughUrlOpened: (() -> Void)?
 
-    required init(identifier: String?, creativeId: String?, sequence: String?, absoluteStart: TimeInterval, relativeStart: TimeInterval, duration: TimeInterval, absoluteEnd: TimeInterval, system: String?, title: String?, advertiser: String?, hasInteractiveUnit: Bool, lineage: YOAdvertWrapper?, extensions: [YOXmlNode], isFiller: Bool, isLinear: Bool, clickThroughUrl: URL?, mediaFileUrl: URL?) {
+    required init(
+        identifier: String?,
+        creativeId: String?,
+        sequence: String?,
+        absoluteStart: TimeInterval,
+        relativeStart: TimeInterval,
+        duration: TimeInterval,
+        absoluteEnd: TimeInterval,
+        system: String?,
+        title: String?,
+        advertiser: String?,
+        hasInteractiveUnit: Bool,
+        lineage: YOAdvertWrapper?,
+        extensions: [YOXmlNode],
+        isFiller: Bool,
+        isLinear: Bool,
+        clickThroughUrl: URL?,
+        mediaFileUrl: URL?,
+        clickThroughUrlOpened: (() -> Void)?
+    ) {
         self.identifier = identifier
         self.creativeId = creativeId
         self.sequence = sequence
@@ -49,6 +69,7 @@ public class YospaceAd: NSObject, Ad {
         self.isLinear = isLinear
         self.clickThroughUrl = clickThroughUrl
         self.mediaFileUrl = mediaFileUrl
+        self.clickThroughUrlOpened = clickThroughUrlOpened
     }
 
     override public var debugDescription: String {

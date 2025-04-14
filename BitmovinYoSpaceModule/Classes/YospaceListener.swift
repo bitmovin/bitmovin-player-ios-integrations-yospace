@@ -5,7 +5,7 @@
 //  Created by Bitmovin on 11/13/18.
 //
 
-import BitmovinPlayer
+import BitmovinPlayerCore
 import Foundation
 
 public protocol YospaceListener: AnyObject {

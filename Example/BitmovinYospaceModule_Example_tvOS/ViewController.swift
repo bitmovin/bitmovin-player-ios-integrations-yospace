@@ -6,7 +6,7 @@
 //  Copyright © 2018 CocoaPods. All rights reserved.
 //
 
-import BitmovinPlayer
+import BitmovinPlayerCore
 import BitmovinYospaceModule
 import UIKit
 
@@ -26,6 +26,7 @@ class ViewController: UIViewController {
 
     lazy var player: BitmovinYospacePlayer = {
         let playerConfig = PlayerConfig()
+        playerConfig.key = "Your License Key"
         playerConfig.playbackConfig.isAutoplayEnabled = true
 
         let player = BitmovinYospacePlayer(
