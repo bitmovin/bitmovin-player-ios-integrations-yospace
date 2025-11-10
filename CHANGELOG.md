@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - **Migrated from CocoaPods to Swift Package Manager**
 - Minimum Xcode version: 14.0
-- Minimum Swift version: 5.7
+- Minimum Swift version: 5.10
 - Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospaceModule/`)
 - `YOAdManagement-Release` dependency to `3.10.0`
 - `TruexAdRenderer-iOS` dependency to `3.5.1`
