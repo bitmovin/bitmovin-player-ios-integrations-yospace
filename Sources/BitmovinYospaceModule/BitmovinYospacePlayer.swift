@@ -246,10 +246,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     var activeAd: YospaceAd?
     var liveAdPaused = false
     var player: Player
-
-    #if os(iOS)
-        private var truexRenderer: BitmovinTruexRenderer?
-    #endif
+    private var truexRenderer: BitmovinTruexRenderer?
 
     var adBreaks: [YOAdBreak] {
         get {
@@ -330,15 +327,13 @@ public class BitmovinYospacePlayer: NSObject, Player {
      - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
      */
     public func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfiguration: TruexConfiguration? = nil) {
-        #if os(iOS)
-            if let truexConfiguration = truexConfiguration {
-                self.truexConfiguration = truexConfiguration
-                truexRenderer = BitmovinTruexRenderer(configuration: truexConfiguration, eventDelegate: self)
-            } else {
-                self.truexConfiguration = nil
-                truexRenderer = nil
-            }
-        #endif
+        if let truexConfiguration = truexConfiguration {
+            self.truexConfiguration = truexConfiguration
+            truexRenderer = BitmovinTruexRenderer(configuration: truexConfiguration, eventDelegate: self)
+        } else {
+            self.truexConfiguration = nil
+            truexRenderer = nil
+        }
 
         var logMessage = "Load: "
         let url = sourceConfig.url
@@ -467,9 +462,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
         liveAdPaused = false
         sessionStatus = .notInitialised
         receivedFirstPlayhead = false
-        #if os(iOS)
-            truexRenderer?.stopRenderer()
-        #endif
+        truexRenderer?.stopRenderer()
     }
 
     func loadVOD(url: URL, yospaceProperties: YOSessionProperties) {
@@ -639,20 +632,18 @@ public extension BitmovinYospacePlayer {
         guard let yospaceAd = advert else { return [] }
         guard let bitmovinAd = activeAd else { return [] }
 
-        #if os(iOS)
-            if let renderer = truexRenderer {
-                BitLog.d("TrueX ad found: \(yospaceAd)")
+        if let renderer = truexRenderer {
+            BitLog.d("TrueX ad found: \(yospaceAd)")
 
-                // Suppress analytics in order for YoSpace TrueX tracking to work
-                BitLog.d("YoSpace analytics suppressed")
-                yospacesession?.suppressAnalytics(true)
-                BitLog.d("Pausing player")
-                pause()
+            // Suppress analytics in order for YoSpace TrueX tracking to work
+            BitLog.d("YoSpace analytics suppressed")
+            yospacesession?.suppressAnalytics(true)
+            BitLog.d("Pausing player")
+            pause()
 
-                let adBreakPosition: YospaceAdBreakPosition = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
-                renderer.renderTruexAd(advert: yospaceAd, adBreakPosition: adBreakPosition)
-            }
-        #endif
+            let adBreakPosition: YospaceAdBreakPosition = activeAdBreak?.relativeStart == 0 ? .preroll : .midroll
+            renderer.renderTruexAd(advert: yospaceAd, adBreakPosition: adBreakPosition)
+        }
 
         let staticCompanionAds = (yospaceAd.companionAds(YOResourceType.YOStaticResource) as? [YOCompanionCreative])?
             .map { (creative: YOCompanionCreative) -> CompanionAd in

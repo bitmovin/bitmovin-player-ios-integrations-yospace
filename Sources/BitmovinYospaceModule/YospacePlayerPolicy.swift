@@ -9,6 +9,10 @@ import Foundation
 import YOAdManagement
 
 public class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
+    public func setSessionMode(_ sessionMode: YOSessionMode) {
+        // TODO!
+    }
+    
     weak var playerPolicy: BitmovinYospacePlayerPolicy?
 
     public convenience init(bitmovinYospacePlayerPolicy: BitmovinYospacePlayerPolicy) {
@@ -99,4 +103,13 @@ public class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
     }
 
     public func setPlaybackMode(_: YOPlaybackMode) {}
+    
+    // Additional methods that may be required by newer versions of YOPlaybackPolicyHandling
+    public func canClickThroughOnAdBreak(_: TimeInterval, timeline _: [Any]) -> Bool {
+        return true
+    }
+    
+    public func shouldBlockPlaybackDuringAd() -> Bool {
+        return false
+    }
 }

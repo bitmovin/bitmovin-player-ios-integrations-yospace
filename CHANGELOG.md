@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Swift Package Manager support
+- TruexAdRenderer support for tvOS (previously iOS only)
+
+### Changed
+- **Migrated from CocoaPods to Swift Package Manager**
+- Minimum Xcode version: 14.0
+- Minimum Swift version: 5.7
+- Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospaceModule/`)
+- `YOAdManagement-Release` dependency to `3.10.0`
+- `TruexAdRenderer-iOS` dependency to `3.5.1`
+- `TruexAdRenderer-tvOS` dependency to `3.15.2`
+
+### Removed
+- CocoaPods support
+
 ## 2.1.0 - 2025-04-14
 
 ### Changed
