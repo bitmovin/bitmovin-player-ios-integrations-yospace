@@ -30,3 +30,6 @@ Carthage/Build
 
 # Pods
 Pods/
+
+# Swift Package Manager
+.swiftpm
