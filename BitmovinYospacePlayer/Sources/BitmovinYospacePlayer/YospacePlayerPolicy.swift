@@ -101,7 +101,6 @@ public class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
 
     public func setPlaybackMode(_: YOPlaybackMode) {}
     
-    // Additional methods that may be required by newer versions of YOPlaybackPolicyHandling
     public func canClickThroughOnAdBreak(_: TimeInterval, timeline _: [Any]) -> Bool {
         return true
     }
