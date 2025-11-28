@@ -98,16 +98,6 @@ public class YospacePlayerPolicy: NSObject, YOPlaybackPolicyHandling {
     public func shouldPreloadInteractiveUnits() -> Bool {
         return true
     }
-
-    public func setPlaybackMode(_: YOPlaybackMode) {}
-    
-    public func canClickThroughOnAdBreak(_: TimeInterval, timeline _: [Any]) -> Bool {
-        return true
-    }
-    
-    public func shouldBlockPlaybackDuringAd() -> Bool {
-        return false
-    }
     
     public func setSessionMode(_ sessionMode: YOSessionMode) {
         self.sessionMode = sessionMode
