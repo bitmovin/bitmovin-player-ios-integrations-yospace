@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Migrated from CocoaPods to Swift Package Manager**
 - Minimum Xcode version: 16.4
 - Minimum Swift version: 5.10
-- Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospaceModule/`)
+- Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospacePlayer/`)
+- `BitmovinPlayer` dependency to `3.100.0`
 - `YOAdManagement-Release` dependency to `3.10.0`
 - `TruexAdRenderer-iOS` dependency to `3.5.1`
 - `TruexAdRenderer-tvOS` dependency to `3.15.2`

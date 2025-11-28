@@ -33,3 +33,6 @@ Pods/
 
 # Swift Package Manager
 .swiftpm
+/Packages
+
+.netrc

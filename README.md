@@ -59,7 +59,7 @@ Replace `{USER_NAME}` with your Yospace username. When prompted, enter your Yosp
 1. In Xcode, select **File** → **Add Package Dependencies...**
 2. Enter the repository URL: `https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace`
 3. Select the version you want to use
-4. Add `BitmovinYospaceModule` to your target
+4. Add `BitmovinYospacePlayer` to your target
 
 #### Via Package.swift
 
@@ -78,7 +78,7 @@ targets: [
     .target(
         name: "YourTarget",
         dependencies: [
-            .product(name: "BitmovinYospaceModule", package: "bitmovin-player-ios-integrations-yospace")
+            .product(name: "BitmovinYospacePlayer", package: "bitmovin-player-ios-integrations-yospace")
         ]
     )
 ]
@@ -96,11 +96,11 @@ let yospaceConfig = YospaceConfig(debug: false, userAgent: "Custom User Agent", 
 let playerConfig = PlayerConfig()
 
 // Create a BitmovinYospacePlayer
-let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
+let bitmovinYospacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
 
 
 // Add it to your player view 
-let playerBoundary = PlayerView(player: bitmovinYoSpacePlayer.bitmovinPlayer(), frame: frame)
+let playerBoundary = PlayerView(player: bitmovinYospacePlayer.bitmovinPlayer(), frame: frame)
 playerBoundary.autoresizingMask = [.flexibleHeight, .flexibleWidth]
 playerBoundary.frame = playerView.bounds
 playerView.addSubview(playerBoundary)
@@ -113,7 +113,7 @@ let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
 let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
 // Load your sourceConfig and yospaceSourceConfig
-bitmovinYoSpacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
+bitmovinYospacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
 
 ### Player Listener
