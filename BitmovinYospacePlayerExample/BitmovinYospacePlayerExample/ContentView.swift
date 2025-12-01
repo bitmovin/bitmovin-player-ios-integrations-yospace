@@ -59,33 +59,6 @@ struct ContentView: View {
         playerListener = PlayerEventListener()
         player.add(listener: playerListener)
     }
-   
-    private func prepareDRM(config: FairplayConfig) {
-        config.prepareCertificate = { (data: Data) -> Data in
-            guard let certString = String(data: data, encoding: .utf8),
-                  let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: ""))
-            else {
-                return data
-            }
-            return certResult
-        }
-        config.prepareContentId = { (contentId: String) -> String in
-            let prepared = contentId.replacingOccurrences(of: "skd://", with: "")
-            let components: [String] = prepared.components(separatedBy: "/")
-            return components[2]
-        }
-        config.prepareMessage = { (spcData: Data, _: String) -> Data in
-            spcData
-        }
-        config.prepareLicense = { (ckcData: Data) -> Data in
-            guard let ckcString = String(data: ckcData, encoding: .utf8),
-                  let ckcResult = Data(base64Encoded: ckcString.replacingOccurrences(of: "\"", with: ""))
-            else {
-                return ckcData
-            }
-            return ckcResult
-        }
-    }
     
     private func loadStream(stream: Stream) {
         guard let streamUrl = URL(string: stream.contentUrl) else { return }
@@ -137,6 +110,33 @@ struct ContentView: View {
                 }
             }
         }
+    }
+}
+
+func prepareDRM(config: FairplayConfig) {
+    config.prepareCertificate = { (data: Data) -> Data in
+        guard let certString = String(data: data, encoding: .utf8),
+              let certResult = Data(base64Encoded: certString.replacingOccurrences(of: "\"", with: ""))
+        else {
+            return data
+        }
+        return certResult
+    }
+    config.prepareContentId = { (contentId: String) -> String in
+        let prepared = contentId.replacingOccurrences(of: "skd://", with: "")
+        let components: [String] = prepared.components(separatedBy: "/")
+        return components[2]
+    }
+    config.prepareMessage = { (spcData: Data, _: String) -> Data in
+        spcData
+    }
+    config.prepareLicense = { (ckcData: Data) -> Data in
+        guard let ckcString = String(data: ckcData, encoding: .utf8),
+              let ckcResult = Data(base64Encoded: ckcString.replacingOccurrences(of: "\"", with: ""))
+        else {
+            return ckcData
+        }
+        return ckcResult
     }
 }
 
