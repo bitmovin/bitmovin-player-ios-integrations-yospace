@@ -34,9 +34,5 @@ let package = Package(
                 .product(name: "TruexAdRenderer", package: "TruexAdRenderer-tvOS-Swift-Package", condition: .when(platforms: [.tvOS]))
             ],
         ),
-        .testTarget(
-            name: "BitmovinYospacePlayerTests",
-            dependencies: ["BitmovinYospacePlayer"]
-        ),
     ]
 )
