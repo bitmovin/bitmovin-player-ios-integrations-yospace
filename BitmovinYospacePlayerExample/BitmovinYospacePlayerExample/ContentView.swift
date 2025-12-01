@@ -67,23 +67,23 @@ struct ContentView: View {
                     Text(streams[index].title)
                 }
             }
-            .onChange(of: selectedStreamIndex) { streamIndex in
-                print("Stream selection changed to \(streams[streamIndex].title)")
-                loadStream(stream: streams[selectedStreamIndex])
-            }
+            
+
+            VideoPlayerView(
+                player: player,
+                playerViewConfig: playerViewConfig
+            )
+            .background(Color.black)
+            .cornerRadius(20)
+            .padding()
+
         }
-        ZStack {
-            Color.black
-            VStack {
-                VideoPlayerView(
-                    player: player,
-                    playerViewConfig: playerViewConfig
-                )
-                .padding()
-                .onAppear() {
-                    loadStream(stream: streams[selectedStreamIndex])
-                }
-            }
+        .onAppear {
+            loadStream(stream: streams[selectedStreamIndex])
+        }
+        .onChange(of: selectedStreamIndex) { streamIndex in
+            print("Stream selection changed to \(streams[streamIndex].title)")
+            loadStream(stream: streams[selectedStreamIndex])
         }
     }
     
