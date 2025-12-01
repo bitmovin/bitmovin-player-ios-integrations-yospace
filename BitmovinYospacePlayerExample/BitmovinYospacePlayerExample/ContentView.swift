@@ -59,31 +59,6 @@ struct ContentView: View {
         playerListener = PlayerEventListener()
         player.add(listener: playerListener)
     }
-    
-    private func loadStream(stream: Stream) {
-        guard let streamUrl = URL(string: stream.contentUrl) else { return }
-        print("Loading \(streamUrl)")
-
-        let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
-
-        if let fairplayLicense = stream.fairplayLicenseUrl, let fairplayCert = stream.fairplayCertUrl {
-            let drmConfig = FairplayConfig(license: URL(string: fairplayLicense), certificateURL: URL(string: fairplayCert)!)
-
-            if let drmHeader = stream.drmHeader {
-                print("Setting DRM header")
-                drmConfig.licenseRequestHeaders = ["x-isp-token": drmHeader]
-            }
-            prepareDRM(config: drmConfig)
-            // This needs to be commented out when running simulation
-            // As simulator does not support fairplay
-            sourceConfig.drmConfig = drmConfig
-        }
-        
-        player.load(
-            sourceConfig: sourceConfig,
-            yospaceSourceConfig: stream.yospaceSourceConfig
-        )
-    }
 
     var body: some View {
         VStack {
@@ -110,6 +85,31 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    private func loadStream(stream: Stream) {
+        guard let streamUrl = URL(string: stream.contentUrl) else { return }
+        print("Loading \(streamUrl)")
+
+        let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
+
+        if let fairplayLicense = stream.fairplayLicenseUrl, let fairplayCert = stream.fairplayCertUrl {
+            let drmConfig = FairplayConfig(license: URL(string: fairplayLicense), certificateURL: URL(string: fairplayCert)!)
+
+            if let drmHeader = stream.drmHeader {
+                print("Setting DRM header")
+                drmConfig.licenseRequestHeaders = ["x-isp-token": drmHeader]
+            }
+            prepareDRM(config: drmConfig)
+            // This needs to be commented out when running simulation
+            // As simulator does not support fairplay
+            sourceConfig.drmConfig = drmConfig
+        }
+        
+        player.load(
+            sourceConfig: sourceConfig,
+            yospaceSourceConfig: stream.yospaceSourceConfig
+        )
     }
 }
 
