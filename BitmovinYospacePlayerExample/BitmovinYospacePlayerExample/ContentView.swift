@@ -6,22 +6,13 @@ import SwiftUI
 // https://bitmovin.com/dashboard/player/licenses
 private let playerLicenseKey = "<PLAYER_LICENSE_KEY>"
 
-private struct Stream: Hashable {
+private struct Stream {
     var title: String
     var contentUrl: String
     var fairplayLicenseUrl: String?
     var fairplayCertUrl: String?
     var drmHeader: String?
     var yospaceSourceConfig: YospaceSourceConfig?
-    
-    static func == (lhs: Stream, rhs: Stream) -> Bool {
-        lhs.title == rhs.title && lhs.contentUrl == rhs.contentUrl
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(title)
-        hasher.combine(contentUrl)
-    }
 }
 
 struct ContentView: View {
