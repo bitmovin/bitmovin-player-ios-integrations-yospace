@@ -67,8 +67,6 @@ struct ContentView: View {
                     Text(streams[index].title)
                 }
             }
-            
-
             VideoPlayerView(
                 player: player,
                 playerViewConfig: playerViewConfig
@@ -76,7 +74,6 @@ struct ContentView: View {
             .background(Color.black)
             .cornerRadius(20)
             .padding()
-
         }
         .onAppear {
             loadStream(stream: streams[selectedStreamIndex])
