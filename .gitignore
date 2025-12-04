@@ -3,6 +3,7 @@
 
 # Xcode
 build/
+.build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -29,3 +30,9 @@ Carthage/Build
 
 # Pods
 Pods/
+
+# Swift Package Manager
+.swiftpm
+/Packages
+
+.netrc

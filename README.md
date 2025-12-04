@@ -30,45 +30,58 @@ Thank you for your contributions!
 
 ## Installation
 
-BitmovinYospacePlayer is available through [CocoaPods](http://cocoapods.org).
-To install the Yospace SDK please follow https://developer.yospace.com/sdk-documentation/apple/userguide/latest/en/prerequisites.html but the relevant steps are also outlined here. You will need to install the `cocoapods-art` plugin first:
+BitmovinYospaceModule is available through Swift Package Manager.
+
+To install the Yospace SDK please follow https://developer.yospace.com/sdk-documentation/apple/api/yosdk/latest/v3/index.html, but the relevant steps are also outlined here:
+
+### Prerequisites
+
+Before adding the package, you must configure the Yospace Ad Management SDK registry:
+
+#### 1. Configure Yospace Artifactory Registry
 
 ```bash
-gem install cocoapods-art
+swift package-registry set --global --scope "yospace" "https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm"
 ```
 
-Then add the Yospace private repository:
+#### 2. Authenticate with Yospace Artifactory
+
 ```bash
-pod repo-art add apple-sdk-release https://yospacerepo.jfrog.io/artifactory/api/pods/apple-sdk-release
+swift package-registry login "https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm" --username {USER_NAME}
 ```
 
-Please make sure you have a `.netrc` file in your home directory containing your Yospace credentials!
+Replace `{USER_NAME}` with your Yospace username. When prompted, enter your Yospace Artifactory API key. Your credentials will be stored in the macOS keychain.
 
-In your `Podfile`, add the `BitmovinPlayer` repository as source:
+### Adding the Package
 
-```ruby
-source 'https://github.com/bitmovin/cocoapod-specs.git'
+#### Via Xcode
+
+1. In Xcode, select **File** → **Add Package Dependencies...**
+2. Enter the repository URL: `https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace`
+3. Select the version you want to use
+4. Add `BitmovinYospacePlayer` to your target
+
+#### Via Package.swift
+
+Add the package to your `Package.swift` dependencies:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace.git", from: "3.0.0")
+]
 ```
 
-And finally add the relevant pods:
+Then add it to your target:
 
-```ruby
-  pod 'BitmovinYospaceModule', git: 'https://github.com/bitmovin/bitmovin-player-ios-integrations-yospace', tag:'2.1.0'
-  pod 'BitmovinPlayerCore', '3.86.0'
-  pod 'YOAdManagement-Release', '3.8.0'
-
-  use_frameworks!
-```
-
-Then, in your command line run
-
-```ruby
-pod install
-```
-
-You might need to first update the Yospace SDK Artifactory repo explicitely, if the version isn't found by the above command: 
-```ruby
-pod repo-art update apple-sdk-release
+```swift
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: [
+            .product(name: "BitmovinYospacePlayer", package: "bitmovin-player-ios-integrations-yospace")
+        ]
+    )
+]
 ```
 
 ## Example
@@ -83,11 +96,11 @@ let yospaceConfig = YospaceConfig(debug: false, userAgent: "Custom User Agent", 
 let playerConfig = PlayerConfig()
 
 // Create a BitmovinYospacePlayer
-let bitmovinYoSpacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
+let bitmovinYospacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
 
 
 // Add it to your player view 
-let playerBoundary = PlayerView(player: bitmovinYoSpacePlayer.bitmovinPlayer(), frame: frame)
+let playerBoundary = PlayerView(player: bitmovinYospacePlayer.bitmovinPlayer(), frame: frame)
 playerBoundary.autoresizingMask = [.flexibleHeight, .flexibleWidth]
 playerBoundary.frame = playerView.bounds
 playerView.addSubview(playerBoundary)
@@ -100,7 +113,7 @@ let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
 let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
 
 // Load your sourceConfig and yospaceSourceConfig
-bitmovinYoSpacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
+bitmovinYospacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
 
 ### Player Listener
