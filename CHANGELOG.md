@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - **Migrated from CocoaPods to Swift Package Manager**
 - **Changed library name from `BitmovinYospaceModule` to `BitmovinYospacePlayer`**
+  This requires changing the import:
+  ```swift
+  // Before
+  import BitmovinYospaceModule
+  // Now
+  import BitmovinYospacePlayer
+  ```
 - Minimum Xcode version: 16.4
 - Minimum Swift version: 5.10
 - Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospacePlayer/`)
