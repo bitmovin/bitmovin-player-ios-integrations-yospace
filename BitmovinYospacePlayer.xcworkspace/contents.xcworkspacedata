@@ -2,24 +2,15 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:BitmovinYospacePlayer">
+      location = "group:">
    </FileRef>
    <FileRef
       location = "group:BitmovinYospacePlayerExample/BitmovinYospacePlayerExample.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:CHANGELOG.md">
-   </FileRef>
-   <FileRef
-      location = "group:CODE_OF_CONDUCT.md">
-   </FileRef>
-   <FileRef
-      location = "group:CONTRIBUTING.md">
-   </FileRef>
-   <FileRef
-      location = "group:LICENSE">
-   </FileRef>
-   <FileRef
       location = "group:README.md">
+   </FileRef>
+   <FileRef
+      location = "group:CHANGELOG.md">
    </FileRef>
 </Workspace>

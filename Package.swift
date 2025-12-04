@@ -33,6 +33,7 @@ let package = Package(
                 .product(name: "TruexAdRenderer-iOS", package: "TruexAdRenderer-iOS-Swift-Package", condition: .when(platforms: [.iOS])),
                 .product(name: "TruexAdRenderer", package: "TruexAdRenderer-tvOS-Swift-Package", condition: .when(platforms: [.tvOS]))
             ],
+            path: "BitmovinYospacePlayer"
         ),
     ]
 )
