@@ -1,4 +1,5 @@
 import BitmovinPlayerCore
 import Foundation
 
-public protocol BitmovinYospaceEvent: Event { }
+@objc
+public protocol BitmovinYospaceEvent: NSObjectProtocol, Event {}

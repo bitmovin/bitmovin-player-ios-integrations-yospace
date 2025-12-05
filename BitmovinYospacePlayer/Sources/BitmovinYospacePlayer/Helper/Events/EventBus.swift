@@ -39,6 +39,8 @@ class EventBus {
             return SourceEvent.self
         case is PlayerViewEvent:
             return PlayerViewEvent.self
+        case is BitmovinYospaceEvent:
+            return BitmovinYospaceEvent.self
         default:
             return nil
         }
