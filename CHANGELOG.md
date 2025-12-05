@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Swift Package Manager support
 - TruexAdRenderer support for tvOS (previously iOS only)
+- Support for using the Combine/Publisher based event listener approach
+  - `Player.events` will now properly include all Ad events
+- `Player.yospaceEvents` to listen to events from the Yospace integration (See `YospaceListener` for available events)
+- `BitmovinYospaceEvent` as parent type for all events from the Yospace integration
 
 ### Changed
 - **Migrated from CocoaPods to Swift Package Manager**
@@ -22,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   // Now
   import BitmovinYospacePlayer
   ```
+- `YospaceListener.onTrueXAdFree` now gets a `TrueXAdFreeEvent` instance when called
 - Minimum Xcode version: 16.4
 - Minimum Swift version: 5.10
 - Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospacePlayer/`)
