@@ -18,7 +18,6 @@ private struct Stream {
 struct ContentView: View {
     private let player: BitmovinYospacePlayer
     private let playerViewConfig: PlayerViewConfig
-    private let playerListener: PlayerEventListener
     private var streams = [
         Stream(
             title: "Yospace Sample w/ pre-roll",
@@ -54,10 +53,6 @@ struct ContentView: View {
 
         // Create player view configuration
         playerViewConfig = PlayerViewConfig()
-        
-        // Create and add listener
-        playerListener = PlayerEventListener()
-        player.add(listener: playerListener)
     }
 
     var body: some View {
@@ -81,6 +76,12 @@ struct ContentView: View {
         .onChange(of: selectedStreamIndex) { streamIndex in
             print("Stream selection changed to \(streams[streamIndex].title)")
             loadStream(stream: streams[selectedStreamIndex])
+        }
+        .onReceive(player.events.on(PlayerEvent.self)) { (event: PlayerEvent) in
+            dump(event, name: "[Player Event]", maxDepth: 2)
+        }
+        .onReceive(player.yospaceEvents.on(BitmovinYospaceEvent.self)) { (event: BitmovinYospaceEvent) in
+            dump(event, name: "[Yospace Event]", maxDepth: 2)
         }
     }
     
@@ -134,29 +135,6 @@ func prepareDRM(config: FairplayConfig) {
             return ckcData
         }
         return ckcResult
-    }
-}
-
-// Define the listener class
-class PlayerEventListener: NSObject, PlayerListener {
-    func onAdBreakStarted(_ event: AdBreakStartedEvent, player: any Player) {
-        dump(event, name: "[Player Event]", maxDepth: 2)
-    }
-    
-    func onAdBreakFinished(_ event: AdBreakFinishedEvent, player: any Player) {
-        dump(event, name: "[Player Event]", maxDepth: 2)
-    }
-    
-    func onAdStarted(_ event: AdStartedEvent, player: any Player) {
-        dump(event, name: "[Player Event]", maxDepth: 2)
-    }
-    
-    func onAdFinished(_ event: AdFinishedEvent, player: any Player) {
-        dump(event, name: "[Player Event]", maxDepth: 2)
-    }
-    
-    func onAdError(_ event: AdErrorEvent, player: any Player) {
-        dump(event, name: "[Player Event]", maxDepth: 2)
     }
 }
 
