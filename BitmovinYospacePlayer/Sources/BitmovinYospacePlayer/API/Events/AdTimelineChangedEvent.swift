@@ -1,6 +1,6 @@
 import Foundation
 
-public class AdTimelineChangedEvent {
+public class AdTimelineChangedEvent: NSObject, BitmovinYospaceEvent {
     public let name: String
     public let timestamp: Double
     public let timeline: AdTimeline
