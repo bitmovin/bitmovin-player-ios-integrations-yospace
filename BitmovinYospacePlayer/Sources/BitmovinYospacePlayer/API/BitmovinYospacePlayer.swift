@@ -1,4 +1,5 @@
 import BitmovinPlayerCore
+import Combine
 import UIKit
 import YOAdManagement
 
@@ -131,15 +132,13 @@ public class BitmovinYospacePlayer: NSObject, Player {
     public var thumbnails: BitmovinPlayerCore.ThumbnailsApi { player.thumbnails }
 
     public var events: PlayerEventsApi {
-        BitLog.w(
-            """
-            Using `Player.events` is discouraged in combination with the Yospace Integration. \
-            Events will not contain Yospace related data. Use `Player.add(listener:)` instead.
-            """
-        )
-        return player.events
+        bitmovinEventsApiProxy
     }
 
+    /// Namespace to subscribe to ``BitmovinYospaceEvent`` using Combine publishers.
+    public var yospaceEvents: YospaceEventsApi {
+        yospaceEventsApi
+    }
 
     // MARK: - Bitmovin Player methods
 
@@ -263,6 +262,9 @@ public class BitmovinYospacePlayer: NSObject, Player {
     var liveAdPaused = false
     var player: Player
     private var truexRenderer: BitmovinTruexRenderer?
+    private let eventBus: EventBus
+    private let bitmovinEventsApiProxy: BitmovinEventsApiProxy
+    private let yospaceEventsApi: DefaultYospaceEventsApi
 
     var adBreaks: [YOAdBreak] {
         get {
@@ -304,6 +306,11 @@ public class BitmovinYospacePlayer: NSObject, Player {
      */
     public init(playerConfig: PlayerConfig, yospaceConfig: YospaceConfig? = nil, integrationConfig: IntegrationConfig? = nil) {
         player = PlayerFactory.create(playerConfig: playerConfig)
+        let eventBuss = EventBus()
+        self.eventBus = eventBuss
+        yospaceEventsApi = DefaultYospaceEventsApi(eventBuss: eventBuss)
+        bitmovinEventsApiProxy = BitmovinEventsApiProxy(eventBuss: eventBuss)
+
         super.init()
         player.add(listener: self as PlayerListener)
 
@@ -575,7 +582,7 @@ extension BitmovinYospacePlayer: TruexAdRendererEventDelegate {
     public func sessionAdFree() {
         BitLog.d("Session ad free")
         for listener in yospaceListeners {
-            listener.onTrueXAdFree()
+            listener.onTrueXAdFree(event: TrueXAdFreeEvent())
         }
     }
 }
@@ -693,6 +700,7 @@ public extension BitmovinYospacePlayer {
         )
 
         BitLog.d("Emitting AdStartedEvent")
+        eventBus.emit(event: adStartedEvent)
         for listener: PlayerListener in listeners {
             listener.onAdStarted?(adStartedEvent, player: self)
         }
@@ -708,8 +716,10 @@ public extension BitmovinYospacePlayer {
                 let ad = createActiveAd(advert: YOAd)
 
                 BitLog.d("Emitting AdFinishedEvent")
+                let adFinishedEvent = AdFinishedEvent(ad: ad)
+                eventBus.emit(event: adFinishedEvent)
                 for listener: PlayerListener in listeners {
-                    listener.onAdFinished?(AdFinishedEvent(ad: ad), player: self)
+                    listener.onAdFinished?(adFinishedEvent, player: self)
                 }
             }
         }
@@ -725,8 +735,10 @@ public extension BitmovinYospacePlayer {
                 let adBreak = createActiveAdBreak(adBreak: YOAdBreak)
 
                 BitLog.d("Emitting AdBreakFinishedEvent")
+                let adBreakFinishedEvent = AdBreakFinishedEvent(adBreak: adBreak)
+                eventBus.emit(event: adBreakFinishedEvent)
                 for listener: PlayerListener in listeners {
-                    listener.onAdBreakFinished?(AdBreakFinishedEvent(adBreak: adBreak), player: self)
+                    listener.onAdBreakFinished?(adBreakFinishedEvent, player: self)
                 }
             }
         }
@@ -801,16 +813,19 @@ public extension BitmovinYospacePlayer {
 
         BitLog.d("Emitting AdBreakStartedEvent: position=\(adBreak.position)")
         let adBreakStartEvent = AdBreakStartedEvent(adBreak: activeAdBreak!)
+        eventBus.emit(event: adBreakStartEvent)
         for listener: PlayerListener in listeners {
             listener.onAdBreakStarted?(adBreakStartEvent, player: self)
         }
     }
 
     private func emitYoSpaceError(_ event: YospaceErrorEvent, player: Player) {
+        eventBus.emit(event: event)
         listeners.forEach { $0.onEvent?(event, player: player) }
     }
 
     private func emitYoSpaceWarning(_ event: YospaceWarningEvent, player: Player) {
+        eventBus.emit(event: event)
         listeners.forEach { $0.onEvent?(event, player: player) }
     }
 }
@@ -1051,11 +1066,13 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onEvent(_ event: Event, player: Player) {
         let selector = buildSelector(for: event, sender: player)
 
-        listeners.forEach { listener in
-            guard !responds(to: selector) else {
-                return
-            }
+        // Filter out events which are preprocessed in this component
+        guard !responds(to: selector) else {
+            return
+        }
 
+        eventBus.emit(event: event)
+        listeners.forEach { listener in
             if listener.responds(to: selector) {
                 listener.perform(selector, with: event, with: player)
             }
@@ -1066,6 +1083,8 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     private func emitPreprocessedEvent(event: Event, player: Player) {
         let selector = buildSelector(for: event, sender: player)
+
+        eventBus.emit(event: event)
         listeners.forEach { listener in
             if listener.responds(to: selector) {
                 listener.perform(selector, with: event, with: player)
