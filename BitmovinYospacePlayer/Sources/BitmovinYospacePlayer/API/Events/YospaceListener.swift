@@ -10,5 +10,5 @@ import Foundation
 
 public protocol YospaceListener: AnyObject {
     func onTimelineChanged(event: AdTimelineChangedEvent)
-    func onTrueXAdFree()
+    func onTrueXAdFree(event: TrueXAdFreeEvent) // TODO: API breaking
 }
