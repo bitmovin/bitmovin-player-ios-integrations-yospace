@@ -1,5 +1,5 @@
 {
-  "originHash" : "08fd2cd7b97f3cde36ccb4fe24452adae855c7531d11a5afe2dea413f78fa5e5",
+  "originHash" : "1f5f0afecf02e7528c2725cd102465ff2057826065bfb7736b541aee7f31496f",
   "pins" : [
     {
       "identity" : "bitmovin-analytics-collector-ios",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/bitmovin/player-ios.git",
       "state" : {
-        "revision" : "8932ee137682ba875f90b457d6cd5e701a24e6ea",
-        "version" : "3.103.0-a.3"
+        "revision" : "036a3e2f50ce5fd0bb4a61d1c58050b328cc77fb",
+        "version" : "3.103.0"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/bitmovin/player-ios-core.git",
       "state" : {
-        "revision" : "bd0ed12450aa03124f9575e8b42fcb3e37993f07",
-        "version" : "3.103.0-a.3"
+        "revision" : "bcc99bfd1b94c23c155a1d6b0cf6e28fd916e927",
+        "version" : "3.103.0"
       }
     },
     {
