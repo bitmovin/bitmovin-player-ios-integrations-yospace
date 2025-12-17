@@ -4,8 +4,8 @@ import Foundation
 internal class DefaultYospaceEventsApi: YospaceEventsApi {
     let eventBus: EventBus
 
-    init(eventBuss: EventBus) {
-        self.eventBus = eventBuss
+    init(eventBus: EventBus) {
+        self.eventBus = eventBus
     }
 
     func on<T: BitmovinYospaceEvent>(_ eventType: T.Type) -> AnyPublisher<T, Never> {

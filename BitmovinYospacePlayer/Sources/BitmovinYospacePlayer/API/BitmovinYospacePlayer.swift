@@ -306,10 +306,10 @@ public class BitmovinYospacePlayer: NSObject, Player {
      */
     public init(playerConfig: PlayerConfig, yospaceConfig: YospaceConfig? = nil, integrationConfig: IntegrationConfig? = nil) {
         player = PlayerFactory.create(playerConfig: playerConfig)
-        let eventBuss = EventBus()
-        self.eventBus = eventBuss
-        yospaceEventsApi = DefaultYospaceEventsApi(eventBuss: eventBuss)
-        bitmovinEventsApiProxy = BitmovinEventsApiProxy(eventBuss: eventBuss)
+        let eventBus = EventBus()
+        self.eventBus = eventBus
+        yospaceEventsApi = DefaultYospaceEventsApi(eventBus: eventBus)
+        bitmovinEventsApiProxy = BitmovinEventsApiProxy(eventBus: eventBus)
 
         super.init()
         player.add(listener: self as PlayerListener)

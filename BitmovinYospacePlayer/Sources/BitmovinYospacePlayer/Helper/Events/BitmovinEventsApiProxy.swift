@@ -5,8 +5,8 @@ import Foundation
 class BitmovinEventsApiProxy: PlayerEventsApi {
     let eventBus: EventBus
 
-    init(eventBuss: EventBus) {
-        self.eventBus = eventBuss
+    init(eventBus: EventBus) {
+        self.eventBus = eventBus
     }
 
     override func on<T: PlayerEvent>(_ eventType: T.Type) -> AnyPublisher<T, Never> {
