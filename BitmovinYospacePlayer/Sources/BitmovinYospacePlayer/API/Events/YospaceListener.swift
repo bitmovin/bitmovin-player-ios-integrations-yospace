@@ -8,7 +8,10 @@
 import BitmovinPlayerCore
 import Foundation
 
-public protocol YospaceListener: AnyObject {
-    func onTimelineChanged(event: AdTimelineChangedEvent)
-    func onTrueXAdFree(event: TrueXAdFreeEvent)
+@objc
+public protocol YospaceListener: AnyObject, NSObjectProtocol {
+    @objc optional
+    func onAdTimelineChanged(event: AdTimelineChangedEvent, yospacePlayer: BitmovinYospacePlayer)
+    @objc optional
+    func onTrueXAdFree(event: TrueXAdFreeEvent, yospacePlayer: BitmovinYospacePlayer)
 }
