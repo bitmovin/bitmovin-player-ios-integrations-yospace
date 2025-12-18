@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   import BitmovinYospacePlayer
   ```
 - `YospaceListener.onTrueXAdFree` now gets a `TrueXAdFreeEvent` instance when called
+- Improved `YospaceListener` API
+  - Event callbacks are now optional allowing only implementing what's needed
+  - The sending `BitmovinYospacePlayer` instance is passed to each event callback
+- `YospaceListener.onTimelineChanged` got renamed to `YospaceListener.onAdTimelineChanged` to be consistent with the event name
 - Minimum Xcode version: 16.4
 - Minimum Swift version: 5.10
 - Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospacePlayer/`)
