@@ -1132,6 +1132,7 @@ extension YOAdvert {
             isLinear: interactiveCreative == nil,
             clickThroughUrl: URL(string: linearCreative.clickthroughUrl() ?? ""),
             mediaFileUrl: URL(string: interactiveCreative?.source ?? ""),
+            skippableAfter: skipOffset,
             clickThroughUrlOpened: { }
         )
     }
