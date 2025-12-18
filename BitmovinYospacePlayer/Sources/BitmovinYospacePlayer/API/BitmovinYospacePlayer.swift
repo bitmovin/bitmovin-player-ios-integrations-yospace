@@ -27,7 +27,13 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var isLive: Bool { return player.isLive }
 
-    public var duration: TimeInterval { player.duration - adBreaks.reduce(0) { $0 + $1.duration } }
+    public var duration: TimeInterval {
+        guard isAd, let activeAd else {
+            return player.duration - adBreaks.reduce(0) { $0 + $1.duration }
+        }
+
+        return activeAd.duration
+    }
 
     public var currentTime: TimeInterval {
         if isAd {
