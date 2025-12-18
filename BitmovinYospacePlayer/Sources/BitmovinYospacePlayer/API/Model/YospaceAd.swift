@@ -91,6 +91,13 @@ public class YospaceAd: NSObject, LinearAd {
 
     // swiftlint:disable:next identifier_name
     public func _toJsonData() -> [AnyHashable: Any] {
-        return [:]
+        var uiConfigJsonData = [AnyHashable: Any]()
+        uiConfigJsonData["requestsUi"] = true
+
+        var jsonData = [AnyHashable: Any]()
+        jsonData["uiConfig"] = uiConfigJsonData
+        jsonData["isLinear"] = isLinear
+//        jsonData["skippableAfter"] = skippableAfter
+        return jsonData
     }
 }
