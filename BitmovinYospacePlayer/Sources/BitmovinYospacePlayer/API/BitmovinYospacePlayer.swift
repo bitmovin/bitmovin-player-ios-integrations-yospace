@@ -714,33 +714,26 @@ public extension BitmovinYospacePlayer {
     @objc func advertDidEnd(notification: NSNotification) {
         BitLog.d("YoSpace advertDidEnd")
 
-        if let dict = notification.userInfo as NSDictionary? {
-            if let YOAd = dict[YOAdvertKey] as? YOAdvert {
-                let ad = createActiveAd(advert: YOAd)
+        guard let activeAd else { return }
 
-                BitLog.d("Emitting AdFinishedEvent")
-                let adFinishedEvent = AdFinishedEvent(ad: ad)
-                eventBus.emit(event: adFinishedEvent)
-            }
-        }
+        BitLog.d("Emitting AdFinishedEvent")
+        let adFinishedEvent = AdFinishedEvent(ad: activeAd)
+        eventBus.emit(event: adFinishedEvent)
 
-        activeAd = nil
+        self.activeAd = nil
     }
 
     @objc func advertBreakDidEnd(notification: NSNotification) {
         BitLog.d("YoSpace advertBreakDidEnd")
 
-        if let dict = notification.userInfo as NSDictionary? {
-            if let YOAdBreak = dict[YOAdBreakKey] as? YOAdBreak, !isLive {
-                let adBreak = createActiveAdBreak(adBreak: YOAdBreak)
 
-                BitLog.d("Emitting AdBreakFinishedEvent")
-                let adBreakFinishedEvent = AdBreakFinishedEvent(adBreak: adBreak)
-                eventBus.emit(event: adBreakFinishedEvent)
-            }
-        }
+        guard let activeAdBreak else { return }
 
-        activeAdBreak = nil
+        BitLog.d("Emitting AdBreakFinishedEvent")
+        let adBreakFinishedEvent = AdBreakFinishedEvent(adBreak: activeAdBreak)
+        eventBus.emit(event: adBreakFinishedEvent)
+
+        self.activeAdBreak = nil
     }
 
     @objc func trackingEventDidOccur(notification: NSNotification) {
