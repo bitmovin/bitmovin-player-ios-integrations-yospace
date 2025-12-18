@@ -9,13 +9,13 @@ import BitmovinPlayerCore
 import Foundation
 import YOAdManagement
 
-public class YospaceAd: NSObject, Ad {
+public class YospaceAd: NSObject, LinearAd {
     public var identifier: String?
     public let creativeId: String?
     public let sequence: String?
     public let absoluteStart: TimeInterval
     public let relativeStart: TimeInterval
-    public let duration: TimeInterval
+    public var duration: TimeInterval
     public let absoluteEnd: TimeInterval
     public let system: String?
     public let title: String?
@@ -30,6 +30,8 @@ public class YospaceAd: NSObject, Ad {
     public var width: Int = -1
     public var height: Int = -1
     public var mediaFileUrl: URL?
+    public var skippableAfter: TimeInterval
+    public var uiConfig: BitmovinPlayerCore.LinearAdUiConfig?
     public var clickThroughUrlOpened: (() -> Void)?
 
     required init(
@@ -50,6 +52,7 @@ public class YospaceAd: NSObject, Ad {
         isLinear: Bool,
         clickThroughUrl: URL?,
         mediaFileUrl: URL?,
+        skippableAfter: TimeInterval,
         clickThroughUrlOpened: (() -> Void)?
     ) {
         self.identifier = identifier
@@ -69,6 +72,7 @@ public class YospaceAd: NSObject, Ad {
         self.isLinear = isLinear
         self.clickThroughUrl = clickThroughUrl
         self.mediaFileUrl = mediaFileUrl
+        self.skippableAfter = skippableAfter
         self.clickThroughUrlOpened = clickThroughUrlOpened
     }
 
