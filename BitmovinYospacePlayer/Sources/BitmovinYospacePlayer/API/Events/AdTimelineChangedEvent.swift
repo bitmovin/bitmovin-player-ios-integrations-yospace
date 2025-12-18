@@ -1,13 +1,11 @@
 import Foundation
 
 public class AdTimelineChangedEvent: NSObject, BitmovinYospaceEvent {
-    public let name: String
-    public let timestamp: Double
+    public let name: String = "onAdTimelineChanged"
+    public let timestamp: Double = Date().timeIntervalSince1970
     public let timeline: AdTimeline
 
-    public init(name: String, timestamp: Double, timeline: AdTimeline) {
-        self.name = name
+    public init(timeline: AdTimeline) {
         self.timeline = timeline
-        self.timestamp = timestamp
     }
 }
