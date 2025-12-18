@@ -12,4 +12,8 @@ class BitmovinEventsApiProxy: PlayerEventsApi {
     override func on<T: PlayerEvent>(_ eventType: T.Type) -> AnyPublisher<T, Never> {
         eventBus.subscribe(eventType: eventType)
     }
+
+    override func on<T: SourceEvent>(_ eventType: T.Type) -> AnyPublisher<T, Never> {
+        eventBus.subscribe(eventType: eventType)
+    }
 }
