@@ -15,6 +15,7 @@ public class DateRangeEmitter: NSObject {
     // MARK: - Properties
 
     weak var player: BitmovinYospacePlayer?
+    weak var eventBus: EventBus?
     var timedMetadataEvents: [TimedMetadataEvent] = []
     var processedDaterangeMetadata: [String: Date] = [:]
     var initialPDT: Date = .init()
@@ -42,12 +43,17 @@ public class DateRangeEmitter: NSObject {
 
     // MARK: - Init
 
-    init(player: BitmovinYospacePlayer, normalizer: PlayheadNormalizer? = nil) {
+    init(
+        player: BitmovinYospacePlayer,
+        eventBus: EventBus,
+        normalizer: PlayheadNormalizer? = nil
+    ) {
         super.init()
         self.player = player
+        self.eventBus = eventBus
         playheadNormalizer = normalizer
 
-        self.player?.add(listener: self)
+        self.eventBus?.add(playerListener: self)
     }
 
     // MARK: - Deinit
@@ -183,22 +189,14 @@ public class DateRangeEmitter: NSObject {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataParsedEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach {
-            if let bmPlayer = player {
-                $0.onMetadataParsed?(event, player: bmPlayer)
-            }
-        }
+        eventBus?.emit(event: event)
     }
 
     func fireMetadataEvent(event: TimedMetadataEvent) {
         let entries = [event.toYospaceId3MetadataEntry()]
         let metadata = Id3Metadata(entries: entries, startTime: event.time)
         let event = MetadataEvent(metadata: metadata, type: .ID3)
-        player?.listeners.forEach {
-            if let bmPlayer = player {
-                $0.onMetadata?(event, player: bmPlayer)
-            }
-        }
+        eventBus?.emit(event: event)
     }
 }
 
