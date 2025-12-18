@@ -80,6 +80,9 @@ struct ContentView: View {
         .onReceive(player.events.on(PlayerEvent.self)) { (event: PlayerEvent) in
             dump(event, name: "[Player Event]", maxDepth: 2)
         }
+        .onReceive(player.events.on(SourceEvent.self)) { (event: SourceEvent) in
+            dump(event, name: "[Source Event]", maxDepth: 2)
+        }
         .onReceive(player.yospaceEvents.on(BitmovinYospaceEvent.self)) { (event: BitmovinYospaceEvent) in
             dump(event, name: "[Yospace Event]", maxDepth: 2)
         }
