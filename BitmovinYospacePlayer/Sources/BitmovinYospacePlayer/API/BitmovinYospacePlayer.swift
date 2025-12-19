@@ -108,16 +108,8 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var playlist: PlaylistApi { return player.playlist }
 
-    // We cannot override the ads property type since AdvertisingApi is not open
-    // Instead, we expose the underlying player's ads API directly
-    // Users should use the yospaceAds property for Yospace-specific functionality
-    public var ads: BitmovinPlayerCore.AdvertisingApi {
-        return player.ads
-    }
-
-    // Yospace-specific advertising API
-    public lazy var yospaceAds: YospaceAdvertisingApi = {
-        return YospaceAdvertisingApi(player: self)
+    public lazy var ads: BitmovinPlayerCore.AdvertisingApi = {
+        return BitmovinAdsApiProxy(yospacePlayer: self)
     }()
 
     public var isCasting: Bool { return player.isCasting }
@@ -317,6 +309,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
         super.init()
         eventBus.register(yospacePlayer: self)
+
         player.add(listener: self as PlayerListener)
 
         self.yospaceConfig = yospaceConfig
@@ -1156,39 +1149,4 @@ private func buildSelector(for event: Event, sender: Any) -> Selector {
     selectorString = selectorString.replacingOccurrences(of: "BMP", with: "")
     selectorString = "on\(selectorString):\(suffix)"
     return Selector(selectorString)
-}
-
-// MARK: - YospaceAdvertisingApi
-
-/// Yospace-specific advertising API that provides custom ad management functionality
-public class YospaceAdvertisingApi: NSObject {
-    private weak var player: BitmovinYospacePlayer?
-
-    init(player: BitmovinYospacePlayer) {
-        self.player = player
-        super.init()
-    }
-
-    public func skip() {
-        if player?.sessionStatus != .notInitialised {
-            guard player?.yospacesession != nil else {
-                return
-            }
-
-            let adBreak: YospaceAdBreak? = player?.getActiveAdBreak()
-            if let currentBreak = adBreak {
-                player?.player.seek(time: currentBreak.absoluteEnd)
-            }
-        } else {
-            player?.player.skipAd()
-        }
-    }
-
-    public func schedule(adItem: AdItem) {
-        player?.scheduleAd(adItem: adItem)
-    }
-
-    public func register(adContainer: UIView) {
-        player?.player.ads.register(adContainer: adContainer)
-    }
 }

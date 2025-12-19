@@ -97,7 +97,7 @@ public class YospaceAd: NSObject, LinearAd {
         var jsonData = [AnyHashable: Any]()
         jsonData["uiConfig"] = uiConfigJsonData
         jsonData["isLinear"] = isLinear
-//        jsonData["skippableAfter"] = skippableAfter
+        jsonData["skippableAfter"] = skippableAfter
         return jsonData
     }
 }
