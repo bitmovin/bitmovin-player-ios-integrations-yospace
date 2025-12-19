@@ -1,6 +1,6 @@
 import BitmovinPlayerCore
 
-class BitmovinAdsApiProxy: AdvertisingApi {
+class YospaceAdvertisingApi: AdvertisingApi {
     private weak var yospacePlayer: BitmovinYospacePlayer?
 
     var schedule: [AdBreak] {

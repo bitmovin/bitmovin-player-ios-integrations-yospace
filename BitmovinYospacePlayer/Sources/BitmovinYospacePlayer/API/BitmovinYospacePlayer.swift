@@ -109,7 +109,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     public var playlist: PlaylistApi { return player.playlist }
 
     public lazy var ads: BitmovinPlayerCore.AdvertisingApi = {
-        return BitmovinAdsApiProxy(yospacePlayer: self)
+        return YospaceAdvertisingApi(yospacePlayer: self)
     }()
 
     public var isCasting: Bool { return player.isCasting }
