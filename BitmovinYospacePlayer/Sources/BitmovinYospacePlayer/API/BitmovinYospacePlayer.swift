@@ -27,7 +27,13 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var isLive: Bool { return player.isLive }
 
-    public var duration: TimeInterval { player.duration - adBreaks.reduce(0) { $0 + $1.duration } }
+    public var duration: TimeInterval {
+        guard isAd, let activeAd else {
+            return player.duration - adBreaks.reduce(0) { $0 + $1.duration }
+        }
+
+        return activeAd.duration
+    }
 
     public var currentTime: TimeInterval {
         if isAd {
@@ -102,16 +108,8 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var playlist: PlaylistApi { return player.playlist }
 
-    // We cannot override the ads property type since AdvertisingApi is not open
-    // Instead, we expose the underlying player's ads API directly
-    // Users should use the yospaceAds property for Yospace-specific functionality
-    public var ads: BitmovinPlayerCore.AdvertisingApi {
-        return player.ads
-    }
-
-    // Yospace-specific advertising API
-    public lazy var yospaceAds: YospaceAdvertisingApi = {
-        return YospaceAdvertisingApi(player: self)
+    public lazy var ads: BitmovinPlayerCore.AdvertisingApi = {
+        return YospaceAdvertisingApi(yospacePlayer: self)
     }()
 
     public var isCasting: Bool { return player.isCasting }
@@ -311,6 +309,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
         super.init()
         eventBus.register(yospacePlayer: self)
+
         player.add(listener: self as PlayerListener)
 
         self.yospaceConfig = yospaceConfig
@@ -708,33 +707,26 @@ public extension BitmovinYospacePlayer {
     @objc func advertDidEnd(notification: NSNotification) {
         BitLog.d("YoSpace advertDidEnd")
 
-        if let dict = notification.userInfo as NSDictionary? {
-            if let YOAd = dict[YOAdvertKey] as? YOAdvert {
-                let ad = createActiveAd(advert: YOAd)
+        guard let activeAd else { return }
 
-                BitLog.d("Emitting AdFinishedEvent")
-                let adFinishedEvent = AdFinishedEvent(ad: ad)
-                eventBus.emit(event: adFinishedEvent)
-            }
-        }
+        BitLog.d("Emitting AdFinishedEvent")
+        let adFinishedEvent = AdFinishedEvent(ad: activeAd)
+        eventBus.emit(event: adFinishedEvent)
 
-        activeAd = nil
+        self.activeAd = nil
     }
 
     @objc func advertBreakDidEnd(notification: NSNotification) {
         BitLog.d("YoSpace advertBreakDidEnd")
 
-        if let dict = notification.userInfo as NSDictionary? {
-            if let YOAdBreak = dict[YOAdBreakKey] as? YOAdBreak, !isLive {
-                let adBreak = createActiveAdBreak(adBreak: YOAdBreak)
 
-                BitLog.d("Emitting AdBreakFinishedEvent")
-                let adBreakFinishedEvent = AdBreakFinishedEvent(adBreak: adBreak)
-                eventBus.emit(event: adBreakFinishedEvent)
-            }
-        }
+        guard let activeAdBreak else { return }
 
-        activeAdBreak = nil
+        BitLog.d("Emitting AdBreakFinishedEvent")
+        let adBreakFinishedEvent = AdBreakFinishedEvent(adBreak: activeAdBreak)
+        eventBus.emit(event: adBreakFinishedEvent)
+
+        self.activeAdBreak = nil
     }
 
     @objc func trackingEventDidOccur(notification: NSNotification) {
@@ -1133,6 +1125,7 @@ extension YOAdvert {
             isLinear: interactiveCreative == nil,
             clickThroughUrl: URL(string: linearCreative.clickthroughUrl() ?? ""),
             mediaFileUrl: URL(string: interactiveCreative?.source ?? ""),
+            skippableAfter: skipOffset,
             clickThroughUrlOpened: { }
         )
     }
@@ -1156,39 +1149,4 @@ private func buildSelector(for event: Event, sender: Any) -> Selector {
     selectorString = selectorString.replacingOccurrences(of: "BMP", with: "")
     selectorString = "on\(selectorString):\(suffix)"
     return Selector(selectorString)
-}
-
-// MARK: - YospaceAdvertisingApi
-
-/// Yospace-specific advertising API that provides custom ad management functionality
-public class YospaceAdvertisingApi: NSObject {
-    private weak var player: BitmovinYospacePlayer?
-
-    init(player: BitmovinYospacePlayer) {
-        self.player = player
-        super.init()
-    }
-
-    public func skip() {
-        if player?.sessionStatus != .notInitialised {
-            guard player?.yospacesession != nil else {
-                return
-            }
-
-            let adBreak: YospaceAdBreak? = player?.getActiveAdBreak()
-            if let currentBreak = adBreak {
-                player?.player.seek(time: currentBreak.absoluteEnd)
-            }
-        } else {
-            player?.player.skipAd()
-        }
-    }
-
-    public func schedule(adItem: AdItem) {
-        player?.scheduleAd(adItem: adItem)
-    }
-
-    public func register(adContainer: UIView) {
-        player?.player.ads.register(adContainer: adContainer)
-    }
 }

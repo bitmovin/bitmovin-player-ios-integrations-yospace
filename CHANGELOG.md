@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `Player.events` will now properly include all Ad events
 - `Player.yospaceEvents` to listen to events from the Yospace integration (See `YospaceListener` for available events)
 - `BitmovinYospaceEvent` as parent type for all events from the Yospace integration
+- Support for skipping Ads
 
 ### Changed
 - **Migrated from CocoaPods to Swift Package Manager**
@@ -38,6 +39,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `YOAdManagement-Release` dependency to `3.10.3`
 - `TruexAdRenderer-iOS` dependency to `3.5.1`
 - `TruexAdRenderer-tvOS` dependency to `3.15.2`
+
+### Fixed
+- Missing `AdBreakFinished` and `AdFinished` events
+- Missing Advertising UI during Ads
 
 ### Removed
 - CocoaPods support
