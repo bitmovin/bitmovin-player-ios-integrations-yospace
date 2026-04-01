@@ -92,6 +92,10 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var videoQuality: VideoQuality? { return player.videoQuality }
 
+    public var videoPlaybackQuality: VideoQuality? { player.videoPlaybackQuality }
+
+    public var videoDownloadQuality: VideoQuality? { player.videoDownloadQuality }
+
     public var playbackSpeed: Float {
         get { return player.playbackSpeed }
         set { player.playbackSpeed = newValue }
