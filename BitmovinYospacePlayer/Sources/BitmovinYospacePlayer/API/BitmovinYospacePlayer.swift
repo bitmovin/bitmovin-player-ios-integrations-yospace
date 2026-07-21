@@ -1108,6 +1108,8 @@ extension String {
 
 extension YOAdvert {
     func toYospaceAd(absoluteStart: Double, relativeStart: Double) -> YospaceAd {
+        let interactiveCreative = interactiveCreatives?.first
+
         return YospaceAd(
             identifier: identifier,
             creativeId: linearCreative.creativeIdentifier,
