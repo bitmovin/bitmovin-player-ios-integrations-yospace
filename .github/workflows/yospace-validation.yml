@@ -1,0 +1,58 @@
+name: Yospace Validation Logs
+
+on:
+  workflow_dispatch:
+    inputs:
+      submission:
+        description: Yospace validation submission to capture
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - vod
+          - dvr-live-direct
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    name: Capture validation logs
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      YOSPACE_USER: ${{ secrets.YOSPACE_USER }}
+      YOSPACE_TOKEN: ${{ secrets.YOSPACE_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check Yospace credentials
+        run: |
+          if [ -z "$YOSPACE_USER" ] || [ -z "$YOSPACE_TOKEN" ]; then
+            echo "::error::YOSPACE_USER and YOSPACE_TOKEN repository secrets are required."
+            exit 1
+          fi
+
+      - name: Configure Yospace registry
+        run: |
+          swift package-registry set --global --scope yospace \
+            https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm
+          swift package-registry login \
+            https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm \
+            --username "$YOSPACE_USER" \
+            --password "$YOSPACE_TOKEN" \
+            --no-confirm
+
+      - name: Capture logs
+        run: scripts/capture-yospace-validation-logs.sh --submission "${{ inputs.submission }}"
+
+      - name: Upload validation logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: yospace-validation-${{ inputs.submission }}-${{ github.run_attempt }}
+          path: build/yospace-validation/**
+          if-no-files-found: warn

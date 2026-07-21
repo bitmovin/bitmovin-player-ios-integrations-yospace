@@ -18,6 +18,7 @@ private struct Stream {
 struct ContentView: View {
     private let player: BitmovinYospacePlayer
     private let playerViewConfig: PlayerViewConfig
+    private let validationRunner: ValidationRunner?
     private var streams = [
         Stream(
             title: "Yospace Sample w/ pre-roll",
@@ -34,6 +35,8 @@ struct ContentView: View {
     @State private var selectedStreamIndex = 0
     
     init() {
+        let validationConfig = ValidationConfig.from(arguments: ProcessInfo.processInfo.arguments)
+
         // Create player configuration
         let playerConfig = PlayerConfig()
 
@@ -45,11 +48,13 @@ struct ContentView: View {
         playerConfig.playbackConfig = playbackConfig
 
         // Create player instance
-        player = BitmovinYospacePlayer(
+        let player = BitmovinYospacePlayer(
             playerConfig: playerConfig,
             yospaceConfig: YospaceConfig(isDebugEnabled: true),
             integrationConfig: IntegrationConfig(enablePlayheadNormalization: true)
         )
+        self.player = player
+        validationRunner = validationConfig.map { ValidationRunner(config: $0, player: player) }
 
         // Create player view configuration
         playerViewConfig = PlayerViewConfig()
@@ -57,9 +62,17 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Picker("Streams", selection: $selectedStreamIndex) {
-                ForEach(streams.indices, id: \.self) {index in
-                    Text(streams[index].title)
+            if let validationRunner {
+                Text("Automatic validation run: \(validationRunner.config.statusLabel)")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .foregroundColor(.white)
+                    .background(Color.black)
+            } else {
+                Picker("Streams", selection: $selectedStreamIndex) {
+                    ForEach(streams.indices, id: \.self) {index in
+                        Text(streams[index].title)
+                    }
                 }
             }
             VideoPlayerView(
@@ -71,20 +84,28 @@ struct ContentView: View {
             .padding()
         }
         .onAppear {
-            loadStream(stream: streams[selectedStreamIndex])
+            if let validationRunner {
+                validationRunner.start()
+            } else {
+                loadStream(stream: streams[selectedStreamIndex])
+            }
         }
         .onChange(of: selectedStreamIndex) { streamIndex in
+            guard validationRunner == nil else { return }
             print("Stream selection changed to \(streams[streamIndex].title)")
             loadStream(stream: streams[selectedStreamIndex])
         }
         .onReceive(player.events.on(PlayerEvent.self)) { (event: PlayerEvent) in
             dump(event, name: "[Player Event]", maxDepth: 2)
+            validationRunner?.onPlayerEvent(event)
         }
         .onReceive(player.events.on(SourceEvent.self)) { (event: SourceEvent) in
             dump(event, name: "[Source Event]", maxDepth: 2)
+            validationRunner?.onSourceEvent(event)
         }
         .onReceive(player.yospaceEvents.on(BitmovinYospaceEvent.self)) { (event: BitmovinYospaceEvent) in
             dump(event, name: "[Yospace Event]", maxDepth: 2)
+            validationRunner?.onYospaceEvent(event)
         }
     }
     

@@ -116,6 +116,23 @@ let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .l
 bitmovinYospacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
 
+### Yospace validation logs
+
+The example app supports an automatic validation mode that captures both log files required for a Yospace submission:
+
+- Test 1 plays through an ad break and unloads the stream after the break finishes.
+- Test 2 loads, plays, and unloads two consecutive sessions.
+
+Capture both supported submissions on an available iPhone simulator with:
+
+```bash
+scripts/capture-yospace-validation-logs.sh --submission all
+```
+
+Use `vod` or `dvr-live-direct` instead of `all` to capture a single submission. Output and a submission manifest are written below `build/yospace-validation/`. The script builds and installs the example app by default; pass `--skip-build` to reuse the app in `build/yospace-validation-derived-data/`.
+
+The manual **Yospace Validation Logs** GitHub Actions workflow runs the same capture and uploads the logs as an artifact. It requires `YOSPACE_USER` and `YOSPACE_TOKEN` repository secrets for the Yospace Swift package registry.
+
 ### Player Listener
 ```swift
 // Implement the Player Listener Protocol

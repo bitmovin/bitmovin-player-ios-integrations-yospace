@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Automated Yospace validation log capture for VOD and DVR live submissions
 - Swift Package Manager support
 - TruexAdRenderer support for tvOS (previously iOS only)
 - Support for using the Combine/Publisher based event listener approach
@@ -282,4 +283,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Empty ad list for live ad breaks
-
