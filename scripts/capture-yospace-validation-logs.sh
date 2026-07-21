@@ -150,6 +150,7 @@ build_and_install() {
       -configuration Debug \
       -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
       -derivedDataPath "$DERIVED_DATA_DIR" \
+      -packageAuthorizationProvider netrc \
       CODE_SIGNING_ALLOWED=NO \
       build
   fi
