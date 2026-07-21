@@ -19,7 +19,7 @@ permissions:
 jobs:
   capture:
     name: Capture validation logs
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
     env:
       YOSPACE_USER: ${{ secrets.YOSPACE_USER }}
