@@ -38,13 +38,12 @@ jobs:
 
       - name: Configure Yospace registry
         run: |
-          swift package-registry set --global --scope yospace \
+          swift package-registry set \
             https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm
-          swift package-registry login \
-            https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm \
-            --username "$YOSPACE_USER" \
-            --password "$YOSPACE_TOKEN" \
-            --no-confirm
+          touch "$HOME/.netrc"
+          chmod 600 "$HOME/.netrc"
+          printf 'machine yospacerepo.jfrog.io login %s password %s\n' \
+            "$YOSPACE_USER" "$YOSPACE_TOKEN" >> "$HOME/.netrc"
 
       - name: Capture logs
         run: scripts/capture-yospace-validation-logs.sh --submission "${{ inputs.submission }}"

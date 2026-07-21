@@ -32,25 +32,17 @@ Thank you for your contributions!
 
 BitmovinYospaceModule is available through Swift Package Manager.
 
-To install the Yospace SDK please follow https://developer.yospace.com/sdk-documentation/apple/api/yosdk/latest/v3/index.html, but the relevant steps are also outlined here:
+To install the Yospace SDK, first obtain access and configure Swift Package Manager:
 
 ### Prerequisites
 
-Before adding the package, you must configure the Yospace Ad Management SDK registry:
+1. Log in to the [Yospace JFrog repository](https://yospacerepo.jfrog.io/ui/).
+2. Open **Profile** and select **Set Me Up**.
+3. Select the **Swift** package type.
+4. Select the **apple-sdk-release-spm** repository.
+5. Follow the generated instructions to configure and authenticate Swift Package Manager.
 
-#### 1. Configure Yospace Artifactory Registry
-
-```bash
-swift package-registry set --global --scope "yospace" "https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm"
-```
-
-#### 2. Authenticate with Yospace Artifactory
-
-```bash
-swift package-registry login "https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm" --username {USER_NAME}
-```
-
-Replace `{USER_NAME}` with your Yospace username. When prompted, enter your Yospace Artifactory API key. Your credentials will be stored in the macOS keychain.
+For further SDK details, see the [Yospace Apple SDK documentation](https://developer.yospace.com/sdk-documentation/apple/api/yosdk/latest/v3/index.html).
 
 ### Adding the Package
 
