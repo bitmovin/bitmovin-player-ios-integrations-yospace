@@ -22,7 +22,8 @@ public class YospaceAd: NSObject, LinearAd {
     public let advertiser: String?
     public let hasInteractiveUnit: Bool
     public let lineage: YOAdvertWrapper?
-    public let extensions: [YOXmlNode]
+    public let yospaceExtensions: [YOXmlNode]
+    public let extensions: [VastAdExtension]
     public let isFiller: Bool
     public let isLinear: Bool
     public var clickThroughUrl: URL?
@@ -33,6 +34,8 @@ public class YospaceAd: NSObject, LinearAd {
     public var skippableAfter: TimeInterval
     public var uiConfig: BitmovinPlayerCore.LinearAdUiConfig?
     public var clickThroughUrlOpened: (() -> Void)?
+    public let expanded: (() -> Void)? = nil
+    public let collapsed: (() -> Void)? = nil
 
     required init(
         identifier: String?,
@@ -67,7 +70,8 @@ public class YospaceAd: NSObject, LinearAd {
         self.advertiser = advertiser
         self.hasInteractiveUnit = hasInteractiveUnit
         self.lineage = lineage
-        self.extensions = extensions
+        self.yospaceExtensions = extensions
+        self.extensions = extensions.map { $0.toVastAdExtension() }
         self.isFiller = isFiller
         self.isLinear = isLinear
         self.clickThroughUrl = clickThroughUrl
@@ -99,5 +103,16 @@ public class YospaceAd: NSObject, LinearAd {
         jsonData["isLinear"] = isLinear
         jsonData["skippableAfter"] = skippableAfter
         return jsonData
+    }
+}
+
+private extension YOXmlNode {
+    func toVastAdExtension() -> VastAdExtension {
+        VastAdExtension(
+            name: qualifiedName,
+            value: innerText.isEmpty ? nil : innerText,
+            attributes: attributes as? [String: String] ?? [:],
+            children: childNodes()?.compactMap { ($0 as? YOXmlNode)?.toVastAdExtension() } ?? []
+        )
     }
 }
