@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for skipping Ads
 
 ### Changed
+- Replaced `YospaceConfig.isDebugEnabled` with `YospaceDebugMode`, including a validation-only trace mode
 - **Migrated from CocoaPods to Swift Package Manager**
 - **Changed library name from `BitmovinYospaceModule` to `BitmovinYospacePlayer`**.
 

@@ -400,9 +400,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
             yospaceProperties.userAgent = userAgent
         }
 
-        if yospaceConfig?.isDebugEnabled == true {
-            YOSessionProperties.setDebugFlags(YODebugFlags.DEBUG_ALL)
-        }
+        YOSessionProperties.setDebugFlags((yospaceConfig?.yospaceDebugMode ?? .none).debugFlags)
 
         if self.sourceConfig?.type != .hls {
             emitYoSpaceError(YospaceErrorEvent(errorCode: .invalidSource, message: "Invalid source provided. Yospace URL must be HLS"), player: self)
@@ -870,6 +868,19 @@ public extension BitmovinYospacePlayer {
                 YospaceErrorEvent(errorCode: .unknownError, message: "Unknown Error. Initialize failed with Error:" + error.localizedDescription),
                 player: self
             )
+        }
+    }
+}
+
+private extension YospaceDebugMode {
+    var debugFlags: YODebugFlags {
+        switch self {
+        case .none:
+            []
+        case .validation:
+            YODebugFlags.DEBUG_VALIDATION
+        case .all:
+            YODebugFlags.DEBUG_ALL
         }
     }
 }

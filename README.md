@@ -81,8 +81,12 @@ targets: [
 The following example creates a BitmovinYospacePlayer and loads a Yospace stream.
 
 ```swift
-// Optionally create a yospace configuration
-let yospaceConfig = YospaceConfig(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+// Optionally create a Yospace configuration
+let yospaceConfig = YospaceConfig(
+    userAgent: "Custom User Agent",
+    timeout: 5000,
+    yospaceDebugMode: .none
+)
 
 // Optionally create a PlayerConfiguration
 let playerConfig = PlayerConfig()

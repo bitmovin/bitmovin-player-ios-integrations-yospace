@@ -50,7 +50,9 @@ struct ContentView: View {
         // Create player instance
         let player = BitmovinYospacePlayer(
             playerConfig: playerConfig,
-            yospaceConfig: YospaceConfig(isDebugEnabled: true),
+            yospaceConfig: YospaceConfig(
+                yospaceDebugMode: validationConfig == nil ? .all : .validation
+            ),
             integrationConfig: IntegrationConfig(enablePlayheadNormalization: true)
         )
         self.player = player
@@ -96,15 +98,21 @@ struct ContentView: View {
             loadStream(stream: streams[selectedStreamIndex])
         }
         .onReceive(player.events.on(PlayerEvent.self)) { (event: PlayerEvent) in
-            dump(event, name: "[Player Event]", maxDepth: 2)
+            if validationRunner == nil {
+                dump(event, name: "[Player Event]", maxDepth: 2)
+            }
             validationRunner?.onPlayerEvent(event)
         }
         .onReceive(player.events.on(SourceEvent.self)) { (event: SourceEvent) in
-            dump(event, name: "[Source Event]", maxDepth: 2)
+            if validationRunner == nil {
+                dump(event, name: "[Source Event]", maxDepth: 2)
+            }
             validationRunner?.onSourceEvent(event)
         }
         .onReceive(player.yospaceEvents.on(BitmovinYospaceEvent.self)) { (event: BitmovinYospaceEvent) in
-            dump(event, name: "[Yospace Event]", maxDepth: 2)
+            if validationRunner == nil {
+                dump(event, name: "[Yospace Event]", maxDepth: 2)
+            }
             validationRunner?.onYospaceEvent(event)
         }
     }
