@@ -17,7 +17,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/bitmovin/player-ios.git", from: "3.105.0"),
+        .package(url: "https://github.com/bitmovin/player-ios.git", exact: "3.117.0"),
         .package(id: "yospace.admanagement-sdk", exact: "3.11.2"),
         .package(url: "https://github.com/socialvibe/TruexAdRenderer-iOS-Swift-Package.git", exact: "3.5.1"),
         .package(url: "https://github.com/socialvibe/TruexAdRenderer-tvOS-Swift-Package.git", exact: "3.15.2")
