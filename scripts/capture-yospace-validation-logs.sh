@@ -263,6 +263,7 @@ capture_case() {
 
   echo "Capturing $submission / $test_case_name"
   if [[ -n "$DEVICE_ID" ]]; then
+    # devicectl forwards variables with the documented DEVICECTL_CHILD_ prefix.
     DEVICECTL_CHILD_BITMOVIN_PLAYER_LICENSE_KEY="${BITMOVIN_PLAYER_LICENSE_KEY:-}" \
       xcrun devicectl device process launch \
       --device "$DEVICE_ID" \

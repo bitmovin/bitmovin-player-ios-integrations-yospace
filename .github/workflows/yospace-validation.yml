@@ -19,6 +19,7 @@ permissions:
 jobs:
   capture:
     name: Capture validation logs
+    # Supported GitHub-hosted runner: https://docs.github.com/actions/reference/runners/github-hosted-runners
     runs-on: macos-26
     timeout-minutes: 60
     env:

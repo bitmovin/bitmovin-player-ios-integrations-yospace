@@ -50,4 +50,19 @@ public class YospaceConfig {
         self.pollingInterval = pollingInterval
         self.yospaceDebugMode = yospaceDebugMode
     }
+
+    @available(*, deprecated, message: "Use init(userAgent:timeout:pollingInterval:yospaceDebugMode:) instead.")
+    public convenience init(
+        userAgent: String? = nil,
+        timeout: TimeInterval? = nil,
+        pollingInterval: Int? = nil,
+        isDebugEnabled: Bool
+    ) {
+        self.init(
+            userAgent: userAgent,
+            timeout: timeout,
+            pollingInterval: pollingInterval,
+            yospaceDebugMode: isDebugEnabled ? .all : nil
+        )
+    }
 }
