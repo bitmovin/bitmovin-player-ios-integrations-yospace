@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Automated Yospace validation log capture for VOD and DVR live submissions
+- `YospaceAssetType.dvrLive` for positional DVR Live sessions
 - Swift Package Manager support
 - TruexAdRenderer support for tvOS (previously iOS only)
 - Support for using the Combine/Publisher based event listener approach
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Replaced `YospaceConfig.isDebugEnabled` with `YospaceDebugMode`, including a validation-only trace mode
+- Deprecated `YospaceAssetType.linear`; use `.dvrLive` for DVR Live playback
 - **Migrated from CocoaPods to Swift Package Manager**
 - **Changed library name from `BitmovinYospaceModule` to `BitmovinYospacePlayer`**.
 

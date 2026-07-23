@@ -30,6 +30,11 @@ struct ContentView: View {
             contentUrl: "https://csm-e-sdk-validation.bln1.yospace.com/csm/access/207411697/c2FtcGxlL21hc3Rlci5tM3U4?yo.av=3",
             yospaceSourceConfig: .init(yospaceAssetType: .vod)
         ),
+        Stream(
+            title: "Yospace Sample DVRLive",
+            contentUrl: "https://csm-e-sdk-validation.bln1.yospace.com/csm/extlive/yosdk02,hls-ts-pre.m3u8?yo.br=false&yo.av=4&yo.lp=true&yo.pdt=true&yo.lpa=dur",
+            yospaceSourceConfig: .init(yospaceAssetType: .dvrLive)
+        ),
     ]
     
     @State private var selectedStreamIndex = 0
@@ -39,8 +44,6 @@ struct ContentView: View {
 
         // Create player configuration
         let playerConfig = PlayerConfig()
-
-        // Set your player license key on the player configuration
         playerConfig.key = playerLicenseKey
         
         let playbackConfig = PlaybackConfig()

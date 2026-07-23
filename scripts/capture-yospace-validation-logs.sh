@@ -12,13 +12,16 @@ SUBMISSION=""
 OUTPUT_DIR="$DEFAULT_OUTPUT_DIR"
 DERIVED_DATA_DIR="${DERIVED_DATA_DIR:-$DEFAULT_DERIVED_DATA_DIR}"
 SIMULATOR_UDID="${SIMULATOR_UDID:-}"
+DEVICE_ID="${DEVICE_ID:-}"
 
 usage() {
   cat <<USAGE
-Usage: $0 --submission <vod|dvr-live-direct|all> [--output-dir <dir>] [--skip-build]
+Usage: $0 --submission <vod|dvr-live-direct|all> [--device <identifier>] [--output-dir <dir>] [--skip-build]
 
-Generates the two iOS simulator log files required by one Yospace validation submission.
-Set SIMULATOR_UDID to select a specific simulator.
+Generates the two iOS log files required by one Yospace validation submission.
+By default, the script uses a simulator. Set SIMULATOR_UDID to select a specific simulator.
+Pass --device (or set DEVICE_ID) to use a connected physical device. Physical-device
+builds also require DEVELOPMENT_TEAM to be set to the Apple development team identifier.
 USAGE
 }
 
@@ -30,6 +33,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --output-dir)
       OUTPUT_DIR="${2:-}"
+      shift 2
+      ;;
+    --device)
+      DEVICE_ID="${2:-}"
       shift 2
       ;;
     --skip-build)
@@ -143,6 +150,37 @@ boot_simulator() {
 }
 
 build_and_install() {
+  local app_path
+
+  if [[ -n "$DEVICE_ID" ]]; then
+    if [[ -z "${DEVELOPMENT_TEAM:-}" ]]; then
+      echo "DEVELOPMENT_TEAM is required for physical-device builds." >&2
+      exit 2
+    fi
+
+    if [[ "$BUILD" == true ]]; then
+      xcodebuild \
+        -workspace "$WORKSPACE" \
+        -scheme "$SCHEME" \
+        -configuration Debug \
+        -destination "platform=iOS,id=$DEVICE_ID" \
+        -derivedDataPath "$DERIVED_DATA_DIR" \
+        -packageAuthorizationProvider netrc \
+        -allowProvisioningUpdates \
+        "DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM" \
+        build
+    fi
+
+    app_path="$DERIVED_DATA_DIR/Build/Products/Debug-iphoneos/$APP_NAME.app"
+    if [[ ! -d "$app_path" ]]; then
+      echo "Built app not found at $app_path. Run without --skip-build first." >&2
+      exit 2
+    fi
+
+    xcrun devicectl device install app --device "$DEVICE_ID" "$app_path"
+    return
+  fi
+
   if [[ "$BUILD" == true ]]; then
     xcodebuild \
       -workspace "$WORKSPACE" \
@@ -155,7 +193,7 @@ build_and_install() {
       build
   fi
 
-  local app_path="$DERIVED_DATA_DIR/Build/Products/Debug-iphonesimulator/$APP_NAME.app"
+  app_path="$DERIVED_DATA_DIR/Build/Products/Debug-iphonesimulator/$APP_NAME.app"
   if [[ ! -d "$app_path" ]]; then
     echo "Built app not found at $app_path. Run without --skip-build first." >&2
     exit 2
@@ -205,7 +243,9 @@ capture_case() {
       wait "$log_pid" 2>/dev/null || true
       log_pid=""
     fi
-    xcrun simctl terminate "$SIMULATOR_UDID" "$APP_ID" >/dev/null 2>&1 || true
+    if [[ -z "$DEVICE_ID" ]]; then
+      xcrun simctl terminate "$SIMULATOR_UDID" "$APP_ID" >/dev/null 2>&1 || true
+    fi
     if [[ -n "${temp_dir:-}" && -d "$temp_dir" ]]; then
       rm -rf "$temp_dir"
       temp_dir=""
@@ -217,24 +257,36 @@ capture_case() {
   timeout_seconds="$(test_case_timeout_seconds "$test_case")"
   temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/yospace-validation-${submission}-${test_case}.XXXXXX")"
   trap cleanup_capture_case RETURN EXIT
-  temp_log="$temp_dir/simulator.log"
+  temp_log="$temp_dir/device.log"
   : > "$temp_log"
   final_log="$run_dir/${submission}_${test_case}.log"
 
   echo "Capturing $submission / $test_case_name"
-  xcrun simctl terminate "$SIMULATOR_UDID" "$APP_ID" >/dev/null 2>&1 || true
-  xcrun simctl spawn "$SIMULATOR_UDID" log stream \
-    --style syslog \
-    --level debug \
-    --predicate "process == \"$APP_NAME\"" > "$temp_log" 2>&1 &
-  log_pid="$!"
-  sleep 2
+  if [[ -n "$DEVICE_ID" ]]; then
+    xcrun devicectl device process launch \
+      --device "$DEVICE_ID" \
+      --terminate-existing \
+      --console \
+      "$APP_ID" \
+      --validation-mode \
+      --asset "$asset" \
+      --test-case "$test_case_name" > "$temp_log" 2>&1 &
+    log_pid="$!"
+  else
+    xcrun simctl terminate "$SIMULATOR_UDID" "$APP_ID" >/dev/null 2>&1 || true
+    xcrun simctl spawn "$SIMULATOR_UDID" log stream \
+      --style syslog \
+      --level debug \
+      --predicate "process == \"$APP_NAME\"" > "$temp_log" 2>&1 &
+    log_pid="$!"
+    sleep 2
 
-  xcrun simctl launch "$SIMULATOR_UDID" "$APP_ID" \
-    --args \
-    --validation-mode \
-    --asset "$asset" \
-    --test-case "$test_case_name" >/dev/null
+    xcrun simctl launch "$SIMULATOR_UDID" "$APP_ID" \
+      --args \
+      --validation-mode \
+      --asset "$asset" \
+      --test-case "$test_case_name" >/dev/null
+  fi
 
   if wait_for_marker "$temp_log" "$timeout_seconds"; then
     cp "$temp_log" "$final_log"
@@ -265,8 +317,10 @@ Upload files:
 MANIFEST
 }
 
-resolve_simulator
-boot_simulator
+if [[ -z "$DEVICE_ID" ]]; then
+  resolve_simulator
+  boot_simulator
+fi
 build_and_install
 mkdir -p "$OUTPUT_DIR"
 

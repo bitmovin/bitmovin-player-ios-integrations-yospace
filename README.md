@@ -106,11 +106,13 @@ playerView.bringSubviewToFront(playerBoundary)
 let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
 
 // Create a YospaceSourceConfiguration with your yospaceAssetType 
-let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
+let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .dvrLive)
 
 // Load your sourceConfig and yospaceSourceConfig
 bitmovinYospacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
+
+Use `.dvrLive` for DVR Live streams. It creates a positional `YOSessionDVRLive` session and supplies playheads relative to the initial DVR window. The legacy timed-metadata `.linear` type is deprecated.
 
 ### Yospace validation logs
 
@@ -126,6 +128,16 @@ scripts/capture-yospace-validation-logs.sh --submission all
 ```
 
 Use `vod` or `dvr-live-direct` instead of `all` to capture a single submission. Output and a submission manifest are written below `build/yospace-validation/`. The script builds and installs the example app by default; pass `--skip-build` to reuse the app in `build/yospace-validation-derived-data/`.
+
+The example app configures a non-empty Player license placeholder in code, which is sufficient for simulator playback. Replace it with a valid Player license key for physical-device runs.
+
+To capture on a connected physical device, use its identifier from `xcrun devicectl list devices` and provide the Apple development team used to sign the app:
+
+```bash
+DEVELOPMENT_TEAM=<team-id> scripts/capture-yospace-validation-logs.sh \
+  --submission all \
+  --device <device-identifier>
+```
 
 The manual **Yospace Validation Logs** GitHub Actions workflow runs the same capture and uploads the logs as an artifact. It requires `YOSPACE_USER` and `YOSPACE_TOKEN` repository secrets for the Yospace Swift package registry.
 

@@ -109,7 +109,8 @@ final class ValidationRunner {
             onAdBreakStarted()
         case is AdBreakFinishedEvent:
             onAdBreakFinished()
-        case is PlayerErrorEvent:
+        case let event as PlayerErrorEvent:
+            log("PLAYER_ERROR code=\(event.errorCode) message=\(event.message)")
             fail(reason: "player-error")
         default:
             break
@@ -123,7 +124,8 @@ final class ValidationRunner {
     }
 
     func onYospaceEvent(_ event: BitmovinYospaceEvent) {
-        if event is YospaceErrorEvent {
+        if let event = event as? YospaceErrorEvent {
+            log("YOSPACE_ERROR name=\(event.name) message=\(event.message)")
             fail(reason: "yospace-error")
         }
     }
@@ -188,7 +190,7 @@ final class ValidationRunner {
         log("LOAD_STREAM session=\(sessionIndex)")
 
         let url = config.asset == .vod ? Self.vodURL : Self.dvrLiveURL
-        let assetType: YospaceAssetType = config.asset == .vod ? .vod : .linear
+        let assetType: YospaceAssetType = config.asset == .vod ? .vod : .dvrLive
         player.load(
             sourceConfig: SourceConfig(url: url, type: .hls),
             yospaceSourceConfig: YospaceSourceConfig(yospaceAssetType: assetType)
