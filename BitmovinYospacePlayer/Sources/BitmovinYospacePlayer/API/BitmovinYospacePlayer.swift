@@ -1125,7 +1125,7 @@ extension YOAdvert {
             advertiser: "Advertiser",
             hasInteractiveUnit: interactiveCreative != nil,
             lineage: lineage,
-            extensions:
+            yospaceExtensions:
             // advertExtensions() returns the "extensions" node itself
             // This creates a list of child "extension" nodes to be consistent with Android
             extensions?.childNodes()?.compactMap { $0 as? YOXmlNode } ?? [YOXmlNode](),
