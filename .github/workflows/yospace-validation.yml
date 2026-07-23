@@ -39,7 +39,7 @@ jobs:
 
       - name: Configure Yospace registry
         run: |
-          swift package-registry set \
+          swift package-registry set --global --scope yospace \
             https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm
           touch "$HOME/.netrc"
           chmod 600 "$HOME/.netrc"
