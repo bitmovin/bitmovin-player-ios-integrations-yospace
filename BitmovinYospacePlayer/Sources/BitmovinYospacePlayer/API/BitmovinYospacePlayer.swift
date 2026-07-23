@@ -403,7 +403,9 @@ public class BitmovinYospacePlayer: NSObject, Player {
             yospaceProperties.userAgent = userAgent
         }
 
-        YOSessionProperties.setDebugFlags((yospaceConfig?.yospaceDebugMode ?? .none).debugFlags)
+        if let yospaceConfig = yospaceConfig {
+            YOSessionProperties.setDebugFlags(yospaceConfig.yospaceDebugMode.debugFlags)
+        }
 
         if self.sourceConfig?.type != .hls {
             emitYoSpaceError(YospaceErrorEvent(errorCode: .invalidSource, message: "Invalid source provided. Yospace URL must be HLS"), player: self)
