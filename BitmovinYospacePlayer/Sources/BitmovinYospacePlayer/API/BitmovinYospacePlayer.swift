@@ -354,7 +354,8 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
      - Parameters:
      - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
-     - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as `.dvrLive` or `.vod`
+     - yospaceConfiguration: YospaceConfiguration to be used during this session playback.
+       Supported asset types are `.linear`, `.dvrLive`, and `.vod`; `.linear` is deprecated.
      */
     public func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfiguration: TruexConfiguration? = nil) {
         if let truexConfiguration = truexConfiguration {
