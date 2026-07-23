@@ -1141,6 +1141,17 @@ extension YOAdvert {
     }
 }
 
+private extension YOXmlNode {
+    func toVastAdExtension() -> VastAdExtension {
+        VastAdExtension(
+            name: qualifiedName,
+            value: innerText.isEmpty ? nil : innerText,
+            attributes: attributes as? [String: String] ?? [:],
+            children: childNodes()?.compactMap { ($0 as? YOXmlNode)?.toVastAdExtension() } ?? []
+        )
+    }
+}
+
 private func buildSelector(for event: Event, sender: Any) -> Selector {
     let suffix: String
     switch sender {

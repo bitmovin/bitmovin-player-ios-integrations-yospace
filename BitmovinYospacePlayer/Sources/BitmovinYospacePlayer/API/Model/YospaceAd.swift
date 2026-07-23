@@ -103,14 +103,3 @@ public class YospaceAd: NSObject, LinearAd {
         return jsonData
     }
 }
-
-extension YOXmlNode {
-    func toVastAdExtension() -> VastAdExtension {
-        VastAdExtension(
-            name: qualifiedName,
-            value: innerText.isEmpty ? nil : innerText,
-            attributes: attributes as? [String: String] ?? [:],
-            children: childNodes()?.compactMap { ($0 as? YOXmlNode)?.toVastAdExtension() } ?? []
-        )
-    }
-}
