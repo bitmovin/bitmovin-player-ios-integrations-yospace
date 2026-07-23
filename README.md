@@ -92,7 +92,7 @@ let yospaceConfig = YospaceConfig(
 let playerConfig = PlayerConfig()
 
 // Create a BitmovinYospacePlayer
-let bitmovinYospacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
+let bitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
 
 
 // Add it to your player view 
@@ -105,11 +105,11 @@ playerView.bringSubviewToFront(playerBoundary)
 // Create a SourceConfiguration
 let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
 
-// Create a YospaceSourceConfiguration with your yospaceAssetType 
-let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .dvrLive)
+// Create a YospaceSourceConfig with your yospaceAssetType
+let yospaceSourceConfig = YospaceSourceConfig(yospaceAssetType: .dvrLive)
 
 // Load your sourceConfig and yospaceSourceConfig
-bitmovinYospacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
+bitmovinYospacePlayer.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
 
 Use `.dvrLive` for DVR Live streams. It creates a positional `YOSessionDVRLive` session and supplies playheads relative to the initial DVR window. The legacy timed-metadata `.linear` type is deprecated.

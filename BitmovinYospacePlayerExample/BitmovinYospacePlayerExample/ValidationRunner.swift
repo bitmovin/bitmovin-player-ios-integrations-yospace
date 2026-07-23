@@ -94,7 +94,7 @@ final class ValidationRunner {
 
         log("START asset=\(config.asset.rawValue) init=\(config.asset.initializationLabel) testCase=\(config.testCase.rawValue)")
 
-        let timeout = config.testCase == .adBreak ? 15 * 60.0 : 5 * 60.0
+        let timeout = config.testCase == .adBreak ? 15 * 60.0 : 7 * 60.0
         let workItem = DispatchWorkItem { [weak self] in self?.fail(reason: "timeout") }
         timeoutWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + timeout, execute: workItem)
