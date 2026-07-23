@@ -403,8 +403,8 @@ public class BitmovinYospacePlayer: NSObject, Player {
             yospaceProperties.userAgent = userAgent
         }
 
-        if let yospaceConfig = yospaceConfig {
-            YOSessionProperties.setDebugFlags(yospaceConfig.yospaceDebugMode.debugFlags)
+        if let yospaceDebugMode = yospaceConfig?.yospaceDebugMode {
+            YOSessionProperties.setDebugFlags(yospaceDebugMode.debugFlags)
         }
 
         if self.sourceConfig?.type != .hls {

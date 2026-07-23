@@ -24,7 +24,7 @@ public class YospaceConfig {
     let userAgent: String?
     let timeout: TimeInterval?
     let pollingInterval: Int?
-    let yospaceDebugMode: YospaceDebugMode
+    let yospaceDebugMode: YospaceDebugMode?
 
     // MARK: - initializer
 
@@ -35,14 +35,15 @@ public class YospaceConfig {
      - userAgent: Custom user agent that is sent with Yospace HTTP requests
      - timeout: HTTP timeout value in milliseconds to be used for Yospace HTTP requests
      - pollingInterval: Resource timeout value used for Yospace polling requests
-     - yospaceDebugMode: Trace output produced by the Yospace Ad Management SDK
+     - yospaceDebugMode: Trace output produced by the Yospace Ad Management SDK.
+       When omitted, the SDK's existing global debug flags remain unchanged.
 
      */
     public init(
         userAgent: String? = nil,
         timeout: TimeInterval? = nil,
         pollingInterval: Int? = nil,
-        yospaceDebugMode: YospaceDebugMode = .none
+        yospaceDebugMode: YospaceDebugMode? = nil
     ) {
         self.userAgent = userAgent
         self.timeout = timeout
