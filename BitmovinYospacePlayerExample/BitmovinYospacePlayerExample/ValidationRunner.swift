@@ -9,15 +9,19 @@ struct ValidationConfig {
 
         var displayName: String {
             switch self {
-            case .vod: "VOD"
-            case .dvrLive: "DVR Live"
+            case .vod:
+                return "VOD"
+            case .dvrLive:
+                return "DVR Live"
             }
         }
 
         var initializationLabel: String {
             switch self {
-            case .vod: "N/A"
-            case .dvrLive: "DIRECT"
+            case .vod:
+                return "N/A"
+            case .dvrLive:
+                return "DIRECT"
             }
         }
     }
@@ -28,8 +32,10 @@ struct ValidationConfig {
 
         var displayName: String {
             switch self {
-            case .adBreak: "Test 1"
-            case .twoSessions: "Test 2"
+            case .adBreak:
+                return "Test 1"
+            case .twoSessions:
+                return "Test 2"
             }
         }
     }

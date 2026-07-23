@@ -69,7 +69,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            if let validationRunner {
+            if let validationRunner = validationRunner {
                 Text("Automatic validation run: \(validationRunner.config.statusLabel)")
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -91,7 +91,7 @@ struct ContentView: View {
             .padding()
         }
         .onAppear {
-            if let validationRunner {
+            if let validationRunner = validationRunner {
                 validationRunner.start()
             } else {
                 loadStream(stream: streams[selectedStreamIndex])
