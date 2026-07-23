@@ -33,7 +33,8 @@ public class YospaceConfig {
 
      - Parameters:
      - userAgent: Custom user agent that is sent with Yospace HTTP requests
-     - timeout: HTTP timeout value in milliseconds to be used for Yospace HTTP requests
+     - timeout: HTTP timeout value for Yospace HTTP requests. The Yospace SDK expects
+       this value in milliseconds, despite exposing it as a `TimeInterval`.
      - pollingInterval: Resource timeout value used for Yospace polling requests
      - yospaceDebugMode: Trace output produced by the Yospace Ad Management SDK.
        When omitted, the SDK's existing global debug flags remain unchanged.

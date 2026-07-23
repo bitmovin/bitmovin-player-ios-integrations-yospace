@@ -151,6 +151,7 @@ boot_simulator() {
 
 build_and_install() {
   local app_path
+  local -a build_command
 
   if [[ -n "$DEVICE_ID" ]]; then
     if [[ -z "${DEVELOPMENT_TEAM:-}" ]]; then
@@ -159,16 +160,20 @@ build_and_install() {
     fi
 
     if [[ "$BUILD" == true ]]; then
-      xcodebuild \
-        -workspace "$WORKSPACE" \
-        -scheme "$SCHEME" \
-        -configuration Debug \
-        -destination "platform=iOS,id=$DEVICE_ID" \
-        -derivedDataPath "$DERIVED_DATA_DIR" \
-        -packageAuthorizationProvider netrc \
-        -allowProvisioningUpdates \
-        "DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM" \
-        build
+      build_command=(xcodebuild
+        -workspace "$WORKSPACE"
+        -scheme "$SCHEME"
+        -configuration Debug
+        -destination "platform=iOS,id=$DEVICE_ID"
+        -derivedDataPath "$DERIVED_DATA_DIR")
+      if [[ -n "${HOME:-}" && -f "$HOME/.netrc" ]]; then
+        build_command+=(-packageAuthorizationProvider netrc)
+      fi
+      build_command+=(
+        -allowProvisioningUpdates
+        "DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM"
+        build)
+      "${build_command[@]}"
     fi
 
     app_path="$DERIVED_DATA_DIR/Build/Products/Debug-iphoneos/$APP_NAME.app"
@@ -182,15 +187,19 @@ build_and_install() {
   fi
 
   if [[ "$BUILD" == true ]]; then
-    xcodebuild \
-      -workspace "$WORKSPACE" \
-      -scheme "$SCHEME" \
-      -configuration Debug \
-      -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
-      -derivedDataPath "$DERIVED_DATA_DIR" \
-      -packageAuthorizationProvider netrc \
-      CODE_SIGNING_ALLOWED=NO \
-      build
+    build_command=(xcodebuild
+      -workspace "$WORKSPACE"
+      -scheme "$SCHEME"
+      -configuration Debug
+      -destination "platform=iOS Simulator,id=$SIMULATOR_UDID"
+      -derivedDataPath "$DERIVED_DATA_DIR")
+    if [[ -n "${HOME:-}" && -f "$HOME/.netrc" ]]; then
+      build_command+=(-packageAuthorizationProvider netrc)
+    fi
+    build_command+=(
+      CODE_SIGNING_ALLOWED=NO
+      build)
+    "${build_command[@]}"
   fi
 
   app_path="$DERIVED_DATA_DIR/Build/Products/Debug-iphonesimulator/$APP_NAME.app"

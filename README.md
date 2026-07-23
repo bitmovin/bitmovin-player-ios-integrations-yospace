@@ -84,6 +84,7 @@ The following example creates a BitmovinYospacePlayer and loads a Yospace stream
 // Optionally create a Yospace configuration
 let yospaceConfig = YospaceConfig(
     userAgent: "Custom User Agent",
+    // The Yospace SDK expects timeout values in milliseconds.
     timeout: 5000,
     yospaceDebugMode: .none
 )
