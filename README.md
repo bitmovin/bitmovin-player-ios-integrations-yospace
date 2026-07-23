@@ -129,7 +129,7 @@ scripts/capture-yospace-validation-logs.sh --submission all
 
 Use `vod` or `dvr-live-direct` instead of `all` to capture a single submission. Output and a submission manifest are written below `build/yospace-validation/`. The script builds and installs the example app by default; pass `--skip-build` to reuse the app in `build/yospace-validation-derived-data/`.
 
-The example app configures a non-empty Player license placeholder in code, which is sufficient for simulator playback. Replace it with a valid Player license key for physical-device runs.
+The example app uses the `BITMOVIN_PLAYER_LICENSE_KEY` environment variable when it is present, otherwise it falls back to a placeholder string. Set the environment variable or string to a valid Player license key.
 
 To capture on a connected physical device, use its identifier from `xcrun devicectl list devices` and provide the Apple development team used to sign the app:
 
@@ -139,7 +139,7 @@ DEVELOPMENT_TEAM=<team-id> scripts/capture-yospace-validation-logs.sh \
   --device <device-identifier>
 ```
 
-The manual **Yospace Validation Logs** GitHub Actions workflow runs the same capture and uploads the logs as an artifact. It requires `YOSPACE_USER` and `YOSPACE_TOKEN` repository secrets for the Yospace Swift package registry.
+The manual **Yospace Validation Logs** GitHub Actions workflow runs the same capture and uploads the logs as an artifact. It requires `YOSPACE_USER` and `YOSPACE_TOKEN` repository secrets for the Yospace Swift package registry. When the optional `BITMOVIN_PLAYER_LICENSE_KEY` repository secret is present, the workflow injects it into the example app; otherwise the app uses a placeholder.
 
 ### Player Listener
 ```swift

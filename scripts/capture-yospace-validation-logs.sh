@@ -263,7 +263,8 @@ capture_case() {
 
   echo "Capturing $submission / $test_case_name"
   if [[ -n "$DEVICE_ID" ]]; then
-    xcrun devicectl device process launch \
+    DEVICECTL_CHILD_BITMOVIN_PLAYER_LICENSE_KEY="${BITMOVIN_PLAYER_LICENSE_KEY:-}" \
+      xcrun devicectl device process launch \
       --device "$DEVICE_ID" \
       --terminate-existing \
       --console \
@@ -281,7 +282,8 @@ capture_case() {
     log_pid="$!"
     sleep 2
 
-    xcrun simctl launch "$SIMULATOR_UDID" "$APP_ID" \
+    SIMCTL_CHILD_BITMOVIN_PLAYER_LICENSE_KEY="${BITMOVIN_PLAYER_LICENSE_KEY:-}" \
+      xcrun simctl launch "$SIMULATOR_UDID" "$APP_ID" \
       --args \
       --validation-mode \
       --asset "$asset" \

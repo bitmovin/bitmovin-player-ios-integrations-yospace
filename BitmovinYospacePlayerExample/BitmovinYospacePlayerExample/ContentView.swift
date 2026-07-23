@@ -4,7 +4,9 @@ import SwiftUI
 
 // You can find your player license key on the player license dashboard:
 // https://bitmovin.com/dashboard/player/licenses
-private let playerLicenseKey = "<PLAYER_LICENSE_KEY>"
+private let playerLicenseKey = ProcessInfo.processInfo.environment["BITMOVIN_PLAYER_LICENSE_KEY"]
+    .flatMap { $0.isEmpty ? nil : $0 }
+    ?? "<PLAYER_LICENSE_KEY>"
 
 private struct Stream {
     var title: String

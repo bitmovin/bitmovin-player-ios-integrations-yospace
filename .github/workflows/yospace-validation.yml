@@ -24,6 +24,7 @@ jobs:
     env:
       YOSPACE_USER: ${{ secrets.YOSPACE_USER }}
       YOSPACE_TOKEN: ${{ secrets.YOSPACE_TOKEN }}
+      BITMOVIN_PLAYER_LICENSE_KEY: ${{ secrets.BITMOVIN_PLAYER_LICENSE_KEY }}
 
     steps:
       - name: Checkout
