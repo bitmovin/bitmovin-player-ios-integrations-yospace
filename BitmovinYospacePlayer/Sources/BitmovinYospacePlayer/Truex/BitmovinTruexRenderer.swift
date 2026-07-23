@@ -4,7 +4,7 @@ import TruexAdRenderer
 import YOAdManagement
 
 public class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
-    private let configuration: TruexConfiguration
+    private let config: TruexConfig
     private weak var eventDelegate: TruexAdRendererEventDelegate?
     private var renderer: TruexAdRenderer?
     private var interactiveUnit: YOInteractiveCreative?
@@ -12,8 +12,8 @@ public class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     private var adFree = false
     private var sessionAdFree = false
 
-    init(configuration: TruexConfiguration, eventDelegate: TruexAdRendererEventDelegate? = nil) {
-        self.configuration = configuration
+    init(config: TruexConfig, eventDelegate: TruexAdRendererEventDelegate? = nil) {
+        self.config = config
         self.eventDelegate = eventDelegate
     }
 
@@ -35,12 +35,12 @@ public class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
         self.interactiveUnit = interactiveUnit
         self.adBreakPosition = adBreakPosition
 
-        if !configuration.vastConfigUrl.isEmpty {
-            adParams["vast_config_url"] = configuration.vastConfigUrl
+        if !config.vastConfigUrl.isEmpty {
+            adParams["vast_config_url"] = config.vastConfigUrl
         }
 
-        if !configuration.userId.isEmpty {
-            adParams["user_id"] = configuration.userId
+        if !config.userId.isEmpty {
+            adParams["user_id"] = config.userId
         }
 
         renderer = TruexAdRenderer(
@@ -49,7 +49,7 @@ public class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
             slotType: adBreakPosition.rawValue
         )
         renderer!.delegate = self
-        renderer!.start(configuration.view)
+        renderer!.start(config.view)
 
         BitLog.d("TrueX rendering completed")
     }

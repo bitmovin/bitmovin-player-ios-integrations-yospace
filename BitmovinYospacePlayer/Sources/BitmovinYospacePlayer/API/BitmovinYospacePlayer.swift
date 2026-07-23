@@ -254,7 +254,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     var yospacePlayerPolicy: YospacePlayerPolicy?
     public private(set) var timeline: AdTimeline?
     var realAdBreaks: [YOAdBreak] = []
-    var truexConfiguration: TruexConfiguration?
+    var truexConfig: TruexConfig?
     var dateRangeEmitter: DateRangeEmitter?
     var playheadNormalizer: PlayheadNormalizer?
     var receivedFirstPlayhead: Bool = false
@@ -357,14 +357,14 @@ public class BitmovinYospacePlayer: NSObject, Player {
      - sourceConfig: `SourceConfig` for the Yospace HLS source.
      - yospaceSourceConfig: `YospaceSourceConfig` to use during this session playback.
        Supported asset types are `.linear`, `.dvrLive`, and `.vod`; `.linear` is deprecated.
-     - truexConfiguration: Optional `TruexConfiguration` to use during this session playback.
+     - truexConfig: Optional `TruexConfig` to use during this session playback.
      */
-    public func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfiguration: TruexConfiguration? = nil) {
-        if let truexConfiguration = truexConfiguration {
-            self.truexConfiguration = truexConfiguration
-            truexRenderer = BitmovinTruexRenderer(configuration: truexConfiguration, eventDelegate: self)
+    public func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfig: TruexConfig? = nil) {
+        if let truexConfig = truexConfig {
+            self.truexConfig = truexConfig
+            truexRenderer = BitmovinTruexRenderer(config: truexConfig, eventDelegate: self)
         } else {
-            self.truexConfiguration = nil
+            self.truexConfig = nil
             truexRenderer = nil
         }
 
@@ -376,12 +376,12 @@ public class BitmovinYospacePlayer: NSObject, Player {
             logMessage.append(", YospaceAssetType=\(yospaceSourceConfig.yospaceAssetType.rawValue)")
             logMessage.append(", YospaceRetry=\(yospaceSourceConfig.retryExcludingYospace)")
         }
-        if let truexConfiguration = truexConfiguration {
-            if !truexConfiguration.userId.isEmpty {
-                logMessage.append(", TruexUserId=\(truexConfiguration.userId)")
+        if let truexConfig = truexConfig {
+            if !truexConfig.userId.isEmpty {
+                logMessage.append(", TruexUserId=\(truexConfig.userId)")
             }
-            if !truexConfiguration.vastConfigUrl.isEmpty {
-                logMessage.append(", TruexVastConfigUrl=\(truexConfiguration.vastConfigUrl)")
+            if !truexConfig.vastConfigUrl.isEmpty {
+                logMessage.append(", TruexVastConfigUrl=\(truexConfig.vastConfigUrl)")
             }
         }
         BitLog.d(logMessage)
