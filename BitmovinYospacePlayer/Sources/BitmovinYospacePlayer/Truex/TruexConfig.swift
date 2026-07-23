@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-public class TruexConfiguration {
+public class TruexConfig {
 #if os(iOS)
     public private(set) var view: UIView
 #else
@@ -13,7 +13,7 @@ public class TruexConfiguration {
     // MARK: - initializer
 
     /**
-     Initialize a new TruexConfiguration object.
+     Initialize a new TruexConfig object.
 
      - Parameters:
      - view:

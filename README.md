@@ -32,25 +32,17 @@ Thank you for your contributions!
 
 BitmovinYospaceModule is available through Swift Package Manager.
 
-To install the Yospace SDK please follow https://developer.yospace.com/sdk-documentation/apple/api/yosdk/latest/v3/index.html, but the relevant steps are also outlined here:
+To install the Yospace SDK, first obtain access and configure Swift Package Manager:
 
 ### Prerequisites
 
-Before adding the package, you must configure the Yospace Ad Management SDK registry:
+1. Log in to the [Yospace JFrog repository](https://yospacerepo.jfrog.io/ui/).
+2. Open **Profile** and select **Set Me Up**.
+3. Select the **Swift** package type.
+4. Select the **apple-sdk-release-spm** repository.
+5. Follow the generated instructions to configure and authenticate Swift Package Manager.
 
-#### 1. Configure Yospace Artifactory Registry
-
-```bash
-swift package-registry set --global --scope "yospace" "https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm"
-```
-
-#### 2. Authenticate with Yospace Artifactory
-
-```bash
-swift package-registry login "https://yospacerepo.jfrog.io/artifactory/api/swift/apple-sdk-release-spm" --username {USER_NAME}
-```
-
-Replace `{USER_NAME}` with your Yospace username. When prompted, enter your Yospace Artifactory API key. Your credentials will be stored in the macOS keychain.
+For further SDK details, see the [Yospace Apple SDK documentation](https://developer.yospace.com/sdk-documentation/apple/api/yosdk/latest/v3/index.html).
 
 ### Adding the Package
 
@@ -89,14 +81,19 @@ targets: [
 The following example creates a BitmovinYospacePlayer and loads a Yospace stream.
 
 ```swift
-// Optionally create a yospace configuration
-let yospaceConfig = YospaceConfig(debug: false, userAgent: "Custom User Agent", timeout: 5000)
+// Optionally create a Yospace configuration
+let yospaceConfig = YospaceConfig(
+    userAgent: "Custom User Agent",
+    // The Yospace SDK expects timeout values in milliseconds.
+    timeout: 5000,
+    yospaceDebugMode: .none
+)
 
 // Optionally create a PlayerConfiguration
 let playerConfig = PlayerConfig()
 
 // Create a BitmovinYospacePlayer
-let bitmovinYospacePlayer:BitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
+let bitmovinYospacePlayer = BitmovinYospacePlayer(playerConfig: playerConfig, yospaceConfig: yospaceConfig)
 
 
 // Add it to your player view 
@@ -109,12 +106,41 @@ playerView.bringSubviewToFront(playerBoundary)
 // Create a SourceConfiguration
 let sourceConfig = SourceConfig(url: streamUrl, type: .hls)
 
-// Create a YospaceSourceConfiguration with your yospaceAssetType 
-let yospaceSourceConfiguration = YospaceSourceConfiguration(yospaceAssetType: .linear)
+// Create a YospaceSourceConfig with your yospaceAssetType
+let yospaceSourceConfig = YospaceSourceConfig(yospaceAssetType: .dvrLive)
 
 // Load your sourceConfig and yospaceSourceConfig
-bitmovinYospacePlayer?.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
+bitmovinYospacePlayer.load(sourceConfig: sourceConfig, yospaceSourceConfig: yospaceSourceConfig)
 ```
+
+Use `.dvrLive` for DVR Live streams. It creates a positional `YOSessionDVRLive` session and supplies playheads relative to the initial DVR window. The legacy timed-metadata `.linear` type is deprecated.
+
+### Yospace validation logs
+
+The example app supports an automatic validation mode that captures both log files required for a Yospace submission:
+
+- Test 1 plays through an ad break and unloads the stream after the break finishes.
+- Test 2 loads, plays, and unloads two consecutive sessions.
+
+Capture both supported submissions on an available iPhone simulator with:
+
+```bash
+scripts/capture-yospace-validation-logs.sh --submission all
+```
+
+Use `vod` or `dvr-live-direct` instead of `all` to capture a single submission. Output and a submission manifest are written below `build/yospace-validation/`. The script builds and installs the example app by default; pass `--skip-build` to reuse the app in `build/yospace-validation-derived-data/`.
+
+The example app uses the `BITMOVIN_PLAYER_LICENSE_KEY` environment variable when it is present, otherwise it falls back to a placeholder string. Set the environment variable or string to a valid Player license key.
+
+To capture on a connected physical device, use its identifier from `xcrun devicectl list devices` and provide the Apple development team used to sign the app:
+
+```bash
+DEVELOPMENT_TEAM=<team-id> scripts/capture-yospace-validation-logs.sh \
+  --submission all \
+  --device <device-identifier>
+```
+
+The manual **Yospace Validation Logs** GitHub Actions workflow runs the same capture and uploads the logs as an artifact. It requires `YOSPACE_USER` and `YOSPACE_TOKEN` repository secrets for the Yospace Swift package registry. When the optional `BITMOVIN_PLAYER_LICENSE_KEY` repository secret is present, the workflow injects it into the example app; otherwise the app uses a placeholder.
 
 ### Player Listener
 ```swift

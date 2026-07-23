@@ -254,7 +254,7 @@ public class BitmovinYospacePlayer: NSObject, Player {
     var yospacePlayerPolicy: YospacePlayerPolicy?
     public private(set) var timeline: AdTimeline?
     var realAdBreaks: [YOAdBreak] = []
-    var truexConfiguration: TruexConfiguration?
+    var truexConfig: TruexConfig?
     var dateRangeEmitter: DateRangeEmitter?
     var playheadNormalizer: PlayheadNormalizer?
     var receivedFirstPlayhead: Bool = false
@@ -303,8 +303,9 @@ public class BitmovinYospacePlayer: NSObject, Player {
      **!! The BitmovinYospacePlayer will only be able to play Yospace streams. It will error out on all other streams. Please add a YospaceListener to be notified of these errors !!**
 
      - Parameters:
-     - configuration: Traditional PlayerConfiguration used by Bitmovin
-     - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
+     - playerConfig: `PlayerConfig` used by the Bitmovin Player.
+     - yospaceConfig: Optional `YospaceConfig` that changes the behavior of the Yospace Ad Management SDK.
+     - integrationConfig: Optional `IntegrationConfig` that changes the behavior of this integration.
      */
     public init(playerConfig: PlayerConfig, yospaceConfig: YospaceConfig? = nil, integrationConfig: IntegrationConfig? = nil) {
         player = PlayerFactory.create(playerConfig: playerConfig)
@@ -353,15 +354,17 @@ public class BitmovinYospacePlayer: NSObject, Player {
      **!! The BitmovinYospacePlayer will only be able to play Yospace streams. It will error out on all other streams. Please add a YospaceListener to be notified of these errors !!**
 
      - Parameters:
-     - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
-     - yospaceConfiguration: YospaceConfiguration to be used during this session playback. You must identify the source as .linear .vod or .startOver
+     - sourceConfig: `SourceConfig` for the Yospace HLS source.
+     - yospaceSourceConfig: `YospaceSourceConfig` to use during this session playback.
+       Supported asset types are `.linear`, `.dvrLive`, and `.vod`; `.linear` is deprecated.
+     - truexConfig: Optional `TruexConfig` to use during this session playback.
      */
-    public func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfiguration: TruexConfiguration? = nil) {
-        if let truexConfiguration = truexConfiguration {
-            self.truexConfiguration = truexConfiguration
-            truexRenderer = BitmovinTruexRenderer(configuration: truexConfiguration, eventDelegate: self)
+    public func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfig: TruexConfig? = nil) {
+        if let truexConfig = truexConfig {
+            self.truexConfig = truexConfig
+            truexRenderer = BitmovinTruexRenderer(config: truexConfig, eventDelegate: self)
         } else {
-            self.truexConfiguration = nil
+            self.truexConfig = nil
             truexRenderer = nil
         }
 
@@ -373,12 +376,12 @@ public class BitmovinYospacePlayer: NSObject, Player {
             logMessage.append(", YospaceAssetType=\(yospaceSourceConfig.yospaceAssetType.rawValue)")
             logMessage.append(", YospaceRetry=\(yospaceSourceConfig.retryExcludingYospace)")
         }
-        if let truexConfiguration = truexConfiguration {
-            if !truexConfiguration.userId.isEmpty {
-                logMessage.append(", TruexUserId=\(truexConfiguration.userId)")
+        if let truexConfig = truexConfig {
+            if !truexConfig.userId.isEmpty {
+                logMessage.append(", TruexUserId=\(truexConfig.userId)")
             }
-            if !truexConfiguration.vastConfigUrl.isEmpty {
-                logMessage.append(", TruexVastConfigUrl=\(truexConfiguration.vastConfigUrl)")
+            if !truexConfig.vastConfigUrl.isEmpty {
+                logMessage.append(", TruexVastConfigUrl=\(truexConfig.vastConfigUrl)")
             }
         }
         BitLog.d(logMessage)
@@ -402,8 +405,8 @@ public class BitmovinYospacePlayer: NSObject, Player {
             yospaceProperties.userAgent = userAgent
         }
 
-        if yospaceConfig?.isDebugEnabled == true {
-            YOSessionProperties.setDebugFlags(YODebugFlags.DEBUG_ALL)
+        if let yospaceDebugMode = yospaceConfig?.yospaceDebugMode {
+            YOSessionProperties.setDebugFlags(yospaceDebugMode.debugFlags)
         }
 
         if self.sourceConfig?.type != .hls {
@@ -419,6 +422,8 @@ public class BitmovinYospacePlayer: NSObject, Player {
         switch yospaceSourceConfig.yospaceAssetType {
         case .linear:
             loadLive(url: url, yospaceProperties: yospaceProperties)
+        case .dvrLive:
+            loadDVRLive(url: url, yospaceProperties: yospaceProperties)
         case .vod:
             loadVOD(url: url, yospaceProperties: yospaceProperties)
         }
@@ -503,6 +508,10 @@ public class BitmovinYospacePlayer: NSObject, Player {
         YOSessionLive.create(url.absoluteString, properties: yospaceProperties, completionHandler: sessionDidInitialise)
     }
 
+    func loadDVRLive(url: URL, yospaceProperties: YOSessionProperties) {
+        YOSessionDVRLive.create(url.absoluteString, properties: yospaceProperties, completionHandler: sessionDidInitialise)
+    }
+
     func handTimelineUpdated() {
         guard let timeline = timeline else {
             return
@@ -523,6 +532,13 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public func currentTimeWithAds() -> TimeInterval {
         return player.currentTime
+    }
+
+    func yospacePlayhead() -> TimeInterval {
+        if yospaceSourceConfig?.yospaceAssetType == .dvrLive {
+            return player.currentTime(.relativeTime)
+        }
+        return currentTimeWithAds()
     }
 
     func durationWithAds() -> TimeInterval {
@@ -876,6 +892,19 @@ public extension BitmovinYospacePlayer {
     }
 }
 
+private extension YospaceDebugMode {
+    var debugFlags: YODebugFlags {
+        switch self {
+        case .none:
+            []
+        case .validation:
+            YODebugFlags.DEBUG_VALIDATION
+        case .all:
+            YODebugFlags.DEBUG_ALL
+        }
+    }
+}
+
 // MARK: - PlayerListener
 
 extension BitmovinYospacePlayer: PlayerListener {
@@ -891,9 +920,9 @@ extension BitmovinYospacePlayer: PlayerListener {
 
         if sessionStatus == .notInitialised || sessionStatus == .ready {
             sessionStatus = .playing
-            yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStartEvent, playhead: currentTimeWithAds())
+            yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStartEvent, playhead: yospacePlayhead())
         } else {
-            yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackResumeEvent, playhead: currentTimeWithAds())
+            yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackResumeEvent, playhead: yospacePlayhead())
         }
 
         let playingEvent = PlayingEvent(time: currentTime)
@@ -904,7 +933,7 @@ extension BitmovinYospacePlayer: PlayerListener {
         BitLog.d("onPaused: \(event)")
 
         liveAdPaused = isLive && isAd
-        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackPauseEvent, playhead: currentTimeWithAds())
+        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackPauseEvent, playhead: yospacePlayhead())
 
         let pausedEvent = PausedEvent(time: currentTime)
         emitPreprocessedEvent(event: pausedEvent, player: player)
@@ -920,13 +949,13 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onStallStarted(_ event: StallStartedEvent, player: Player) {
-        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStallEvent, playhead: currentTimeWithAds())
+        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStallEvent, playhead: yospacePlayhead())
 
         emitPreprocessedEvent(event: event, player: player)
     }
 
     public func onStallEnded(_ event: StallEndedEvent, player: Player) {
-        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackContinueEvent, playhead: currentTimeWithAds())
+        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackContinueEvent, playhead: yospacePlayhead())
 
         emitPreprocessedEvent(event: event, player: player)
     }
@@ -961,7 +990,8 @@ extension BitmovinYospacePlayer: PlayerListener {
         //
         // If onMetadata does fire afterwards, it will be ignored by handling in DateRangeEmitter
         if receivedFirstPlayhead == false {
-            if yospaceSourceConfig?.yospaceAssetType == .linear {
+            switch yospaceSourceConfig?.yospaceAssetType {
+            case .linear:
                 if let dateRangeMetadata = event.metadata as? DaterangeMetadata {
                     let metadataTime = String(format: "%.2f", dateRangeMetadata.startDate.timeIntervalSince1970)
                     let currentTime = String(format: "%.2f", currentTimeWithAds())
@@ -970,6 +1000,8 @@ extension BitmovinYospacePlayer: PlayerListener {
                         dateRangeEmitter?.trackEmsg(MetadataEvent(metadata: event.metadata, type: event.metadataType))
                     }
                 }
+            case .dvrLive, .vod, .none:
+                break
             }
         }
 
@@ -979,12 +1011,15 @@ extension BitmovinYospacePlayer: PlayerListener {
     public func onMetadata(_ event: MetadataEvent, player: Player) {
 //        BitLog.d("onMetadata: \(event)")
 
-        if yospaceSourceConfig?.yospaceAssetType == .linear {
+        switch yospaceSourceConfig?.yospaceAssetType {
+        case .linear:
             if event.metadataType == .ID3 {
                 trackId3(event)
             } else if event.metadataType == .daterange {
                 dateRangeEmitter?.trackEmsg(event)
             }
+        case .dvrLive, .vod, .none:
+            break
         }
 
         emitPreprocessedEvent(event: event, player: player)
@@ -998,7 +1033,7 @@ extension BitmovinYospacePlayer: PlayerListener {
     }
 
     public func onPlaybackFinished(_ event: PlaybackFinishedEvent, player: Player) {
-        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStopEvent, playhead: currentTimeWithAds())
+        yospacesession?.playerEventDidOccur(YOPlayerEvent.playbackStopEvent, playhead: yospacePlayhead())
 
         emitPreprocessedEvent(event: event, player: player)
     }
@@ -1010,7 +1045,7 @@ extension BitmovinYospacePlayer: PlayerListener {
 
     public func onTimeChanged(_ event: TimeChangedEvent, player: Player) {
         receivedFirstPlayhead = true
-        yospacesession?.playheadDidChange(currentTimeWithAds())
+        yospacesession?.playheadDidChange(yospacePlayhead())
 
         if liveAdPaused {
             if let adBreak = activeAdBreak, let advert = activeAd {

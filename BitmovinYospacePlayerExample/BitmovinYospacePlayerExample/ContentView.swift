@@ -4,7 +4,9 @@ import SwiftUI
 
 // You can find your player license key on the player license dashboard:
 // https://bitmovin.com/dashboard/player/licenses
-private let playerLicenseKey = "<PLAYER_LICENSE_KEY>"
+private let playerLicenseKey = ProcessInfo.processInfo.environment["BITMOVIN_PLAYER_LICENSE_KEY"]
+    .flatMap { $0.isEmpty ? nil : $0 }
+    ?? "<PLAYER_LICENSE_KEY>"
 
 private struct Stream {
     var title: String
@@ -18,6 +20,7 @@ private struct Stream {
 struct ContentView: View {
     private let player: BitmovinYospacePlayer
     private let playerViewConfig: PlayerViewConfig
+    private let validationRunner: ValidationRunner?
     private var streams = [
         Stream(
             title: "Yospace Sample w/ pre-roll",
@@ -29,15 +32,20 @@ struct ContentView: View {
             contentUrl: "https://csm-e-sdk-validation.bln1.yospace.com/csm/access/207411697/c2FtcGxlL21hc3Rlci5tM3U4?yo.av=3",
             yospaceSourceConfig: .init(yospaceAssetType: .vod)
         ),
+        Stream(
+            title: "Yospace Sample DVRLive",
+            contentUrl: "https://csm-e-sdk-validation.bln1.yospace.com/csm/extlive/yosdk02,hls-ts-pre.m3u8?yo.br=false&yo.av=4&yo.lp=true&yo.pdt=true&yo.lpa=dur",
+            yospaceSourceConfig: .init(yospaceAssetType: .dvrLive)
+        ),
     ]
     
     @State private var selectedStreamIndex = 0
     
     init() {
+        let validationConfig = ValidationConfig.from(arguments: ProcessInfo.processInfo.arguments)
+
         // Create player configuration
         let playerConfig = PlayerConfig()
-
-        // Set your player license key on the player configuration
         playerConfig.key = playerLicenseKey
         
         let playbackConfig = PlaybackConfig()
@@ -45,11 +53,15 @@ struct ContentView: View {
         playerConfig.playbackConfig = playbackConfig
 
         // Create player instance
-        player = BitmovinYospacePlayer(
+        let player = BitmovinYospacePlayer(
             playerConfig: playerConfig,
-            yospaceConfig: YospaceConfig(isDebugEnabled: true),
+            yospaceConfig: YospaceConfig(
+                yospaceDebugMode: validationConfig == nil ? .all : .validation
+            ),
             integrationConfig: IntegrationConfig(enablePlayheadNormalization: true)
         )
+        self.player = player
+        validationRunner = validationConfig.map { ValidationRunner(config: $0, player: player) }
 
         // Create player view configuration
         playerViewConfig = PlayerViewConfig()
@@ -57,9 +69,17 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Picker("Streams", selection: $selectedStreamIndex) {
-                ForEach(streams.indices, id: \.self) {index in
-                    Text(streams[index].title)
+            if let validationRunner = validationRunner {
+                Text("Automatic validation run: \(validationRunner.config.statusLabel)")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .foregroundColor(.white)
+                    .background(Color.black)
+            } else {
+                Picker("Streams", selection: $selectedStreamIndex) {
+                    ForEach(streams.indices, id: \.self) {index in
+                        Text(streams[index].title)
+                    }
                 }
             }
             VideoPlayerView(
@@ -71,20 +91,34 @@ struct ContentView: View {
             .padding()
         }
         .onAppear {
-            loadStream(stream: streams[selectedStreamIndex])
+            if let validationRunner = validationRunner {
+                validationRunner.start()
+            } else {
+                loadStream(stream: streams[selectedStreamIndex])
+            }
         }
         .onChange(of: selectedStreamIndex) { streamIndex in
+            guard validationRunner == nil else { return }
             print("Stream selection changed to \(streams[streamIndex].title)")
             loadStream(stream: streams[selectedStreamIndex])
         }
         .onReceive(player.events.on(PlayerEvent.self)) { (event: PlayerEvent) in
-            dump(event, name: "[Player Event]", maxDepth: 2)
+            if validationRunner == nil {
+                dump(event, name: "[Player Event]", maxDepth: 2)
+            }
+            validationRunner?.onPlayerEvent(event)
         }
         .onReceive(player.events.on(SourceEvent.self)) { (event: SourceEvent) in
-            dump(event, name: "[Source Event]", maxDepth: 2)
+            if validationRunner == nil {
+                dump(event, name: "[Source Event]", maxDepth: 2)
+            }
+            validationRunner?.onSourceEvent(event)
         }
         .onReceive(player.yospaceEvents.on(BitmovinYospaceEvent.self)) { (event: BitmovinYospaceEvent) in
-            dump(event, name: "[Yospace Event]", maxDepth: 2)
+            if validationRunner == nil {
+                dump(event, name: "[Yospace Event]", maxDepth: 2)
+            }
+            validationRunner?.onYospaceEvent(event)
         }
     }
     
