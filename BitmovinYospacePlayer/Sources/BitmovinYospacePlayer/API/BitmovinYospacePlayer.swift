@@ -303,8 +303,9 @@ public class BitmovinYospacePlayer: NSObject, Player {
      **!! The BitmovinYospacePlayer will only be able to play Yospace streams. It will error out on all other streams. Please add a YospaceListener to be notified of these errors !!**
 
      - Parameters:
-     - configuration: Traditional PlayerConfiguration used by Bitmovin
-     - yospaceConfiguration: YospaceConfiguration object that changes the behavior of the internal Yospace AD Management SDK
+     - playerConfig: `PlayerConfig` used by the Bitmovin Player.
+     - yospaceConfig: Optional `YospaceConfig` that changes the behavior of the Yospace Ad Management SDK.
+     - integrationConfig: Optional `IntegrationConfig` that changes the behavior of this integration.
      */
     public init(playerConfig: PlayerConfig, yospaceConfig: YospaceConfig? = nil, integrationConfig: IntegrationConfig? = nil) {
         player = PlayerFactory.create(playerConfig: playerConfig)
@@ -353,9 +354,10 @@ public class BitmovinYospacePlayer: NSObject, Player {
      **!! The BitmovinYospacePlayer will only be able to play Yospace streams. It will error out on all other streams. Please add a YospaceListener to be notified of these errors !!**
 
      - Parameters:
-     - sourceConfiguration: SourceConfiguration of your Yospace HLSSource
-     - yospaceConfiguration: YospaceConfiguration to be used during this session playback.
+     - sourceConfig: `SourceConfig` for the Yospace HLS source.
+     - yospaceSourceConfig: `YospaceSourceConfig` to use during this session playback.
        Supported asset types are `.linear`, `.dvrLive`, and `.vod`; `.linear` is deprecated.
+     - truexConfiguration: Optional `TruexConfiguration` to use during this session playback.
      */
     public func load(sourceConfig: SourceConfig, yospaceSourceConfig: YospaceSourceConfig? = nil, truexConfiguration: TruexConfiguration? = nil) {
         if let truexConfiguration = truexConfiguration {
