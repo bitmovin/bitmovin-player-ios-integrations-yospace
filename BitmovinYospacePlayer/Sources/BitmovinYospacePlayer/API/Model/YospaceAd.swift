@@ -22,7 +22,6 @@ public class YospaceAd: NSObject, LinearAd {
     public let advertiser: String?
     public let hasInteractiveUnit: Bool
     public let lineage: YOAdvertWrapper?
-    public let yospaceExtensions: [YOXmlNode]
     public let extensions: [VastAdExtension]
     public let isFiller: Bool
     public let isLinear: Bool
@@ -50,7 +49,7 @@ public class YospaceAd: NSObject, LinearAd {
         advertiser: String?,
         hasInteractiveUnit: Bool,
         lineage: YOAdvertWrapper?,
-        yospaceExtensions: [YOXmlNode],
+        extensions: [VastAdExtension],
         isFiller: Bool,
         isLinear: Bool,
         clickThroughUrl: URL?,
@@ -70,8 +69,7 @@ public class YospaceAd: NSObject, LinearAd {
         self.advertiser = advertiser
         self.hasInteractiveUnit = hasInteractiveUnit
         self.lineage = lineage
-        self.yospaceExtensions = yospaceExtensions
-        self.extensions = yospaceExtensions.map { $0.toVastAdExtension() }
+        self.extensions = extensions
         self.isFiller = isFiller
         self.isLinear = isLinear
         self.clickThroughUrl = clickThroughUrl
@@ -106,7 +104,7 @@ public class YospaceAd: NSObject, LinearAd {
     }
 }
 
-private extension YOXmlNode {
+extension YOXmlNode {
     func toVastAdExtension() -> VastAdExtension {
         VastAdExtension(
             name: qualifiedName,

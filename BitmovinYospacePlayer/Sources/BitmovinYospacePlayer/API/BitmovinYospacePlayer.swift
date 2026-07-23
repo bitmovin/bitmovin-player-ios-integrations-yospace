@@ -1125,10 +1125,12 @@ extension YOAdvert {
             advertiser: "Advertiser",
             hasInteractiveUnit: interactiveCreative != nil,
             lineage: lineage,
-            yospaceExtensions:
+            extensions:
             // advertExtensions() returns the "extensions" node itself
             // This creates a list of child "extension" nodes to be consistent with Android
-            extensions?.childNodes()?.compactMap { $0 as? YOXmlNode } ?? [YOXmlNode](),
+            extensions?.childNodes()?.compactMap {
+                ($0 as? YOXmlNode)?.toVastAdExtension()
+            } ?? [],
             isFiller: isFiller,
             isLinear: interactiveCreative == nil,
             clickThroughUrl: URL(string: linearCreative.clickthroughUrl() ?? ""),
