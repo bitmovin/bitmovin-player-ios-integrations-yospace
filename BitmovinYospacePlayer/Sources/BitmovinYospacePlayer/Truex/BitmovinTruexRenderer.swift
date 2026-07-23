@@ -18,7 +18,7 @@ public class BitmovinTruexRenderer: NSObject, TruexAdRendererDelegate {
     }
 
     func renderTruexAd(advert: YOAdvert, adBreakPosition: YospaceAdBreakPosition) {
-        guard let interactiveUnit = advert.interactiveCreative else {
+        guard let interactiveUnit = advert.interactiveCreatives?.first else {
             return
         }
 

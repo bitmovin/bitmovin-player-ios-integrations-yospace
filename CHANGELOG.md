@@ -35,8 +35,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Minimum Xcode version: 16.4
 - Minimum Swift version: 5.10
 - Project structure reorganized to follow SPM conventions (`Sources/BitmovinYospacePlayer/`)
-- `BitmovinPlayer` dependency to `3.105.0` and newer
-- `YOAdManagement-Release` dependency to `3.10.3`
+- `BitmovinPlayer` dependency to `3.117.0`
+- `YospaceAd.extensions` now exposes Player's `[VastAdExtension]` model
+- `YOAdManagement-Release` dependency to `3.11.2`
 - `TruexAdRenderer-iOS` dependency to `3.5.1`
 - `TruexAdRenderer-tvOS` dependency to `3.15.2`
 

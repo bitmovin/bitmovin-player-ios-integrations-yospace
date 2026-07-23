@@ -112,6 +112,8 @@ public class BitmovinYospacePlayer: NSObject, Player {
 
     public var playlist: PlaylistApi { return player.playlist }
 
+    public var nowPlaying: NowPlayingApi { return player.nowPlaying }
+
     public lazy var ads: BitmovinPlayerCore.AdvertisingApi = {
         return YospaceAdvertisingApi(yospacePlayer: self)
     }()
@@ -1108,6 +1110,8 @@ extension String {
 
 extension YOAdvert {
     func toYospaceAd(absoluteStart: Double, relativeStart: Double) -> YospaceAd {
+        let interactiveCreative = interactiveCreatives?.first
+
         return YospaceAd(
             identifier: identifier,
             creativeId: linearCreative.creativeIdentifier,
@@ -1124,13 +1128,26 @@ extension YOAdvert {
             extensions:
             // advertExtensions() returns the "extensions" node itself
             // This creates a list of child "extension" nodes to be consistent with Android
-            extensions?.childNodes()?.compactMap { $0 as? YOXmlNode } ?? [YOXmlNode](),
+            extensions?.childNodes()?.compactMap {
+                ($0 as? YOXmlNode)?.toVastAdExtension()
+            } ?? [],
             isFiller: isFiller,
             isLinear: interactiveCreative == nil,
             clickThroughUrl: URL(string: linearCreative.clickthroughUrl() ?? ""),
             mediaFileUrl: URL(string: interactiveCreative?.source ?? ""),
             skippableAfter: skipOffset,
             clickThroughUrlOpened: { }
+        )
+    }
+}
+
+private extension YOXmlNode {
+    func toVastAdExtension() -> VastAdExtension {
+        VastAdExtension(
+            name: qualifiedName,
+            value: innerText.isEmpty ? nil : innerText,
+            attributes: attributes as? [String: String] ?? [:],
+            children: childNodes()?.compactMap { ($0 as? YOXmlNode)?.toVastAdExtension() } ?? []
         )
     }
 }

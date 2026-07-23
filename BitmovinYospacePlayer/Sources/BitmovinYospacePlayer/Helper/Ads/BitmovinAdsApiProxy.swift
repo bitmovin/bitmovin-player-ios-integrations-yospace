@@ -7,6 +7,10 @@ class YospaceAdvertisingApi: AdvertisingApi {
         yospacePlayer?.timeline?.adBreaks ?? []
     }
 
+    var activeAd: (any Ad)? {
+        yospacePlayer?.activeAd
+    }
+
     init(yospacePlayer: BitmovinYospacePlayer) {
         self.yospacePlayer = yospacePlayer
     }

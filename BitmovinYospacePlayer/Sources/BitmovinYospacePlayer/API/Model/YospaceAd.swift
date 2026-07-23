@@ -22,7 +22,7 @@ public class YospaceAd: NSObject, LinearAd {
     public let advertiser: String?
     public let hasInteractiveUnit: Bool
     public let lineage: YOAdvertWrapper?
-    public let extensions: [YOXmlNode]
+    public let extensions: [VastAdExtension]
     public let isFiller: Bool
     public let isLinear: Bool
     public var clickThroughUrl: URL?
@@ -33,6 +33,8 @@ public class YospaceAd: NSObject, LinearAd {
     public var skippableAfter: TimeInterval
     public var uiConfig: BitmovinPlayerCore.LinearAdUiConfig?
     public var clickThroughUrlOpened: (() -> Void)?
+    public var expanded: (() -> Void)?
+    public var collapsed: (() -> Void)?
 
     required init(
         identifier: String?,
@@ -47,7 +49,7 @@ public class YospaceAd: NSObject, LinearAd {
         advertiser: String?,
         hasInteractiveUnit: Bool,
         lineage: YOAdvertWrapper?,
-        extensions: [YOXmlNode],
+        extensions: [VastAdExtension],
         isFiller: Bool,
         isLinear: Bool,
         clickThroughUrl: URL?,
